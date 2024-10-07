@@ -1,0 +1,121 @@
+﻿<UserControl x:Class="ZWaveControllerUI.Views.AssociationsView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="clr-namespace:ZWaveControllerUI.Views"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             xmlns:converters="clr-namespace:ZWaveControllerUI.Converters"
+             xmlns:viewModels="clr-namespace:ZWaveControllerUI.Models"
+             AutomationProperties.AutomationId="ID_ASSOCIATIONS_VIEW">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <converters:StringToIntConverter x:Key="StringToIntConverter"/>
+            <converters:BoolToVisibilityCollapsedConverter x:Key="BoolToVisibilityConverter"/>
+            <converters:NodeTypeConverter x:Key="NodeTypeConverter" ZWaveDefinition="{Binding ApplicationModel.ZWaveDefinition}" Network="{Binding ApplicationModel.Controller.Network}"/>
+            <converters:CommandClassConverter x:Key="CommandClassConverter"/>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <bind:CommandReference x:Key="AssociationGetGroupsCommand" Command="{Binding AssociationGetGroupsCommand}"/>
+            <bind:CommandReference x:Key="AssociationCreateCommand" Command="{Binding AssociationCreateCommand}"/>
+            <bind:CommandReference x:Key="AssociationGetCommand" Command="{Binding AssociationGetCommand}"/>
+            <bind:CommandReference x:Key="AssociationRemoveCommand" Command="{Binding AssociationRemoveCommand}"/>
+            <bind:CommandReference x:Key="AssociationGetGroupInfoCommand" Command="{Binding AssociationGetGroupInfoCommand}"/>
+            <bind:CommandReference x:Key="AssociationGetCommandListCommand" Command="{Binding AssociationGetCommandListCommand}"/>
+            <converters:AssociativeGroupInfoConverter x:Key="AssociativeGroupInfoConverter"/>
+            <converters:AssociativeDeviceNameConverter x:Key="AssociativeDeviceNameConverter"/>
+            <Style TargetType="TreeViewItem" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                <Setter Property="AutomationProperties.AutomationId" Value="ID_TVM_ITEM_ASSOCIATIONS"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="276" />
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="50*"/>
+        </Grid.RowDefinitions>
+        <views:NodesListView Grid.Column="0" Grid.Row="0" DataContext="{Binding ApplicationModel}"/>
+        <views:NodeInfoView Grid.Column="0" Grid.Row="2" DataContext="{Binding ApplicationModel}"/>
+        <GridSplitter 
+            Grid.Column="0" 
+            Grid.Row="1" 
+            VerticalAlignment="Center"
+            HorizontalAlignment="Stretch"
+            Height="4"
+            ShowsPreview="True"
+            />
+
+        <GridSplitter 
+            Grid.Column="1" 
+            Grid.Row="0" 
+            Grid.RowSpan="3" 
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Center"
+            Width="4"
+            ShowsPreview="True"
+            />
+        <DockPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="3">
+            <StackPanel DockPanel.Dock="Top">
+                <StackPanel Margin="4" Orientation="Horizontal">
+                    <Button Content="Create" Command="{StaticResource AssociationCreateCommand}" AutomationProperties.AutomationId="ID_BTN_CREATE"/>
+                    <Button Content="Remove" Command="{StaticResource AssociationRemoveCommand}" AutomationProperties.AutomationId="ID_BTN_REMOVE"/>
+                    <Button Content="Get Groups" Command="{StaticResource AssociationGetGroupsCommand}" AutomationProperties.AutomationId="ID_BTN_GET_GROUPS"/>
+                    <Button Content="Get Nodes" Command="{StaticResource AssociationGetCommand}" AutomationProperties.AutomationId="ID_BTN_GET_NODES"/>
+                </StackPanel>
+                <StackPanel Margin="4">
+                    <CheckBox Content="Assign return routes" IsChecked="{Binding IsAssignReturnRoutes}" VerticalAlignment="Center" AutomationProperties.AutomationId="ID_CHK_ASSIGN_RETURN_ROUTES"/>
+                </StackPanel>
+            </StackPanel>
+            <TreeView 
+                ItemContainerStyle="{StaticResource {x:Type TreeViewItem}}" 
+                ItemsSource="{Binding AssociativeApplications}" 
+                bind:TreeViewBehavior.Attach="true" 
+                bind:TreeViewBehavior.SelectedItem="{Binding SelectedObject, Mode=TwoWay}" 
+                bind:TreeViewBehavior.ExpandItem="{Binding ExpandObject, Mode=TwoWay}" AutomationProperties.AutomationId="ID_TVW_ASSOCIATIONS_INFO">
+                <TreeView.Resources>
+                    <HierarchicalDataTemplate DataType="{x:Type viewModels:AssociativeApplication}" ItemsSource="{Binding Devices}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding RootDevice}" FontWeight="Bold" AutomationProperties.AutomationId="ID_ROOT_DEVICE"/>
+                            <TextBlock  FontWeight="Bold">
+                                <TextBlock.Text>
+                                    <Binding Path="RootDevice" Converter="{StaticResource NodeTypeConverter}"/>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                    <HierarchicalDataTemplate DataType="{x:Type viewModels:AssociativeDevice}" ItemsSource="{Binding Groups}" >
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Device, Converter={StaticResource AssociativeDeviceNameConverter}}" AutomationProperties.AutomationId="ID_END_POINT"/>
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                    <HierarchicalDataTemplate DataType="{x:Type viewModels:AssociativeGroup}">
+                        <HierarchicalDataTemplate.ItemsSource>
+                            <MultiBinding Converter="{StaticResource AssociativeGroupInfoConverter}">
+                                <Binding Path="Nodes"/>
+                                <Binding Path="GroupInfo"/>
+                                <Binding Path="GroupCommandClasses"/>
+                            </MultiBinding>
+                        </HierarchicalDataTemplate.ItemsSource>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock  Text="{Binding Id, StringFormat='Group {0} '}" />
+                            <TextBlock  Text="{Binding GroupName, StringFormat='({0})'}" />
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                    <HierarchicalDataTemplate DataType="{x:Type viewModels:AssociativeFolder}" ItemsSource="{Binding Path=Items}">
+                        <TextBlock Text="{Binding Path=Name}" FontStyle="Italic" AutomationProperties.AutomationId="ID_NODE_TYPE"/>
+                    </HierarchicalDataTemplate>
+                    <HierarchicalDataTemplate DataType="{x:Type viewModels:AssociativeNode}">
+                        <TextBlock Text="{Binding Item}" AutomationProperties.AutomationId="DEBUG" />
+                    </HierarchicalDataTemplate>
+                </TreeView.Resources>
+            </TreeView>
+        </DockPanel>
+    </Grid>
+</UserControl>

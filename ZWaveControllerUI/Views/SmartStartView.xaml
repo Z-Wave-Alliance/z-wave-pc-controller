@@ -1,0 +1,193 @@
+﻿<UserControl x:Class="ZWaveControllerUI.Views.SmartStartView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             xmlns:views="clr-namespace:ZWaveControllerUI.Views"
+             xmlns:converters="clr-namespace:ZWaveControllerUI.Converters"
+             xmlns:cfg="clr-namespace:ZWaveController.Configuration;assembly=ZWaveController"
+             AutomationProperties.AutomationId="ID_SMART_START_VIEW">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>            
+            <bind:CommandReference x:Key="WhitelistListGetCommandRef" Command="{Binding WhitelistListGetCommand}"/>
+            <bind:CommandReference x:Key="WhitelistGetCommandRef" Command="{Binding WhitelistGetCommand}"/>
+            <bind:CommandReference x:Key="AddProvisioningItemCommandRef" Command="{Binding AddProvisioningItemCommand}"/>
+            <bind:CommandReference x:Key="UpdateProvisioningItemCommandRef" Command="{Binding UpdateProvisioningItemCommand}"/>
+            <bind:CommandReference x:Key="SetInifUserInputCommandRef" Command="{Binding SetInifUserInputCommand}"/>
+            <bind:CommandReference x:Key="GetInifUserInputCommandRef" Command="{Binding GetInifUserInputCommand}"/>
+            <bind:CommandReference x:Key="RemoveRef" Command="{Binding RemoveSelectedCommand}"/>
+            <bind:CommandReference x:Key="RemoveAllRef" Command="{Binding RemoveAllCommand}"/>
+            <converters:ByteArrayToStringConverter x:Key="ByteArrayToStringConverter" />
+            <converters:ByteArrayToDSKString x:Key="ByteArrayToDSKString" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:InvertBoolToVisibilityConverter x:Key="InvertBoolToVisibilityConverter" />
+            <bind:CommandReference x:Key="ScanDSKCommand" Command="{Binding ScanDSKCommand}"/>
+            <bind:CommandReference x:Key="ImportDSKCommand" Command="{Binding ImportDSKCommand}"/>
+            <bind:CommandReference x:Key="ExportDSKCommand" Command="{Binding ExportDSKCommand}"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="276" />
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="50*"/>
+        </Grid.RowDefinitions>
+
+        <GridSplitter 
+            Grid.Column="0" 
+            Grid.Row="1" 
+            VerticalAlignment="Center"
+            HorizontalAlignment="Stretch"
+            Height="4"
+            ShowsPreview="True"/>
+
+        <GridSplitter 
+            Grid.Column="1" 
+            Grid.Row="0" 
+            Grid.RowSpan="3" 
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Center"
+            Width="4"
+            ShowsPreview="True"/>
+        <views:NodesListView Grid.Column="0" Grid.Row="0" AutomationProperties.AutomationId="ID_NODES_LIST_VIEW" DataContext="{Binding ApplicationModel}"/>
+        <views:NodeInfoView Grid.Column="0" Grid.Row="2" DataContext="{Binding ApplicationModel}"/>
+        <Grid Grid.Row="0" Grid.RowSpan="3" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*" MinHeight="100"/>
+            </Grid.RowDefinitions>
+            <Grid >
+                <Grid.Resources>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+                        <Setter Property="Width" Value="112"/>
+                        <Setter Property="Height" Value="40"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                    <Style TargetType="md:PackIcon">
+                        <Setter Property="Width" Value="24"/>
+                        <Setter Property="Height" Value="24"/>
+                    </Style>
+                </Grid.Resources>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+            </Grid>
+            <CheckBox Margin="2,0" IsChecked="{Binding DialogSettings.IsFloating}" Content="Floating View" HorizontalAlignment="Right"/>
+            <DockPanel Grid.Row="2">
+                <StackPanel Margin="4,0" DockPanel.Dock="Top" Orientation="Horizontal">
+                    <TextBlock Text="Provisioning List:"/>
+                </StackPanel>
+                <DockPanel Margin="4" DockPanel.Dock="Bottom" 
+                               Visibility="{Binding IsMetadataEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel>
+                        <DockPanel>
+                            <TextBlock Text="Metadata Type - Name:" Width="142"/>
+                            <TextBox Text="{Binding Path=MetadaNameValue, Mode=TwoWay}"/>
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock Text="Metadata Type - Location:" Width="142"/>
+                            <TextBox Text="{Binding Path=MetadaLocationValue, Mode=TwoWay}"/>
+                        </DockPanel>
+                    </StackPanel>
+                </DockPanel>
+
+                <StackPanel Margin="4" DockPanel.Dock="Bottom" >
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Left" Text="DSK Value:"/>
+                        <TextBox x:Name="tbDsk" FontFamily="Courier New" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                 GotKeyboardFocus="MaskTextBox_GotKeyboardFocus" 
+                                 GotMouseCapture="MaskTextBox_GotMouseCapture"
+                                 PreviewMouseLeftButtonDown="MaskTextBox_PreviewMouseLeftButtonDown"
+                                 AcceptsReturn="True"
+                                 Text="{Binding Path=DSK, Converter={StaticResource ByteArrayToDSKString}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="-3,1,5,1"
+                                 AutomationProperties.AutomationId="ID_TB_DSK_VALUE"/>
+                    </DockPanel>
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding IsMetadataEnabled, Converter={StaticResource InvertBoolToVisibilityConverter}}">
+                        <TextBlock  Text="Grant Schemes:" Width="85"/>
+                        <CheckBox IsChecked="{Binding IsGrantS0Key}" Content="S0;" DockPanel.Dock="Right"/>
+                        <CheckBox IsChecked="{Binding IsGrantS2UnauthenticatedKey}" Content="S2 Unauthenticated;" DockPanel.Dock="Right"/>
+                        <CheckBox IsChecked="{Binding IsGrantS2AuthenticatedKey}" Content="S2 Authenticated;" DockPanel.Dock="Right"/>
+                        <CheckBox IsChecked="{Binding IsGrantS2AccessKey}" Content="S2 Access;" DockPanel.Dock="Right"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock  Text="Node Options:" Width="85"/>
+                            <CheckBox IsChecked="{Binding IsNodeOptionLongRange}" Content="Long Range;" DockPanel.Dock="Right"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding IsMetadataEnabled, Converter={StaticResource InvertBoolToVisibilityConverter}}">
+                            <!--Visibility="{Binding Path=ApplicationModel.Controller.Network.IsNodeIdBaseTypeLR, Converter={StaticResource BooleanToVisibilityConverter}}"/>-->
+                            <CheckBox IsChecked="{Binding IsNodeOptionNetworkWide}" Content="Network Wide;" DockPanel.Dock="Right"/>
+                            <CheckBox IsChecked="{Binding IsNodeOptionNormalPower}" Content="Normal Power;" DockPanel.Dock="Right"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <CheckBox Content="Auto remove DSK on Device Reset Locally Notification" IsChecked="{Binding IsRemoveDSK}" DockPanel.Dock="Right"/>
+                    <DockPanel Margin="0,8,0,0" DockPanel.Dock="Bottom">
+                        <Button Content="Add" Command="{StaticResource AddProvisioningItemCommandRef}" AutomationProperties.AutomationId="ID_BTN_ADD_DSK"/>
+                        <Button Content="Update" Command="{StaticResource UpdateProvisioningItemCommandRef}" AutomationProperties.AutomationId="ID_BTN_UPDATE_DSK"/>
+                        <Button DockPanel.Dock="Right" Content="Remove All" Command="{StaticResource RemoveAllRef}"/>
+                        <Button DockPanel.Dock="Right" Content="Remove" Command="{StaticResource RemoveRef}"/>
+                        <TextBlock/>
+                    </DockPanel>
+                </StackPanel>
+                <StackPanel Margin="4" DockPanel.Dock="Bottom" Orientation="Horizontal">
+                    <Button Content="Refresh List" Command="{StaticResource WhitelistListGetCommandRef}"/>
+                    <Button Content="Scan DSK" Command="{StaticResource ScanDSKCommand}"/>
+                    <Button Content="Import DSKs" Command="{StaticResource ImportDSKCommand}"/>
+                    <Button Content="Export DSKs" Command="{StaticResource ExportDSKCommand}"/>
+                </StackPanel>
+                <TreeView ItemContainerStyle="{StaticResource {x:Type TreeViewItem}}"
+                  ItemsSource="{Binding ApplicationModel.ConfigurationItem.PreKitting.ProvisioningList}" 
+                  bind:TreeViewBehavior.Attach="true"
+                  bind:TreeViewBehavior.SelectedItem="{Binding SelectedObject, Mode=TwoWay}" AutomationProperties.AutomationId="ID_TVW_PROVISIONING_LIST_VIEW">
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate DataType="{x:Type cfg:ProvisioningItem}" ItemsSource="{Binding Metadata}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Width="40">
+                                    <TextBlock.Text>
+                                        <Binding Path="NodeId" Converter="{converters:IsValueInRangeConverter}"/>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <TextBlock Name="tb1" FontFamily="Courier New">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{1}">
+                                            <Binding Path="State" />
+                                            <Binding Path="Text" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
+                            <HierarchicalDataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding Path=State}" Value="{x:Static cfg:PreKittingState.Pending}">
+                                    <Setter TargetName="tb1" Property="FontStyle" Value="Italic"/>
+                                </DataTrigger>
+                            </HierarchicalDataTemplate.Triggers>
+                        </HierarchicalDataTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type cfg:ProvisioningItemExtension}">
+                            <TextBlock Name="tb2">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0}: {1}">
+                                        <Binding Path="Type" />
+                                        <Binding Path="Text" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </HierarchicalDataTemplate>
+                    </TreeView.Resources>
+                </TreeView>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</UserControl>

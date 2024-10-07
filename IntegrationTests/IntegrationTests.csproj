@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{64F610BC-203E-4347-BC4E-E545D4E78FDC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>IntegrationTests</RootNamespace>
+    <AssemblyName>IntegrationTests</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL" />
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CallbackDialogsHelper.cs" />
+    <Compile Include="CustomTestCases\InclusionBridgeCustomTests.cs" />
+    <Compile Include="ViewTests\AssociationsTests.cs" />
+    <Compile Include="ViewTests\ConfigurationItemTests.cs" />
+    <Compile Include="CustomTestCases\InclusionCustomTests.cs" />
+    <Compile Include="ViewTests\DispatchFake.cs" />
+    <Compile Include="ViewTests\EncryptDecryptTests.cs" />
+    <Compile Include="ViewTests\ERTTTests.cs" />
+    <Compile Include="ViewTests\IMANetworkTests.cs" />
+    <Compile Include="ReceivedLogItem.cs" />
+    <Compile Include="ManualTests.cs" />
+    <Compile Include="ViewTests\NetworkManagementTests.cs" />
+    <Compile Include="ViewTests\NVMBackupRestoreTests.cs" />
+    <Compile Include="ViewTests\OTAFirmawareUpdateTests.cs" />
+    <Compile Include="ViewTests\PollingTests.cs" />
+    <Compile Include="SetUpFixture.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewTests\SetupRouteTests.cs" />
+    <Compile Include="SubscribeCollectionFactoryFake.cs" />
+    <Compile Include="TestCaseBase.cs" />
+    <Compile Include="ViewTests\SettingsTests.cs" />
+    <Compile Include="CertificationS2TestCases\TC02457.cs" />
+    <Compile Include="CertificationS2TestCases\TC02013.cs" />
+    <Compile Include="CertificationS2TestCases\TC02484.cs" />
+    <Compile Include="CertificationS2TestCases\TC02455.cs" />
+    <Compile Include="CertificationS2TestCases\TC02489.cs" />
+    <Compile Include="CertificationS2TestCases\TC02152.cs" />
+    <Compile Include="CertificationS2TestCases\TC02133.cs" />
+    <Compile Include="CertificationS2TestCases\TC02132.cs" />
+    <Compile Include="CertificationS2TestCases\TC02463.cs" />
+    <Compile Include="CertificationS2TestCases\TC02069.cs" />
+    <Compile Include="CertificationS2TestCases\TC02488.cs" />
+    <Compile Include="CertificationS2TestCases\TC02009.cs" />
+    <Compile Include="CertificationS2TestCases\TC02007.cs" />
+    <Compile Include="CertificationS2TestCases\TC02538.cs" />
+    <Compile Include="CertificationS2TestCases\TC02485.cs" />
+    <Compile Include="ZFingerDeviceTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\ZWaveDll\BasicApplication\BasicApplication.csproj">
+      <Project>{2E351174-ED53-4E8A-A065-3E15A7E228B5}</Project>
+      <Name>BasicApplication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\ZWaveDll\Utils\Utils.csproj">
+      <Project>{6C298CDF-2B64-4BE7-B9D4-449D5F30E57F}</Project>
+      <Name>Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\ZWaveDll\ZWaveXml\ZWaveXml.csproj">
+      <Project>{FEB030F9-A44A-4C72-9C28-C8FA186995FB}</Project>
+      <Name>ZWaveXml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\ZWaveDll\ZWave\ZWave.csproj">
+      <Project>{B214D482-57EB-42BE-AEC7-D64850F56514}</Project>
+      <Name>ZWave</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ZWaveControllerUI\ZWaveControllerUI.csproj">
+      <Project>{CBCD0B30-1DA2-4B4E-977C-631FF02887CA}</Project>
+      <Name>ZWaveControllerUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ZWaveController\ZWaveController.csproj">
+      <Project>{DD57A974-E2E4-4E8E-9847-C7BAC0BB94A0}</Project>
+      <Name>ZWaveController</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

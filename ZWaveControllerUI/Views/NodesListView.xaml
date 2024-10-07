@@ -1,0 +1,249 @@
+﻿<UserControl x:Class="ZWaveControllerUI.Views.NodesListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:ZWaveControllerUI.Converters"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             x:Name="NodesListControl"
+             xmlns:cm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             AutomationProperties.AutomationId="ID_NODES_LIST_VIEW">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <converters:NodeSecuritySchemesConverter x:Key="NodeSecuritySchemesConverter" Network="{Binding Controller.Network}"/>
+            <converters:NodeTypeConverter x:Key="NodeTypeConverter" ZWaveDefinition="{Binding ZWaveDefinition}" Network="{Binding Controller.Network}"/>
+            <converters:NodeListeningConverter x:Key="NodeListeningConverter" Network="{Binding Controller.Network}"/>
+            <converters:NodeLongRangeConverter x:Key="NodeLongRangeConverter" Network="{Binding Controller.Network}"/>
+            <converters:NodeVirtualConverter x:Key="NodeVirtualConverter" Network="{Binding Controller.Network}"/>
+            <converters:NodeForcedListeningConverter x:Key="NodeForcedListeningConverter" Network="{Binding Controller.Network}"/>
+            <converters:NodeFailedConverter x:Key="NodeFailedConverter" Network="{Binding Controller.Network}"/>
+            <converters:NodeEndPointConverter x:Key="NodeEndPointConverter"/>
+            <converters:NodeSubjectConverter x:Key="NodeSubjectConverter" Network="{Binding Controller.Network}"/>
+            <converters:NodeEndDeviceApiConverter x:Key="NodeEndDeviceApiConverter" Network="{Binding Controller.Network}"/>
+            <converters:NodeFlirsConverter x:Key="NodeFlirsConverter" Network="{Binding Controller.Network}"/>
+            <converters:IsFailedNodeColorConverter x:Key="IsFailedNodeColorConverter"/>
+            <converters:AreEqualConvertor x:Key="AreEqualConvertor"/>
+            <converters:IsNotZero x:Key="IsNotZero"/>
+            <converters:GroupNodesCountConverter x:Key="GroupNodesCountConverter"/>
+            <converters:GroupEndPointsCountConverter x:Key="GroupEndPointsCountConverter"/>
+            <converters:HasBitConverter x:Key="HasBitConverter"/>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <bind:CommandReference x:Key="OnSelectedItemsChangedCommand" Command="{Binding OnSelectedItemsChangedCommand}"/>
+            <bind:ObjectReference x:Key="ControllerId" Value="{Binding Controller.Id}"/>
+            <bind:CommandReference x:Key="NetworkManagementCommand" Command="{Binding MainMenuViewModel.ShowNetworkManagementCommand}"/>
+
+            <CollectionViewSource x:Key="Nodes" Source="{Binding ConfigurationItem.Nodes}">
+                <CollectionViewSource.GroupDescriptions>
+                    <PropertyGroupDescription PropertyName="Item" Converter="{StaticResource NodeEndDeviceApiConverter}"/>
+                </CollectionViewSource.GroupDescriptions>
+                <CollectionViewSource.SortDescriptions>
+                    <cm:SortDescription PropertyName="Item"/>
+                </CollectionViewSource.SortDescriptions>
+            </CollectionViewSource>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <DockPanel>
+        <ListView bind:ListViewBehavior.Attach="true" bind:ListViewBehavior.OnSelectedItemsChangedCommand="{StaticResource OnSelectedItemsChangedCommand}"
+                  IsSynchronizedWithCurrentItem="False"
+                  Grid.Column="0" 
+                  Grid.Row="2" 
+                  ItemsSource="{Binding Source={StaticResource Nodes}}" 
+                  SelectedItem="{Binding Path=SelectedNode}"
+                  AutomationProperties.AutomationId="ID_LV_NODES">
+            <ListView.Resources>
+                <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                    <Setter Property="FontSize" Value="12"/>
+                    <Setter Property="Margin" Value="0"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Item, Converter={StaticResource NodeSubjectConverter}, Mode=OneWay}" Value="True">
+                            <Setter Property="FontWeight" Value="Bold"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Item, Converter={StaticResource NodeFailedConverter}, Mode=OneWay}" Value="True">
+                            <Setter Property="Foreground" Value="Red"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.Resources>
+            <ListView.View>
+                <GridView AllowsColumnReorder="False">
+                    <GridViewColumn Header="Id" Width="32">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="-2,0" Orientation="Horizontal">
+                                    <TextBlock AutomationProperties.AutomationId="ID_TB_NODEID" Text="{Binding Item}"/>
+                                </StackPanel>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding Item, Converter={StaticResource NodeEndPointConverter}}" Value="True">
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Type" Width="140">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="-2,0" Orientation="Horizontal">
+                                    <TextBlock x:Name="tbEndPointIcon" Text="---" Visibility="Collapsed" Foreground="{StaticResource ButtonBackground}"/>
+                                    <TextBlock AutomationProperties.AutomationId="ID_TB_NODETYPE" Text="{Binding Item, Converter={StaticResource NodeTypeConverter}}"/>
+                                </StackPanel>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding Item, Converter={StaticResource NodeEndPointConverter}}" Value="True">
+                                        <Setter TargetName="tbEndPointIcon" Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="22">
+                        <GridViewColumnHeader Content="Sch" ToolTip="Security Schemes"/>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border x:Name="bScheme" Margin="-4,1" BorderBrush="{StaticResource EditBorderBrush}" Background="White" BorderThickness="1,0">
+                                    <StackPanel >
+                                        <Rectangle Margin="1,0,1,1" x:Name="S0Scheme" Fill="{StaticResource SnkS0}" Width="8" Height="3" Visibility="Hidden"/>
+                                        <Rectangle Margin="1,0,1,1" x:Name="S2UnauthenticatedScheme" Fill="{StaticResource SnkS2_UNAUTHENTICATED}" Width="8" Height="3" Visibility="Hidden"/>
+                                        <Rectangle Margin="1,0,1,1" x:Name="S2AuthenticatedScheme" Fill="{StaticResource SnkS2_AUTHENTICATED}" Width="8" Height="3" Visibility="Hidden"/>
+                                        <Rectangle Margin="1,0,1,0" x:Name="S2AccessScheme" Fill="{StaticResource SnkS2_ACCESS}" Width="8" Height="3" Visibility="Hidden"/>
+                                    </StackPanel>
+                                </Border>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding Item, Converter={StaticResource NodeEndPointConverter}}" Value="True">
+                                        <Setter TargetName="bScheme" Property="Visibility" Value="Hidden"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Item, Converter={StaticResource NodeSecuritySchemesConverter}, ConverterParameter='S2_ACCESS'}" Value="True">
+                                        <Setter TargetName="S2AccessScheme" Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Item, Converter={StaticResource NodeSecuritySchemesConverter}, ConverterParameter='S2_AUTHENTICATED'}" Value="True">
+                                        <Setter TargetName="S2AuthenticatedScheme" Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Item, Converter={StaticResource NodeSecuritySchemesConverter}, ConverterParameter='S2_UNAUTHENTICATED'}" Value="True">
+                                        <Setter TargetName="S2UnauthenticatedScheme" Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Item, Converter={StaticResource NodeSecuritySchemesConverter}, ConverterParameter='S0'}" Value="True">
+                                        <Setter TargetName="S0Scheme" Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="20">
+                        <GridViewColumnHeader Content="LR" ToolTip="Long Range Node"/>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox Margin="-4,0" x:Name="cbILR" Visibility="Hidden" IsEnabled="False" AutomationProperties.AutomationId="ID_CHK_ILR"
+                                          Style="{StaticResource CheckBoxNullableFlag}" Foreground="Sienna" 
+                                          IsChecked="{Binding Item, Converter={StaticResource NodeLongRangeConverter}, Mode=OneWay}"/>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding Item, Converter={StaticResource NodeEndPointConverter}}" Value="false">
+                                        <Setter TargetName="cbILR" Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="20">
+                        <GridViewColumnHeader Content="Lsn" ToolTip="Listening Node"/>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Margin="-4,0">
+                                    <CheckBox x:Name="cbIL" Visibility="Collapsed" IsEnabled="False" AutomationProperties.AutomationId="ID_CHK_IL"
+                                          IsChecked="{Binding Item, Converter={StaticResource NodeListeningConverter}}"/>
+                                    <CheckBox x:Name="cbQO" Visibility="Collapsed" AutomationProperties.AutomationId="ID_CHK_QO">
+                                        <CheckBox.Resources>
+                                            <bind:ObjectReference x:Key="ItemReference" Value="{Binding Item}"/>
+                                        </CheckBox.Resources>
+                                        <CheckBox.IsChecked>
+                                            <Binding Path="Item" Converter="{StaticResource NodeForcedListeningConverter}" ConverterParameter="{StaticResource ItemReference}" Mode="TwoWay"/>
+                                        </CheckBox.IsChecked>
+                                    </CheckBox>
+                                </Grid>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding Item, Converter={StaticResource NodeEndPointConverter}}" Value="false">
+                                        <Setter TargetName="cbIL" Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding Item, Converter={StaticResource NodeEndPointConverter}}" Value="false"/>
+                                            <Condition Binding="{Binding Item, Converter={StaticResource NodeListeningConverter}}" Value="False"/>
+                                            <Condition Binding="{Binding Item, Converter={StaticResource NodeFlirsConverter}}" Value="False"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter TargetName="cbQO" Property="Visibility" Value="Visible"/>
+                                    </MultiDataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="20">
+                        <GridViewColumnHeader Content="V" ToolTip="Virtual Node"/>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox Margin="-4,0" x:Name="cbIV" Visibility="Hidden" IsEnabled="False" AutomationProperties.AutomationId="ID_CHK_IV"
+                                          Style="{StaticResource CheckBoxFlag}" Foreground="Sienna" 
+                                          IsChecked="{Binding Item, Converter={StaticResource NodeVirtualConverter}, Mode=OneWay}"/>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding Item, Converter={StaticResource NodeEndPointConverter}}" Value="false">
+                                        <Setter TargetName="cbIV" Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+
+            </ListView.View>
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="{x:Type GroupItem}">
+                            <Setter Property="Margin" Value="0"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <Expander Margin="0" IsExpanded="True">
+                                            <Expander.Header>
+                                                <StackPanel Orientation="Horizontal" TextElement.Foreground="{StaticResource ButtonBackground}">
+                                                    <TextBlock>
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Name}" Value="True">
+                                                                        <Setter Property="Text" Value="End Devices" />
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding Name}" Value="False">
+                                                                        <Setter Property="Text" Value="Controllers" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                    <TextBlock>
+                                                        <TextBlock.Text>
+                                                            <MultiBinding StringFormat="{}({0})" Converter="{StaticResource GroupNodesCountConverter}">
+                                                                <Binding Path="Items"/>
+                                                                <Binding Path="Items.Count" FallbackValue="0" TargetNullValue="0"/>
+                                                            </MultiBinding>
+                                                        </TextBlock.Text>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </Expander.Header>
+                                            <ItemsPresenter />
+                                        </Expander>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+            </ListView.GroupStyle>
+        </ListView>
+    </DockPanel>
+</UserControl>

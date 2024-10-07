@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="ZWaveControllerUI.Views.SelectLocalIpAddressView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:cnv="clr-namespace:ZWaveControllerUI.Converters"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <bind:CommandReference x:Key="UnsolicitedDestStartStopCommand" Command="{Binding UnsolicitedDestStartStopCommand}"/>
+            <bind:CommandReference x:Key="UnsolicitedDestSecondaryStartStopCommand" Command="{Binding UnsolicitedDestSecondaryStartStopCommand}"/>
+            <bind:CommandReference x:Key="UnsolicitedDestApplyCommand" Command="{Binding UnsolicitedDestApplyCommand}"/>
+            <bind:CommandReference x:Key="CommandCancel" Command="{Binding CommandCancel}"/>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <cnv:InvertBoolToVisibilityConverter x:Key="InvertBoolToVisibilityConverter"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <StackPanel>
+            <GroupBox Header="Unsolicited Destiantion">
+                <StackPanel Margin="4">
+                    <StackPanel Orientation="Horizontal">
+                        <md:PackIcon Name="ab1" Kind="CheckboxMarkedCircleOutline" Foreground="{StaticResource ButtonBackground}" Width="24" Height="20"
+                                     Visibility="{Binding IsListening, Mode=TwoWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <md:PackIcon Name="ab2" Kind="WarningOutline" Foreground="Red" Width="24" Height="20"
+                                     Visibility="{Binding IsListening, Mode=TwoWay, Converter={StaticResource InvertBoolToVisibilityConverter}}"/>
+                        <TextBlock Text="{Binding StatusMessage }"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Address:"/>
+                        <TextBox Name="ipPrim" Text="{Binding Path=PrimaryAddress}" IsReadOnly="True" Width="180"/>
+                        <TextBlock Text="Port:"/>
+                        <TextBox Name="portPrim" Text="{Binding Path=PrimaryPort}" IsReadOnly="True" Width="80"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Seconday Port:"/>
+                        <controls:NumericUpDown Width="80" MinValue="1024" MaxValue="65535"
+                                                Value="{Binding SecondaryPort, Mode=TwoWay, UpdateSourceTrigger='PropertyChanged'}"/>
+                        <ToggleButton HorizontalAlignment="Left" Style="{StaticResource SwitchTypeToggleButton}" Margin="2"
+                                    IsChecked="{Binding IsSecondaryOn, Mode=OneWay}"
+                                    Command="{StaticResource UnsolicitedDestSecondaryStartStopCommand}"/>
+                    </StackPanel>
+                    <Button Content="{Binding ActionButtonName}" Command="{StaticResource UnsolicitedDestStartStopCommand}" HorizontalAlignment="Right"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Custom Destination">
+                <StackPanel Orientation="Horizontal" Margin="4">
+                    <TextBlock Text="Address:"/>
+                    <TextBox Text="{Binding CustomPrimaryAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="180"/>
+                    <TextBlock Text="Port:"/>
+                    <controls:NumericUpDown Width="80" MinValue="1024" MaxValue="65535"
+                                            Value="{Binding CustomPrimaryPort, Mode=TwoWay, UpdateSourceTrigger='PropertyChanged'}"/>
+                </StackPanel>
+            </GroupBox>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="4" >
+                <Button Content="Apply" Command="{StaticResource UnsolicitedDestApplyCommand}"/>
+                <Button Content="Close" Command="{StaticResource CommandCancel}" IsCancel="True"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

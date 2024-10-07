@@ -1,0 +1,260 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Styles/Colors.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+    <Style x:Key="{x:Type FlowDocumentReader}" TargetType="{x:Type FlowDocumentReader}">
+        <Setter Property="Background" Value="{StaticResource EditBackground}"/>
+        <Setter Property="KeyboardNavigation.TabNavigation" Value="Local"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type FlowDocumentReader}">
+                    <DockPanel Language="en-us" LastChildFill="True" Uid="DockPanel_3" >
+                        <Grid Background="{TemplateBinding Background}" DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Uid="Grid_31">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="8"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" Uid="StackPanel_5" Visibility="Hidden">
+                                <ToggleButton x:Name="FindButton" Command="ApplicationCommands.Find" Focusable="False" Margin="3,0" ToolTip="Find" Uid="ToggleButton_1">
+                                    <ToggleButton.Style>
+                                        <Style TargetType="{x:Type ToggleButton}">
+                                            <Style.BasedOn>
+                                                <Style TargetType="{x:Type ButtonBase}">
+                                                    <Setter Property="Focusable" Value="False"/>
+                                                    <Setter Property="Opacity" Value="0.5"/>
+                                                    <Setter Property="Cursor" Value="Hand"/>
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                    <Setter Property="Padding" Value="3,1"/>
+                                                    <Setter Property="BorderBrush" Value="{x:Null}"/>
+                                                    <Setter Property="BorderThickness" Value="0"/>
+                                                    <Setter Property="MinWidth" Value="0"/>
+                                                    <Setter Property="MinHeight" Value="0"/>
+                                                    <Setter Property="Height" Value="Auto"/>
+                                                    <Setter Property="Width" Value="Auto"/>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="{x:Type ButtonBase}">
+                                                                <Border Background="{TemplateBinding Background}" Uid="Border_39">
+                                                                    <ContentPresenter x:Name="Content" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" RenderTransformOrigin="0.5,0.5" Uid="ContentPresenter_2"/>
+                                                                </Border>
+                                                                <ControlTemplate.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="RenderTransform" TargetName="Content">
+                                                                            <Setter.Value>
+                                                                                <ScaleTransform ScaleY="1.1" ScaleX="1.1"/>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                    </Trigger>
+                                                                    <Trigger Property="IsPressed" Value="True">
+                                                                        <Setter Property="RenderTransform" TargetName="Content">
+                                                                            <Setter.Value>
+                                                                                <ScaleTransform ScaleY="0.9" ScaleX="0.9"/>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                    </Trigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Opacity" Value="0.3"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Opacity" Value="1"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Style.BasedOn>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </Trigger>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter Property="Opacity" Value="1"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ToggleButton.Style>
+                                    <Path Stroke="{TemplateBinding Foreground}" Uid="Path_23" VerticalAlignment="Center">
+                                        <Path.Data>
+                                            <GeometryGroup>
+                                                <RectangleGeometry RadiusY="1" RadiusX="1" Rect="0.5,0.5,19,19"/>
+                                                <EllipseGeometry Center="12,8" RadiusY="5" RadiusX="5"/>
+                                                <EllipseGeometry Center="12,8" RadiusY="4" RadiusX="4"/>
+                                                <LineGeometry EndPoint="9,10" StartPoint="2.5,16.5"/>
+                                                <LineGeometry EndPoint="9.5,10.5" StartPoint="3,17"/>
+                                                <LineGeometry EndPoint="10,11" StartPoint="3.5,17.5"/>
+                                            </GeometryGroup>
+                                        </Path.Data>
+                                    </Path>
+                                </ToggleButton>
+                                <Border x:Name="PART_FindToolBarHost" HorizontalAlignment="Left" Uid="Border_64" Visibility="Collapsed" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel x:Name="PageCountAndButtons" Visibility="Hidden" Grid.Column="1" HorizontalAlignment="Center" Orientation="Horizontal" Uid="StackPanel_3" VerticalAlignment="Center">
+                                <RepeatButton Command="NavigationCommands.PreviousPage" IsEnabled="{TemplateBinding CanGoToPreviousPage}" ToolTip="Previous Page" Uid="RepeatButton_9">
+                                    <RepeatButton.Style>
+                                        <Style TargetType="{x:Type RepeatButton}">
+                                            <Setter Property="Padding" Value="5"/>
+                                            <Setter Property="Delay" Value="1000"/>
+                                            <Setter Property="Interval" Value="250"/>
+                                            <Style.BasedOn>
+                                                <Style TargetType="{x:Type ButtonBase}">
+                                                    <Setter Property="Focusable" Value="False"/>
+                                                    <Setter Property="Opacity" Value="0.5"/>
+                                                    <Setter Property="Cursor" Value="Hand"/>
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                    <Setter Property="Padding" Value="3,1"/>
+                                                    <Setter Property="BorderBrush" Value="{x:Null}"/>
+                                                    <Setter Property="BorderThickness" Value="0"/>
+                                                    <Setter Property="MinWidth" Value="0"/>
+                                                    <Setter Property="MinHeight" Value="0"/>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="{x:Type ButtonBase}">
+                                                                <Border Background="{TemplateBinding Background}" Uid="Border_39">
+                                                                    <ContentPresenter x:Name="Content" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" RenderTransformOrigin="0.5,0.5" Uid="ContentPresenter_2"/>
+                                                                </Border>
+                                                                <ControlTemplate.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="RenderTransform" TargetName="Content">
+                                                                            <Setter.Value>
+                                                                                <ScaleTransform ScaleY="1.1" ScaleX="1.1"/>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                    </Trigger>
+                                                                    <Trigger Property="IsPressed" Value="True">
+                                                                        <Setter Property="RenderTransform" TargetName="Content">
+                                                                            <Setter.Value>
+                                                                                <ScaleTransform ScaleY="0.9" ScaleX="0.9"/>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                    </Trigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Opacity" Value="0.3"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Opacity" Value="1"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Style.BasedOn>
+                                        </Style>
+                                    </RepeatButton.Style>
+                                    <Viewbox Height="{TemplateBinding FontSize}" Uid="Viewbox_7">
+                                        <Path Data="M5,0 L5,10 L0,5 z" Fill="{TemplateBinding Foreground}" Uid="Path_18"/>
+                                    </Viewbox>
+                                </RepeatButton>
+                                <TextBlock HorizontalAlignment="Center" Uid="TextBlock_8" VerticalAlignment="Center"><Run Text=" "/><Run Text=" "/><InlineUIContainer>
+                                            <TextBlock Text="{Binding PageNumber, RelativeSource={RelativeSource TemplatedParent}}" Uid="TextBlock_9"/>
+                                        </InlineUIContainer><Run Text=" "/><Run Text=" of "/><Run Text=" "/><InlineUIContainer>
+                                            <TextBlock Text="{Binding PageCount, RelativeSource={RelativeSource TemplatedParent}}" Uid="TextBlock_10"/>
+                                        </InlineUIContainer><Run Text=" "/><Run Text=" "/></TextBlock>
+                                <RepeatButton Command="NavigationCommands.NextPage" IsEnabled="{TemplateBinding CanGoToNextPage}" ToolTip="Next Page" Uid="RepeatButton_10">
+                                    <RepeatButton.Style>
+                                        <Style TargetType="{x:Type RepeatButton}">
+                                            <Setter Property="Padding" Value="5"/>
+                                            <Setter Property="Delay" Value="1000"/>
+                                            <Setter Property="Interval" Value="250"/>
+                                            <Style.BasedOn>
+                                                <Style TargetType="{x:Type ButtonBase}">
+                                                    <Setter Property="Focusable" Value="False"/>
+                                                    <Setter Property="Opacity" Value="0.5"/>
+                                                    <Setter Property="Cursor" Value="Hand"/>
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                    <Setter Property="Padding" Value="3,1"/>
+                                                    <Setter Property="BorderBrush" Value="{x:Null}"/>
+                                                    <Setter Property="BorderThickness" Value="0"/>
+                                                    <Setter Property="MinWidth" Value="0"/>
+                                                    <Setter Property="MinHeight" Value="0"/>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="{x:Type ButtonBase}">
+                                                                <Border Background="{TemplateBinding Background}" Uid="Border_39">
+                                                                    <ContentPresenter x:Name="Content" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" RenderTransformOrigin="0.5,0.5" Uid="ContentPresenter_2"/>
+                                                                </Border>
+                                                                <ControlTemplate.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="RenderTransform" TargetName="Content">
+                                                                            <Setter.Value>
+                                                                                <ScaleTransform ScaleY="1.1" ScaleX="1.1"/>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                    </Trigger>
+                                                                    <Trigger Property="IsPressed" Value="True">
+                                                                        <Setter Property="RenderTransform" TargetName="Content">
+                                                                            <Setter.Value>
+                                                                                <ScaleTransform ScaleY="0.9" ScaleX="0.9"/>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                    </Trigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Opacity" Value="0.3"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Opacity" Value="1"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Style.BasedOn>
+                                        </Style>
+                                    </RepeatButton.Style>
+                                    <Viewbox Height="{TemplateBinding FontSize}" Uid="Viewbox_8">
+                                        <Path Data="M0,0 L0,10 L5,5 z" Fill="{TemplateBinding Foreground}" Uid="Path_19"/>
+                                    </Viewbox>
+                                </RepeatButton>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Uid="Grid_33">
+                            <Border x:Name="PART_ContentHost" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" KeyboardNavigation.IsTabStop="False" Margin="{TemplateBinding Padding}" KeyboardNavigation.TabIndex="1" KeyboardNavigation.TabNavigation="Local" Uid="Border_59"/>
+                        </Grid>
+                    </DockPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Document" Value="{x:Null}">
+                            <Setter Property="IsEnabled" TargetName="FindButton" Value="False"/>
+                        </Trigger>
+                        <Trigger Property="IsFindEnabled" Value="False">
+                            <Setter Property="IsEnabled" TargetName="FindButton" Value="False"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="dd" BasedOn="{x:Null}" TargetType="{x:Type DocumentViewer}">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DocumentViewer}">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Focusable="False">
+                        <Grid Background="{TemplateBinding Background}" KeyboardNavigation.TabNavigation="Local">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ScrollViewer x:Name="PART_ContentHost" CanContentScroll="true" Grid.Column="0" Focusable="{TemplateBinding Focusable}" HorizontalScrollBarVisibility="Auto" IsTabStop="true" Grid.Row="1" TabIndex="1"/>
+                            <ContentControl x:Name="PART_FindToolBarHost" Grid.Column="0" Focusable="{TemplateBinding Focusable}" Grid.Row="2" TabIndex="2"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
+-->
+
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <!-- **** PreKitting ***************************************************** -->
+  <xs:element name="PreKitting">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ProvisioningList">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ProvisioningItem" type="ProvisioningItem" maxOccurs="unbounded" minOccurs="0"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- **** ProvisioningItem ************************************************************ -->
+  <xs:complexType name="ProvisioningItem">
+    <xs:sequence>
+      <xs:element name="Metadata" type="ProvisioningItemExtension" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="NodeId" type="xs:unsignedShort" use="optional" default="0"/>
+    <xs:attribute name="Dsk" type="xs:hexBinary" use="required" />
+    <xs:attribute name="State" type="PreKittingState" use="optional" default="Pending" />
+    <xs:attribute name="Comment" type="xs:string" use="optional" />
+    <xs:attribute name="GrantSchemes" type="xs:unsignedByte" use="optional" default="135"/>
+    <xs:attribute name="NodeOptions" type="xs:unsignedByte" use="optional" default="64"/>
+  </xs:complexType>
+
+  <!-- **** Metadata ******************************************************* -->
+  <xs:complexType name="ProvisioningItemExtension">
+    <xs:attribute name="Type" type="ProvisioningItemExtensionTypes" use="required" />
+    <xs:attribute name="IsElective" type="xs:boolean" use="optional" default="false" />
+    <xs:attribute name="Text" type="xs:string" use="required" />
+	<xs:attribute name="IsCritical" type="xs:boolean" use="required" />
+    <xs:attribute name="Comment" type="xs:string" use="optional" />
+  </xs:complexType>
+
+  <!-- **** PreKittingState ********************************************************** -->
+  <xs:simpleType name="PreKittingState">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="Pending"/>
+      <xs:enumeration value="Included"/>
+      <xs:enumeration value="Failed"/>
+      <xs:enumeration value="Passive"/>
+      <xs:enumeration value="Ignore"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- **** PreKittingState ********************************************************** -->
+  <xs:simpleType name="ProvisioningItemExtensionTypes">
+    <xs:restriction base="xs:NCName">
+      <xs:enumeration value="ProductType__eq__0"/>
+      <xs:enumeration value="ProductId__eq__1"/>
+      <xs:enumeration value="Name__eq__100"/>
+      <xs:enumeration value="Location__eq__101"/>
+      <xs:enumeration value="Status__eq__102"/>
+      <xs:enumeration value="AdvancedJoining__eq__103"/>
+      <xs:enumeration value="BootstrappingMode__eq__104"/>
+      <xs:enumeration value="NodeID__eq__105"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

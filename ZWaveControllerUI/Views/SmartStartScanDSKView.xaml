@@ -1,0 +1,106 @@
+﻿<UserControl x:Class="ZWaveControllerUI.Views.SmartStartScanDSKView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cnv="clr-namespace:ZWaveControllerUI.Converters"
+             mc:Ignorable="d" 
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             xmlns:ExtType="clr-namespace:ZWaveController.Models;assembly=ZWaveController"
+             Width="550" Height="250">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <cnv:InvertBoolToVisibilityConverter x:Key="InvertBoolToVisibilityConverter" />
+        <bind:CommandReference x:Key="CommandOk" Command="{Binding CommandOk}"/>
+        <bind:CommandReference x:Key="CommandCancel" Command="{Binding CommandCancel}"/>
+    </UserControl.Resources>
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Bottom" Margin="4">
+            <Button DockPanel.Dock="Right" Command="{StaticResource CommandCancel}" Content="Cancel"/>
+            <Button DockPanel.Dock="Right" Command="{StaticResource CommandOk}" Content="OK"/>
+            <TextBlock Text="DSK:" Margin="4"/>
+            <TextBlock Name="DSK" Margin="4" Text="{Binding Path=QrCodeOptions.QrHeader.DSK, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </DockPanel>
+        <DockPanel>
+            <Grid HorizontalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="150"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Image Grid.Row="0" Name="ImageFromCamera"
+                       Width="150" Height="140" Margin="4" >
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Style.Triggers>
+                                <DataTrigger  Binding="{Binding ElementName=QRScannerCheckBox, Path=IsChecked}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                                <DataTrigger  Binding="{Binding ElementName=QRScannerCheckBox, Path=IsChecked}" Value="False">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
+
+                <TextBox Grid.Row="0" Name="InputQR" TextWrapping="Wrap"
+                         Width="150" Height="140" Margin="4"
+                         Text="{Binding Path=InputQRCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.Style>
+                        <Style TargetType="{x:Type TextBox}">
+                            <Style.Triggers>
+                                <DataTrigger  Binding="{Binding ElementName=QRScannerCheckBox, Path=IsChecked}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger  Binding="{Binding ElementName=QRScannerCheckBox, Path=IsChecked}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+
+                <CheckBox Grid.Row="1" Margin="4"
+                          Content="Keyboard Entry" Name="QRScannerCheckBox" Checked="QRScannerCheckBox_Checked" Unchecked="QRScannerCheckBox_Unchecked"/>
+                
+                <Label Grid.Row="2" x:Name="ValidationError" Content="Invalid checksum" Foreground="Red"
+                       Visibility="{Binding Path=IsValidCheksum, Converter={StaticResource InvertBoolToVisibilityConverter}}" />
+            </Grid>
+
+            <TreeView Margin="4" x:Name="QRTreeView" 
+                      ItemsSource="{Binding Path=ParsedQR}"
+                      ScrollViewer.CanContentScroll="True" 
+                      ScrollViewer.VerticalScrollBarVisibility="Visible" 
+                      ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                <TreeView.Resources>
+                    <HierarchicalDataTemplate DataType="{x:Type ExtType:StringFamilyTree}" ItemsSource="{Binding Children}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition SharedSizeGroup="AFirstColumn1" Width="Auto" />
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding Path=Name, StringFormat='{}{0}:'}" VerticalAlignment="Top"/>
+                            <Border Grid.Column="1" BorderBrush="Red">
+                                <Border.Style>
+                                    <Style TargetType="{x:Type Border}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding = "{Binding IsValid, UpdateSourceTrigger=PropertyChanged}" Value = "True">
+                                                <Setter Property="BorderThickness" Value="0" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding = "{Binding IsValid, UpdateSourceTrigger=PropertyChanged}" Value = "False">
+                                                <Setter Property="BorderThickness" Value="1" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBox BorderThickness="0" Background="Transparent" IsReadOnly="True" TextWrapping="Wrap" Text="{Binding Path=Value, Mode=OneWay}" />
+                            </Border>
+                        </Grid>
+                    </HierarchicalDataTemplate>
+                </TreeView.Resources>
+            </TreeView>
+        </DockPanel>
+    </DockPanel>
+</UserControl>

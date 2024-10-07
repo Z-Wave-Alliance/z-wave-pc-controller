@@ -1,0 +1,43 @@
+﻿<Window x:Class="ZWaveControllerUI.Views.MessageDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+        xmlns:converters="clr-namespace:ZWaveControllerUI.Converters"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        Width="500"
+        SizeToContent="Height"
+        Title="Z-Wave PC Controller"
+        AutomationProperties.AutomationId="ID_MESSAGE_DIALOG">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <bind:CommandReference x:Key="CommandOk" Command="{Binding CommandOk}"/>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Border Background="{StaticResource ViewBackground}">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="4" ShadowDepth="1"/>
+            </Border.Effect>
+        </Border>
+        <DockPanel>
+            <Border DockPanel.Dock="Top" Background="{StaticResource BarBackground}" TextElement.Foreground="{StaticResource BarForeground}" >
+                <StackPanel Margin="4">
+                    <TextBlock Text="{Binding Path=Title}" Foreground="{StaticResource BarForeground}"/>
+                </StackPanel>
+            </Border>
+            <StackPanel Margin="4" DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                <CheckBox Content="Do not show for this version" IsChecked="{Binding Path=IsDoNotShowThis, Mode=TwoWay}" Visibility="{Binding Path=IsDoNotShowThisVersionUpdateVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <Button IsDefault="True" Content="OK" Command="{StaticResource CommandOk}" AutomationProperties.AutomationId="ID_BTN_MESSAGE_DIALOG_CLOSE"/>
+            </StackPanel>
+            <StackPanel Margin="4">
+                <TextBlock Text="{Binding Path=Message}" TextWrapping="WrapWithOverflow" />
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+</Window>

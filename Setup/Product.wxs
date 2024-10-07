@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?include "config.wxi"?>
+  <Product Id="*" Name="Z-Wave PC Controller 5" Language="1033" Version="1.0.0.0" Manufacturer="Silicon Labs" UpgradeCode="C833C4A9-E79D-436E-917C-1EEDB9B49716">
+    <Package Id="*" InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Languages="1033" SummaryCodepage="1252" Manufacturer="Silicon Labs" />
+    <Property Id="DISABLEADVTSHORTCUTS" Value="1" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Z-Wave PC Controller 5 is already installed." Schedule="afterInstallInitialize" />
+    <Media Id="1" Cabinet="Sample.cab" EmbedCab="yes" />
+    <Condition Message="This application is only supported on Windows 7 or higher"><![CDATA[Installed OR (VersionNT > 600)]]></Condition>
+    <UIRef Id="WixUI_InstallDir" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <UI>
+      <UIRef Id="WixUI_InstallDir" />
+      <!-- Skip licence dialog -->
+      <!-- Temporarily switch to per-user install scope -->
+      <Publish Dialog="WelcomeDlg" Control="Next" Property="ALLUSERS" Value="{}">1</Publish>
+      <!-- Find related products that have been installed per-user -->
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="DoAction" Value="FindRelatedProducts">1</Publish>
+      <!-- Switch back to per-machine install scope -->
+      <Publish Dialog="WelcomeDlg" Control="Next" Property="ALLUSERS" Value="1">1</Publish>
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg" Order="2">1</Publish>
+      <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2">1</Publish>
+    </UI>
+    <WixVariable Id="WixUIBannerBmp" Value="Resources\banner.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="Resources\dialog.bmp" />
+    <Feature Id="Complete" Title="Z-Wave PC Controller 5 Setup" Level="1">
+      <ComponentGroupRef Id="InstalledBinaryFiles" />
+      <ComponentRef Id="XmlFiles" />
+      <ComponentRef Id="ProgramMenuDir" />
+    </Feature>
+    <Icon Id="ZWaveControllerIcon.ico" SourceFile="$(var.SourceDir)\App.ico" />
+  </Product>
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="SiliconLabs" Name="Silicon Labs">
+          <Directory Id="INSTALLFOLDER" Name="Z-Wave PC Controller 5">
+            <Directory Id="XmlFilesDir" Name="XmlFiles">
+              <Component Id="XmlFiles">
+                <File Id="ZWaveCmdClasses" Name="ZWave_cmd_classes.xml" DiskId="1" Source="$(var.SourceDir)\XmlFiles\ZWave_cmd_classes.xml" />
+              </Component>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder" Name="Programs">
+        <Directory Id="ProgramSiliconLabsDir" Name="Silicon Labs">
+          <Directory Id="ProgramMenuDir" Name="Z-Wave PC Controller 5">
+            <Component Id="ProgramMenuDir" Guid="056DB651-A27D-413e-8A11-5E6FDDA465C9">
+              <RemoveFolder Id="RemoveProgramSiliconLabsDir" Directory="ProgramSiliconLabsDir" On="uninstall" />
+              <RemoveFolder Id="RemoveProgramMenuDir" Directory="ProgramMenuDir" On="uninstall" />
+              <RegistryValue Root="HKCU" Key="Software\Silicon Labs\Z-Wave PC Controller 5" Type="string" Value="" KeyPath="yes" />
+            </Component>
+          </Directory>
+        </Directory>
+      </Directory>
+      <Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>
+  </Fragment>
+  <Fragment>
+    <ComponentGroup Id="InstalledBinaryFiles" Directory="INSTALLFOLDER">
+      <Component Id="ZWaveDllComponent" Guid="12693D43-DD9F-43fb-AD65-EEBF626885EE" KeyPath="yes">
+        <File Id="Utils" Name="Utils.dll" DiskId="1" Source="$(var.SourceDir)\Utils.dll" />
+        <File Id="ZWaveXml" Name="ZWaveXml.dll" DiskId="1" Source="$(var.SourceDir)\ZWaveXml.dll" />
+        <File Id="ZWave" Name="ZWave.dll" DiskId="1" Source="$(var.SourceDir)\ZWave.dll" />
+		<File Id="AutoMapper" Name="AutoMapper.dll" DiskId="1" Source="$(var.SourceDir)\AutoMapper.dll" />
+        <File Id="S2Crypto32" Name="s2crypto32.dll" DiskId="1" Source="$(var.SourceDir)\s2crypto32.dll" />
+        <File Id="S2Crypto64" Name="s2crypto64.dll" DiskId="1" Source="$(var.SourceDir)\s2crypto64.dll" />
+        <File Id="ZWaveBasicApplication" Name="ZWaveBasicApplication.dll" DiskId="1" Source="$(var.SourceDir)\ZWaveBasicApplication.dll" />
+        <File Id="ZWaveZipApplication" Name="ZWaveZipApplication.dll" DiskId="1" Source="$(var.SourceDir)\ZWaveZipApplication.dll" />
+        <File Id="Ziptrans32" Name="ziptrans32.dll" DiskId="1" Source="$(var.SourceDir)\ziptrans32.dll" />
+        <File Id="Ziptrans64" Name="ziptrans64.dll" DiskId="1" Source="$(var.SourceDir)\ziptrans64.dll" />
+		<File Id="Wcvcap32" Name="wcvcap32.dll" DiskId="1" Source="$(var.SourceDir)\wcvcap32.dll" />
+		<File Id="Wcvcap64" Name="wcvcap64.dll" DiskId="1" Source="$(var.SourceDir)\wcvcap64.dll" />
+		<File Id="Newtonsoft.Json" Name="Newtonsoft.Json.dll" DiskId="1" Source="$(var.SourceDir)\Newtonsoft.Json.dll" />
+		<File Id="MaterialDesignColors" Name="MaterialDesignColors.dll" DiskId="1" Source="$(var.SourceDir)\MaterialDesignColors.dll" />
+        <File Id="MaterialDesignThemes.Wpf" Name="MaterialDesignThemes.Wpf.dll" DiskId="1" Source="$(var.SourceDir)\MaterialDesignThemes.Wpf.dll" />
+        <File Id="zxing" Name="zxing.dll" DiskId="1" Source="$(var.SourceDir)\zxing.dll" />
+        <File Id="zxingpresentation" Name="zxing.presentation.dll" DiskId="1" Source="$(var.SourceDir)\zxing.presentation.dll" />
+      </Component>
+      <Component Id="PCControllerComponent" Guid="93447981-5CFA-43e9-82B7-586CD9229E57">
+        <File Id="ZWaveControllerUI" Name="ZWaveControllerUI.exe" DiskId="1" Source="$(var.SourceDir)\ZWaveControllerUI.exe" KeyPath="yes">
+          <Shortcut Id="startmenuZWaveController" Directory="ProgramMenuDir" Name="Z-Wave PC Controller 5" WorkingDirectory="INSTALLDIR" Icon="ZWaveControllerIcon.ico" IconIndex="0" Advertise="yes" />
+          <Shortcut Id="desktopZWaveController" Directory="DesktopFolder" Name="Z-Wave PC Controller 5" WorkingDirectory="INSTALLDIR" Icon="ZWaveControllerIcon.ico" IconIndex="0" Advertise="yes" />
+        </File>
+        <File Id="ZWaveControllerUIConfig" Name="ZWaveControllerUI.exe.config" DiskId="1" Source="$(var.SourceDir)\ZWaveControllerUI.exe.config" />
+        <File Id="ZWaveControllerDll" Name="ZWaveController.dll" DiskId="1" Source="$(var.SourceDir)\ZWaveController.dll" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

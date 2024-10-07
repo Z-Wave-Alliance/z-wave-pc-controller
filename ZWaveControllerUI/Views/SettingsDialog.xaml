@@ -1,0 +1,238 @@
+﻿<Window x:Class="ZWaveControllerUI.Views.SettingsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:u="clr-namespace:Utils;assembly=Utils"
+        xmlns:zl="clr-namespace:ZWave.Layers;assembly=ZWave"
+        xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+        xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+        xmlns:cnv="clr-namespace:ZWaveControllerUI.Converters"
+        Title="Settings" 
+        WindowStartupLocation="CenterOwner" 
+        ShowInTaskbar="False" 
+        Background="{StaticResource ViewBackground}" 
+        Foreground="{StaticResource ViewForeground}" 
+        VerticalContentAlignment="Stretch" 
+        HorizontalContentAlignment="Stretch" 
+        ResizeMode="NoResize" 
+        Height="500" 
+        Width="750" 
+        WindowStyle="ToolWindow"
+        AutomationProperties.AutomationId="ID_DLG_SETTINGS">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <bind:CommandReference x:Key="CommandOk" Command="{Binding CommandOk}"/>
+            <bind:CommandReference x:Key="CommandCancel" Command="{Binding CommandCancel}"/>
+            <bind:CommandReference x:Key="DetectCommand" Command="{Binding DetectCommand}"/>
+            <bind:CommandReference x:Key="RefreshCommand" Command="{Binding RefreshCommand}"/>
+            <bind:CommandReference x:Key="BrowseFolderCommand" Command="{Binding BrowseFolderCommand}"/>
+            <bind:CommandReference x:Key="DiscoverCommand" Command="{Binding DiscoverCommand}"/>
+            <bind:CommandReference x:Key="AddSocketSourceCommand" Command="{Binding OpenAddSocketSourceCommand}"/>
+            <bind:CommandReference x:Key="ClearAllCommand" Command="{Binding ClearAllCommand}"/>
+            <cnv:InvertBoolConverter x:Key="InvertBoolConverter"/>
+            <CollectionViewSource x:Key="serialCvs" Source="{Binding DataSources}" Filter="CollectionViewSource_Filter_1">
+            </CollectionViewSource>
+            <CollectionViewSource x:Key="socketCvs" Source="{Binding DataSources}" Filter="CollectionViewSource_Filter_2">
+            </CollectionViewSource>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Grid.IsSharedSizeScope="True"
+          IsEnabled="{Binding ApplicationModel.IsBusy, Converter={StaticResource InvertBoolConverter}}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <StackPanel Margin="4">
+                    <TextBlock>Serial Port Data Sources:</TextBlock>
+                </StackPanel>
+                <ListView Grid.Row="1"
+                          x:Name="ComportsList"
+                          IsSynchronizedWithCurrentItem="False"
+                          SelectionMode="Single"
+                          ItemsSource="{Binding Source={StaticResource serialCvs}}"
+                          SelectedItem="{Binding SelectedSource}"
+                          Background="White"
+                          AutomationProperties.AutomationId="ID_LB_SERIAL_DATA_SOURCES">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Name" Width="70">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate DataType="{x:Type zl:SerialPortDataSource}">
+                                        <TextBlock Text="{Binding SourceName}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Version" Width="150">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Version}" Foreground="{StaticResource ButtonBackground}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Description" Width="200">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Description}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <StackPanel Margin="4" Grid.Row="2"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+                    <Button Content="Detect" Command="{StaticResource DetectCommand}"/>
+                    <Button Content="Refresh" Command="{StaticResource RefreshCommand}"/>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <StackPanel Margin="4">
+                    <TextBlock>Socket Data Sources:</TextBlock>
+                </StackPanel>
+                <ListView Grid.Row="1"
+                          IsSynchronizedWithCurrentItem="False"
+                          SelectionMode="Single"
+                          ItemsSource="{Binding Source={StaticResource socketCvs}}"
+                          SelectedItem="{Binding SelectedSource}"
+                          Grid.IsSharedSizeScope="True"
+                          x:Name="SocketSourcesListView" 
+                          Background="White"
+                          AutomationProperties.AutomationId="ID_LB_SOCKET_DATA_SOURCES">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Type" Width="40">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate DataType="{x:Type zl:SocketDataSource}">
+                                        <TextBlock Text="{Binding Type}" Grid.Column="0"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="IP Address" Width="100">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding SourceName}" Grid.Column="0"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Port" Width="50">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Port}" Grid.Column="0"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Desciption" Width="100">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Description}" Grid.Column="0"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Args" Width="250">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Args}" Grid.Column="0"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+
+                </ListView>
+                <StackPanel Margin="4" Grid.Row="3"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+                    <Button Content="Add"
+                            Command="{StaticResource AddSocketSourceCommand}"/>
+                    <Button Content="Clear All"
+                            Command="{StaticResource ClearAllCommand}"/>
+                    <Button Content="Discover"
+                            Command="{StaticResource DiscoverCommand}"
+                            AutomationProperties.AutomationId="ID_DISCOVER_BTN" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+        <StackPanel Grid.Row="1">
+            <StackPanel Margin="9,4">
+                <CheckBox  Content="Enable Watchdog" IsChecked="{Binding IsWatchdogEnabled}"/>
+            </StackPanel>
+            <GroupBox>
+                <GroupBox.Header>
+                    <CheckBox Name="cbIsDumping" Content="Capture communication trace to" IsChecked="{ Binding Path = IsTraceCapturing}"/>
+                </GroupBox.Header>
+                <Grid IsEnabled="{Binding IsChecked, ElementName=cbIsDumping}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Margin="4" Text="Capture Folder:" />
+                    <DockPanel Margin="4" Grid.Column="1">
+                        <Button Width="40" DockPanel.Dock="Right" Command="{StaticResource BrowseFolderCommand}" >
+                            <md:PackIcon Kind="Folder" Width="24" Height="24"/>
+                        </Button>
+                        <TextBox IsReadOnly="True" Text="{Binding Path=TraceCaptureFolder}" Height="Auto" VerticalAlignment="Stretch" TextWrapping="Wrap"/>
+                    </DockPanel>
+                    <StackPanel Margin="4" Grid.Column="1" Grid.Row="1">
+                        <UniformGrid Columns="3">
+                            <CheckBox Name="cbIsKeepFiles" Content="Keep last files" IsChecked="{ Binding Path = IsTraceCaptureOverwriteFile, Converter={StaticResource InvertBoolConverter}}"/>
+                            <StackPanel IsEnabled="{Binding IsChecked, ElementName=cbIsKeepFiles}" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <TextBlock Text="Count:"/>
+                                <controls:NumericUpDown Value="{Binding Path = TraceCaptureSplitCount, Mode=TwoWay}" MaxValue="100000" MinValue="1"/>
+                            </StackPanel>
+                            <StackPanel IsEnabled="{Binding IsChecked, ElementName=cbIsKeepFiles}" Orientation="Horizontal" HorizontalAlignment="Right">
+                            </StackPanel>
+                        </UniformGrid>
+                        <UniformGrid Columns="3">
+                            <CheckBox Name="cbIsLimited" Content="Auto split by:" IsChecked="{ Binding Path = IsTraceCaptureAutoSplit}" />
+                            <StackPanel IsEnabled="{Binding IsChecked, ElementName=cbIsLimited}" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <TextBlock Text="Size, Mb:"/>
+                                <controls:NumericUpDown Value="{Binding Path = TraceCaptureSplitSize, Mode=TwoWay}" HorizontalAlignment="Left" MaxValue="100000" MinValue="0"/>
+                            </StackPanel>
+                            <StackPanel IsEnabled="{Binding IsChecked, ElementName=cbIsLimited}" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <TextBlock Text="Duration, min"/>
+                                <controls:NumericUpDown MajorDelta="10" MinorDelta="10" Value="{Binding Path = TraceCaptureSplitDuration, Mode=TwoWay}" MaxValue="1440" MinValue="0"/>
+                            </StackPanel>
+                        </UniformGrid>
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+            <StackPanel Margin="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Grid.Column="3" 
+                            Content="OK" 
+                            AutomationProperties.AutomationId="ID_BTN_OK" 
+                            Command="{StaticResource CommandOk}" 
+                            IsDefault="True" />
+                <Button Grid.Column="4" 
+                            Content="Cancel" 
+                            Command="{StaticResource CommandCancel}" 
+                            IsCancel="True"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
