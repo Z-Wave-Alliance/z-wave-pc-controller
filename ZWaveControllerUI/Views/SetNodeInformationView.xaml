@@ -1,0 +1,172 @@
+﻿<UserControl x:Class="ZWaveControllerUI.Views.SetNodeInformationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:zx="clr-namespace:ZWave.Xml.Application;assembly=ZWaveXml"
+             xmlns:cm="clr-namespace:System.ComponentModel;assembly=WindowsBase"    
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             xmlns:en="clr-namespace:ZWaveController.Enums;assembly=ZWaveController"
+             xmlns:cnv="clr-namespace:ZWaveControllerUI.Converters"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
+             xmlns:enm="clr-namespace:ZWave.Enums;assembly=ZWave"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <cnv:ByteToHexStringConverter x:Key="ByteToHexStringConverter" />
+            <cnv:CommandClassTextConverter x:Key="CommandClassTextConverter"/>
+            <cnv:BoolToBoldConverter x:Key="BoolToBoldConverter" />
+            <!--<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />-->
+            <cnv:InvertBoolToVisibilityConverter x:Key="InvertBoolToVisibilityConverter"/>
+            <cnv:ByteArrayToStringOfDecimalsConverter x:Key="ByteArrayToStringOfDecimalsConverter" />
+
+            <CollectionViewSource x:Key="CommandClasses">
+                <CollectionViewSource.Source>
+                    <Binding Path="CommandClasses"/>
+                </CollectionViewSource.Source>
+                <CollectionViewSource.SortDescriptions>
+                    <cm:SortDescription PropertyName="IsSelected" Direction="Descending"/>
+                    <cm:SortDescription PropertyName="Item.Name"/>
+                </CollectionViewSource.SortDescriptions>
+            </CollectionViewSource>
+            <CollectionViewSource x:Key="Generic">
+                <CollectionViewSource.Source>
+                    <Binding Path="GenericDevices"/>
+                </CollectionViewSource.Source>
+                <CollectionViewSource.SortDescriptions>
+                    <cm:SortDescription PropertyName="Item.Name"/>
+                </CollectionViewSource.SortDescriptions>
+            </CollectionViewSource>
+            <ObjectDataProvider x:Key="DeviceOptionsViewEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="en:DeviceOptionsView"/>
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+            <ObjectDataProvider x:Key="RoleTypesEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="enm:RoleTypes"/>
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+            <ObjectDataProvider x:Key="NodeTypesEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="enm:NodeTypes"/>
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+
+            <bind:CommandReference x:Key="SetNodeInformationCommand" Command="{Binding SetNodeInformationCommand}"/>
+            <bind:CommandReference x:Key="Default" Command="{Binding SelectDefaultCommandClassesCommand}"/>
+            <bind:CommandReference x:Key="Clear" Command="{Binding ClearActiveCommandClassesCommand}"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid IsEnabled="{Binding Path=IsReadOnlyView}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <ListView Grid.Row="0"
+                  ItemsSource="{Binding Source={StaticResource CommandClasses}}"
+                  SelectionMode="Multiple">
+            <ListView.Resources>
+                <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Setter Property="FontWeight" Value="{Binding Path=IsEnabled, Converter={StaticResource BoolToBoldConverter}}"/>
+                    <Setter Property="AutomationProperties.AutomationId" Value="{Binding Item.Name}"/>
+                </Style>
+            </ListView.Resources>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate DataType="{x:Type zx:CommandClass}">
+                                <CheckBox>
+                                    <CheckBox.IsChecked>
+                                        <Binding Path="IsSelected"/>
+                                    </CheckBox.IsChecked>
+                                </CheckBox>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Id">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate DataType="{x:Type zx:CommandClass}">
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <Binding Path="Item.Key"/>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Name">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate DataType="{x:Type zx:CommandClass}">
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <Binding Path="Item.Text" Converter="{StaticResource CommandClassTextConverter}"/>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <StackPanel Margin="4" Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
+            <Button Content="Default" Command="{StaticResource Default}"/>
+            <Button Content="Clear" Command="{StaticResource Clear}"/>
+        </StackPanel>
+        <UniformGrid Margin="4" Columns="2" Grid.Row="2">
+            <GroupBox Header="Z-Wave Plus Info Report:" Margin="4" >
+                <UniformGrid Columns="2" Rows="3">
+                    <TextBlock Text="Role Type:" />
+                    <ComboBox Name="cbRoleType" ItemsSource="{Binding Source={StaticResource RoleTypesEnum}}" SelectedItem="{Binding Path=RoleType}"/>
+                    <TextBlock Text="Node Type:" />
+                    <ComboBox Name="cNodeType" ItemsSource="{Binding Source={StaticResource NodeTypesEnum}}" SelectedItem="{Binding Path=NodeType}"/>
+                </UniformGrid>
+            </GroupBox>
+            <GroupBox Header="Device Node Info:" Margin="4" >
+                <UniformGrid Margin="4" Columns="2">
+                    <TextBlock Text="Listening:"/>
+                    <CheckBox>
+                        <CheckBox.IsChecked>
+                            <Binding Path="IsListening" Mode="TwoWay"/>
+                        </CheckBox.IsChecked>
+                    </CheckBox>
+                    <TextBlock Text="Device Option:"/>
+                    <ComboBox Name="cbOpt" ItemsSource="{Binding Source={StaticResource DeviceOptionsViewEnum}}"
+                          SelectedItem="{Binding Path=DeviceOption}"/>
+                    <TextBlock Text="Generic:"/>
+                    <ComboBox Name="cbGen" ItemsSource="{Binding Source={StaticResource Generic}}"
+                          SelectedValue="{Binding SelectedGenericDevice, Mode=TwoWay}"
+                          SelectedValuePath="Item">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type zx:GenericDevice}">
+                                <TextBlock Text="{Binding Item.Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBlock Text="Specific:"/>
+                    <ComboBox Name="cbSpec" ItemsSource="{Binding SelectedGenericDevice.SpecificDevice}"
+                          SelectedValue="{Binding SelectedSpecificDevice, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type zx:SpecificDevice}">
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </UniformGrid>
+            </GroupBox>
+        </UniformGrid>
+        <DockPanel Margin="4" Grid.Row="3">
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <TextBlock Visibility="{Binding IsReadOnlyView, Converter={StaticResource InvertBoolToVisibilityConverter}}"
+                           Text="List of supported command classes can be changed after RESET"
+                           Foreground="Red"/>
+                <Button Content="Set" Command="{StaticResource SetNodeInformationCommand}" IsDefault="True" AutomationProperties.AutomationId="ID_BTN_SET"/>
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,81 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <RadialGradientBrush x:Key="GreenFill" Center="0.5,0.5" GradientOrigin="0.35,0.35"  RadiusX="0.5" RadiusY="0.5">
+        <GradientStop Color="White" Offset="0"/>
+        <GradientStop Color="White" Offset="0.1"/>
+        <GradientStop Color="LimeGreen" Offset="0.5"/>
+    </RadialGradientBrush>
+    <RadialGradientBrush x:Key="YellowFill" Center="0.5,0.5" GradientOrigin="0.35,0.35"  RadiusX="0.5" RadiusY="0.5">
+        <GradientStop Color="White" Offset="0"/>
+        <GradientStop Color="White" Offset="0.1"/>
+        <GradientStop Color="Orange" Offset="0.5"/>
+    </RadialGradientBrush>
+    <RadialGradientBrush x:Key="RedFill" Center="0.5,0.5" GradientOrigin="0.35,0.35"  RadiusX="0.5" RadiusY="0.5">
+        <GradientStop Color="White" Offset="0"/>
+        <GradientStop Color="White" Offset="0.1"/>
+        <GradientStop Color="Crimson" Offset="0.5"/>
+    </RadialGradientBrush>
+
+    <SolidColorBrush x:Key="GreenDisabledFill" Color="Green" Opacity="0.2"/>
+    <SolidColorBrush x:Key="YellowDisabledFill" Color="Orange" Opacity="0.2"/>
+    <SolidColorBrush x:Key="RedDisabledFill" Color="Brown" Opacity="0.2"/>
+
+    <SolidColorBrush x:Key="SnkS0" Color="OrangeRed"/>
+    <SolidColorBrush x:Key="SnkS2_UNAUTHENTICATED" Color="Orange"/>
+    <SolidColorBrush x:Key="SnkS2_AUTHENTICATED" Color="DodgerBlue"/>
+    <SolidColorBrush x:Key="SnkS2_ACCESS" Color="LimeGreen"/>
+
+
+    <!--<Color x:Key="ButtonBackAccentOld">#4f6678</Color>-->
+
+    <Color x:Key="ButtonBackAccent">#4f6678</Color>
+    <Color x:Key="ButtonForeAccent">White</Color>
+    <Color x:Key="ButtonFocusAccent">WhiteSmoke</Color>
+    <Color x:Key="ButtonBackLockAccent">DarkGray</Color>
+    <Color x:Key="ButtonForeLockAccent">WhiteSmoke</Color>
+    <Color x:Key="BarBackAccent">#B3BCC3</Color>
+    <Color x:Key="BarForeAccent">Black</Color>
+    <Color x:Key="BarBackLockAccent">DarkGray</Color>
+    <Color x:Key="BarForeLockAccent">WhiteSmoke</Color>
+    <Color x:Key="EditBackAccent">White</Color>
+    <Color x:Key="EditForeAccent">Black</Color>
+    <Color x:Key="EditBorderAccent">#B3BCC3</Color>
+    <Color x:Key="EditBackLockAccent">Gainsboro</Color>
+    <Color x:Key="EditForeLockAccent">DarkGray</Color>
+    <Color x:Key="ViewBackAccent">WhiteSmoke</Color>
+    <Color x:Key="ViewForeAccent">Black</Color>
+
+    <SolidColorBrush x:Key="EditBackground" Color="{StaticResource EditBackAccent}"/>
+    <SolidColorBrush x:Key="EditForeground" Color="{StaticResource EditForeAccent}"/>
+    <SolidColorBrush x:Key="EditBorderBrush" Color="{StaticResource EditBorderAccent}"/>
+    <SolidColorBrush x:Key="EditDisabledBackground" Color="{StaticResource EditBackLockAccent}"/>
+    <SolidColorBrush x:Key="EditDisabledForeground" Color="{StaticResource EditForeLockAccent}"/>
+    <SolidColorBrush x:Key="EditDisabledBorderBrush" Color="{StaticResource EditBackLockAccent}"/>
+
+    <SolidColorBrush x:Key="ButtonBackground" Color="{StaticResource ButtonBackAccent}"/>
+    <SolidColorBrush x:Key="ButtonForeground" Color="{StaticResource ButtonForeAccent}"/>
+    <SolidColorBrush x:Key="ButtonDisabledBackground" Color="{StaticResource ButtonBackLockAccent}"/>
+    <SolidColorBrush x:Key="ButtonDisabledForeground" Color="{StaticResource ButtonForeLockAccent}"/>
+    <SolidColorBrush x:Key="ButtonHoverBorderBrush" Color="{StaticResource ButtonFocusAccent}"/>
+    <SolidColorBrush x:Key="ButtonPressedBorderBrush" Color="{StaticResource ButtonFocusAccent}" Opacity="0.8"/>
+
+    <SolidColorBrush x:Key="ViewBackground" Color="{StaticResource ViewBackAccent}"/>
+    <SolidColorBrush x:Key="ViewForeground" Color="{StaticResource ViewForeAccent}"/>
+
+    <SolidColorBrush x:Key="BarBackground" Color="{StaticResource BarBackAccent}"/>
+    <SolidColorBrush x:Key="BarForeground" Color="{StaticResource BarForeAccent}"/>
+    <SolidColorBrush x:Key="BarDisabledBackground" Color="{StaticResource BarBackLockAccent}"/>
+    <SolidColorBrush x:Key="BarDisabledForeground" Color="{StaticResource BarForeLockAccent}"/>
+    <SolidColorBrush x:Key="BarHoverBackground" Color="{StaticResource BarBackAccent}" Opacity="0.4"/>
+    <SolidColorBrush x:Key="BarPressedBackground" Color="{StaticResource BarBackAccent}" Opacity="0.6"/>
+
+    <SolidColorBrush x:Key="ItemBackground" Color="{StaticResource EditBackAccent}"/>
+    <SolidColorBrush x:Key="ItemForeground" Color="{StaticResource EditForeAccent}"/>
+    <SolidColorBrush x:Key="ItemHoverBackground" Color="{StaticResource BarBackAccent}" Opacity="0.3"/>
+    <SolidColorBrush x:Key="ItemHoverForeground" Color="{StaticResource EditForeAccent}"/>
+    <SolidColorBrush x:Key="ItemSelectedBackground" Color="{StaticResource BarBackAccent}" Opacity="0.5"/>
+    <SolidColorBrush x:Key="ItemSelectedForeground" Color="{StaticResource EditForeAccent}"/>
+    <SolidColorBrush x:Key="ItemHoverSelectedBackground" Color="{StaticResource BarBackAccent}" Opacity="0.6"/>
+    <SolidColorBrush x:Key="ItemHoverSelectedForeground" Color="{StaticResource EditForeAccent}"/>
+</ResourceDictionary>

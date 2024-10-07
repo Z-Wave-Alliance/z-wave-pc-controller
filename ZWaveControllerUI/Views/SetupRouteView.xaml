@@ -1,0 +1,121 @@
+﻿<UserControl x:Class="ZWaveControllerUI.Views.SetupRouteView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:views="clr-namespace:ZWaveControllerUI.Views"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             xmlns:converters="clr-namespace:ZWaveControllerUI.Converters"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             AutomationProperties.AutomationId="ID_SETUP_ROUTE_VIEW">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <bind:CommandReference x:Key="AssignReturnRouteCommandRef" Command="{Binding AssignReturnRouteCommand}"/>
+            <bind:CommandReference x:Key="RemoveReturnRouteCommandRef" Command="{Binding RemoveReturnRouteCommand}"/>
+            <bind:CommandReference x:Key="GetPriorityRouteCommand" Command="{Binding GetPriorityRouteCommand}"/>
+            <bind:CommandReference x:Key="SetPriorityRouteCommand" Command="{Binding SetPriorityRouteCommand}"/>
+            <converters:ByteArrayToStringConverter x:Key="ByteArrayToStringConverter"/>
+            <converters:NodeTypeConverter x:Key="NodeTypeConverter" ZWaveDefinition="{Binding ApplicationModel.ZWaveDefinition}" Network="{Binding ApplicationModel.Controller.Network}"/>
+            <converters:NodesToStringConverter x:Key="NodesToStringConverter"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <UniformGrid Margin="4" Columns="3" Rows="2" >
+                <RadioButton IsChecked="{Binding Path=UseAssignReturnRoute}">Return Route</RadioButton>
+                <RadioButton IsChecked="{Binding Path=UseAssignPriorityReturnRoute}">Priority Return Route</RadioButton>
+                <RadioButton AutomationProperties.AutomationId="ID_RB_GET_SET_PRIORITY_ROUTE" IsChecked="{Binding Path=UsePriorityRoute}">Get/Set Priority Route</RadioButton>
+                <RadioButton IsChecked="{Binding Path=UseAssignSUCRetrunRoute}">SUC Retrun Route</RadioButton>
+                <RadioButton IsChecked="{Binding Path=UseAssignPrioritySUCReturnRoute}">Priority SUC Return Route</RadioButton>
+            </UniformGrid>
+            <UniformGrid Margin="4" IsEnabled="{Binding Path=IsPriorityEnabled}" Columns="2" Rows="2">
+                <TextBlock Text="Priority Route:"/>
+                <controls:TextBoxHexMask Height="20" BorderBrush="Black" BorderThickness="1" SymbolsCount="8"
+                                      Text="{Binding Path=PriorityRoute, Mode=TwoWay, UpdateSourceTrigger='PropertyChanged', Converter={StaticResource NodesToStringConverter}}" Width="80"
+                                      AutomationProperties.AutomationId="ID_TB_PRIORITY_ROUTE"/>
+                <TextBlock Text="Route Speed:"/>
+                <ComboBox AutomationProperties.AutomationId="ID_CMB_ROUTE_SPEED"
+                    Grid.Row="5" Grid.Column="1" SelectedIndex="{Binding Path=RouteSpeed}" Width="80">
+                    <ComboBoxItem></ComboBoxItem>
+                    <ComboBoxItem>9.6 KBit/s</ComboBoxItem>
+                    <ComboBoxItem>40 KBit/s</ComboBoxItem>
+                    <ComboBoxItem>100 KBit/s</ComboBoxItem>
+                </ComboBox>
+            </UniformGrid>
+        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <ListView IsEnabled="{Binding IsSourceListEnabled}" 
+                      ItemsSource="{Binding SourceRouteCollection.Nodes}" SelectedItem="{Binding SourceRouteCollection.SelectedNode}"
+                      SelectionMode="Single"
+                      AutomationProperties.AutomationId="ID_NODES_LIST_VIEW_SOURCES">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Id" Width="45">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Item}" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Type" Width="200">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <Binding Path="Item" Converter="{StaticResource NodeTypeConverter}"/>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <ListView Grid.Column="2" IsEnabled="{Binding IsDestListEnabled}" 
+                      ItemsSource="{Binding DestinationRouteCollection.Nodes}" SelectedItem="{Binding DestinationRouteCollection.SelectedNode}"
+                      SelectionMode="Single"
+                      AutomationProperties.AutomationId="ID_NODES_LIST_VIEW_DESTINATIONS">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Id" Width="45">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Item}" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Type" Width="200">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <Binding Path="Item" Converter="{StaticResource NodeTypeConverter}"/>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+        <StackPanel Margin="4" Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="2">
+            <Button Content="Get Priority Route" Command="{StaticResource GetPriorityRouteCommand}" Width="120" />
+            <Button AutomationProperties.AutomationId="ID_BTN_SET_PRIORITY_ROUTE" Content="Set Priority Route" Command="{StaticResource SetPriorityRouteCommand}" Width="120" />
+            <Button Content="Assign" Command="{StaticResource AssignReturnRouteCommandRef}"/>
+            <Button Content="Delete" Command="{StaticResource RemoveReturnRouteCommandRef}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="ZWaveControllerUI.Views.NVMBackupRestoreView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <bind:CommandReference x:Key="NVMBackupGetFileCommand" Command="{Binding NVMBackupGetFileCommand}"/>
+            <bind:CommandReference x:Key="NVMRestoreGetFileCommand" Command="{Binding NVMRestoreGetFileCommand}"/>
+            <bind:CommandReference x:Key="NVMBackupCommand" Command="{Binding NVMBackupCommand}"/>
+            <bind:CommandReference x:Key="NVMRestoreCommand" Command="{Binding NVMRestoreCommand}"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <StackPanel>
+            <UniformGrid Margin="4" Columns="2">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Request packet length: "/>
+                    <controls:NumericUpDown Value="{Binding PacketLength, Mode=TwoWay}" MinValue="8" MaxValue="255"/>
+                </StackPanel>
+                <TextBlock Text="{Binding ActualPacketLength ,StringFormat='Actual packet length: {0}'}"/>
+            </UniformGrid>
+            <GroupBox Header="Backup">
+                <StackPanel>
+                    <DockPanel Margin="4">
+                        <TextBlock DockPanel.Dock="Top" Text="Backup file path" Width="100"/>
+                        <Button DockPanel.Dock="Right" Width="40" Command="{StaticResource NVMBackupGetFileCommand}" >
+                            <md:PackIcon Kind="Folder" Width="24" Height="24"/>
+                        </Button>
+                        <TextBox IsReadOnly="True" Text="{Binding Path=BackupFileName}" Height="Auto" VerticalAlignment="Stretch" TextWrapping="Wrap"/>
+                    </DockPanel>
+                    <DockPanel Margin="4" LastChildFill="False">
+                        <Button DockPanel.Dock="Right" Content="Backup" Command="{StaticResource NVMBackupCommand}"/>
+                    </DockPanel>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Restore">
+                <StackPanel>
+                    <DockPanel Margin="4">
+                        <TextBlock DockPanel.Dock="Top" Text="Restore file path:" Width="100"/>
+                        <Button DockPanel.Dock="Right" Width="40" Command="{StaticResource NVMRestoreGetFileCommand}">
+                            <md:PackIcon Kind="Folder" Width="24" Height="24"/>
+                        </Button>
+                        <TextBox IsReadOnly="True" Text="{Binding Path=RestoreFileName}" Height="Auto" VerticalAlignment="Stretch" TextWrapping="Wrap"/>
+                    </DockPanel>
+                    <DockPanel Margin="4" LastChildFill="False">
+                        <Button DockPanel.Dock="Right" Content="Restore" Command="{StaticResource NVMRestoreCommand}"/>
+                    </DockPanel>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+    </Grid>
+</UserControl>

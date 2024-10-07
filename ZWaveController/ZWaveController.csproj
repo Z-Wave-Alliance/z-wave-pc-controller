@@ -1,0 +1,394 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DD57A974-E2E4-4E8E-9847-C7BAC0BB94A0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ZWaveController</RootNamespace>
+    <AssemblyName>ZWaveController</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Commands\ApplySendDataSettingsCommand.cs" />
+    <Compile Include="Commands\Basic\CommandClasses\AddPredefinedItemCommand.cs" />
+    <Compile Include="Commands\Basic\CommandClasses\CopyPredefinedItemCommand.cs" />
+    <Compile Include="Commands\Basic\CommandClasses\MoveDownPredefinedItemCommand.cs" />
+    <Compile Include="Commands\Basic\CommandClasses\MoveUpPredefinedItemCommand.cs" />
+    <Compile Include="Commands\Basic\CommandClasses\RenamePredefinedGroupCommand.cs" />
+    <Compile Include="Commands\Basic\CommandClasses\CopyPredefinedGroupCommand.cs" />
+    <Compile Include="Commands\Basic\CommandClasses\AddPredefinedGroupCommand.cs" />
+    <Compile Include="Commands\Basic\CommandClasses\DeletePredefinedGroupsCommand.cs" />
+    <Compile Include="Commands\Basic\CommandClasses\DeletePredefinedGroupCommand.cs" />
+    <Compile Include="Commands\Basic\CommandClasses\DeletePredefinedCommandCommand.cs" />
+    <Compile Include="Commands\Basic\CommandClasses\DeleteHistoryItemsCommand.cs" />
+    <Compile Include="Commands\Basic\CommandClasses\SavePredefinedGroupCommand.cs" />
+    <Compile Include="Commands\Basic\CommandClasses\LoadPredefinedGroupCommand.cs" />
+    <Compile Include="Commands\Basic\CommandClasses\PredefinedCommandsCommandBase.cs" />
+    <Compile Include="Commands\Basic\CommandClasses\SendPredefinedGroupCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\IndicatorSetCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\ProvisioningListImportCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\ProvisioningListUpdateCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkStatistics\ClearTxTimerCommand .cs" />
+    <Compile Include="Commands\Basic\NetworkStatistics\JammingDetectionStopCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkStatistics\JammingDetectionStartCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkStatistics\GetBackgroundRSSICommand.cs" />
+    <Compile Include="Commands\Basic\NetworkStatistics\GetTxTimerCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkStatistics\GetNetworkStatsCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkStatistics\ClearNetworkStatsCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkStatistics\NetworkStatisticsCommandBase.cs" />
+    <Compile Include="Commands\Basic\SecuritySettings\ClearTestExtensionsS2Command.cs" />
+    <Compile Include="Commands\Basic\SecuritySettings\SecuritySettingsCommandBase.cs" />
+    <Compile Include="Commands\Basic\SecuritySettings\SetTestSecurityParameterCommand.cs" />
+    <Compile Include="Commands\Basic\SecuritySettings\RemoveSelectedTestExtensionS2Command.cs" />
+    <Compile Include="Commands\Basic\SecuritySettings\SetTestExtensionS2Command.cs" />
+    <Compile Include="Commands\Basic\SecuritySettings\AddTestExtensionS2Command.cs" />
+    <Compile Include="Commands\Basic\SecuritySettings\ClearTestSecurityParametersCommand.cs" />
+    <Compile Include="Commands\Basic\SecuritySettings\ClearTestSecurityFramesCommand.cs" />
+    <Compile Include="Commands\Basic\SecuritySettings\DeleteTestSecurityParameterCommand.cs" />
+    <Compile Include="Commands\Basic\SecuritySettings\DeleteTestSecurityFrameCommand.cs" />
+    <Compile Include="Commands\Basic\SecuritySettings\SetTestSecurityFrameCommand.cs" />
+    <Compile Include="Commands\Basic\SecuritySettings\ApplySecuritySettingsCommand.cs" />
+    <Compile Include="Commands\Basic\SetNodeInformation\SelectDefaultCommandClassesCommand.cs" />
+    <Compile Include="Commands\Basic\SetNodeInformation\SetNodeInformationCommand.cs" />
+    <Compile Include="Commands\Basic\TransmitSettings\SetDcdcModeCommand.cs" />
+    <Compile Include="Commands\Basic\TransmitSettings\EnableRadioPTICommand.cs" />
+    <Compile Include="Commands\Basic\TransmitSettings\SetMaxLrTxPowerCommand.cs" />
+    <Compile Include="Commands\Basic\TransmitSettings\SetPowerLevelCommand.cs" />
+    <Compile Include="Commands\Basic\TransmitSettings\SetLRChannelCommand.cs" />
+    <Compile Include="Commands\Basic\TransmitSettings\SetRfRegionCommand.cs" />
+    <Compile Include="Commands\ControllerSessionCommandBase.cs" />
+    <Compile Include="CommandsFactory.cs" />
+    <Compile Include="Commands\AboutCommand.cs" />
+    <Compile Include="Commands\Basic\Association\AssociationCommandBase.cs" />
+    <Compile Include="Commands\Basic\Association\AssociationCreateCommand.cs" />
+    <Compile Include="Commands\Basic\Association\AssociationGetCommand.cs" />
+    <Compile Include="Commands\Basic\Association\AssociationGetCommandListCommand.cs" />
+    <Compile Include="Commands\Basic\Association\AssociationGetGroupInfoCommand.cs" />
+    <Compile Include="Commands\Basic\Association\AssociationGetGroupsCommand.cs" />
+    <Compile Include="Commands\Basic\Association\AssociationRemoveCommand.cs" />
+    <Compile Include="Commands\Basic\CommandBasicBase.cs" />
+    <Compile Include="Commands\Basic\CommandClasses\ReloadXmlCommand.cs" />
+    <Compile Include="Commands\Basic\CommandClasses\SendCommand.cs" />
+    <Compile Include="Commands\Basic\Configuration\ConfigurationCommandBase.cs" />
+    <Compile Include="Commands\Basic\Configuration\ConfigurationSetCommand.cs" />
+    <Compile Include="Commands\Basic\Configuration\RetrieveConfigurationListCommand.cs" />
+    <Compile Include="Commands\Basic\EncryptDecrypt\DecryptS2Command.cs" />
+    <Compile Include="Commands\Basic\EncryptDecrypt\EncryptS2Command.cs" />
+    <Compile Include="Commands\Basic\EncryptDecrypt\CopyCurrentKeyS0Command.cs" />
+    <Compile Include="Commands\Basic\EncryptDecrypt\DecryptS0Command.cs" />
+    <Compile Include="Commands\Basic\EncryptDecrypt\EncryptS0Command.cs" />
+    <Compile Include="Commands\Basic\EncryptDecrypt\EncryptDecryptCommandBase.cs" />
+    <Compile Include="Commands\Basic\ERTT\StartStopCommand.cs" />
+    <Compile Include="Commands\Basic\FirmwareUpdate\FirmwareUpdateOTASaveCommand.cs" />
+    <Compile Include="Commands\Basic\FirmwareUpdate\FirmwareUpdateOTADownloadCommand.cs" />
+    <Compile Include="Commands\Basic\FirmwareUpdate\FirmwareUpdateOTAActivateCommand.cs" />
+    <Compile Include="Commands\Basic\IMA\NetworkHealthSingleCommand.cs" />
+    <Compile Include="Commands\Basic\IMA\GetRoutingInfoCommand.cs" />
+    <Compile Include="Commands\Basic\IMA\FullNetworkCommand.cs" />
+    <Compile Include="Commands\Basic\IMA\GetVersionCommand.cs" />
+    <Compile Include="Commands\Basic\IMA\AreNeighborsCommand.cs" />
+    <Compile Include="Commands\Basic\IMA\IMACommandBase.cs" />
+    <Compile Include="Commands\Basic\IMA\PingNodeCommand.cs" />
+    <Compile Include="Commands\Basic\IMA\PowerLevelTestCommand.cs" />
+    <Compile Include="Commands\Basic\IMA\RediscoveryCommand.cs" />
+    <Compile Include="Commands\Basic\IMA\RequestNodeInfoCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\Mpan\AddOrUpdateSelectedMpanItemCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\Mpan\ClearMpanTableCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\Mpan\NextSelectedMpanItemCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\Mpan\RemoveSelectedMpanItemCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\ProvisioningListGetDSKCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\ProvisioningListGetCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\ProvisioningListClearCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\ProvisioningListDeleteCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\ProvisioningListSetCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\SendWakeUpNotificationCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\Mpan\LoadMpanTableCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\VersionGetCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\AddNodeWithCustomSettingsCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\AddVirtualNodeCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\NextSPANCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\SetRFReceiveModeCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\SetSleepModeCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\StartVirtualDeviceLearnModeCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\ResetSPANCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\SetS2Command.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\RemoveVirtualNodeCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\SendNodeInformationCommand.cs" />
+    <Compile Include="Commands\Basic\NVM\NVMCommandBase.cs" />
+    <Compile Include="Commands\Basic\NVM\NVMRestoreCommand.cs" />
+    <Compile Include="Commands\Basic\NVM\NVMBackupCommand.cs" />
+    <Compile Include="Commands\Basic\FirmwareUpdate\FirmwareUpdateCommandBase.cs" />
+    <Compile Include="Commands\Basic\FirmwareUpdate\FirmwareUpdateLocalCommand.cs" />
+    <Compile Include="Commands\Basic\FirmwareUpdate\FirmwareUpdateOTABrowseFileCommand.cs" />
+    <Compile Include="Commands\Basic\FirmwareUpdate\FirmwareUpdateOTAGetCommand.cs" />
+    <Compile Include="Commands\Basic\FirmwareUpdate\FirmwareUpdateOTAUpdateCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\RemoveNodeFromNetworkWideCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\ShiftControllerCommand.cs" />
+    <Compile Include="Commands\Basic\Polling\StartPollingCommand.cs" />
+    <Compile Include="Commands\Basic\Polling\StopPollingCommand.cs" />
+    <Compile Include="Commands\Basic\SetupRoute\AssignReturnRouteCommand.cs" />
+    <Compile Include="Commands\Basic\SetupRoute\GetPriorityRouteCommand.cs" />
+    <Compile Include="Commands\Basic\SetupRoute\RemoveReturnRouteCommand.cs" />
+    <Compile Include="Commands\Basic\SetupRoute\SetPriorityRouteCommand.cs" />
+    <Compile Include="Commands\Basic\SetupRoute\SetupRouteCommandBase.cs" />
+    <Compile Include="Commands\Basic\Misc\BasicSetOnOffCommand.cs" />
+    <Compile Include="Commands\ICommandRunner.cs" />
+    <Compile Include="Commands\Sources\AddSocketSourceCommand.cs" />
+    <Compile Include="Commands\Sources\ClearDataSourcesCommand.cs" />
+    <Compile Include="Commands\ClearLogCommand.cs" />
+    <Compile Include="Commands\CommandBase.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\AddNodeToNetworkNWICommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\RequestNodeNeighborUpdateCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\StartLearnModeCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\RemoveFailedCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\ReplaceFailedCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\SetSUCCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\IsFailedNodeCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\NetworkManagamentCommandBase.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\RemoveNodeCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\AddNodeCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\RequestNetworkUpdateCommand.cs" />
+    <Compile Include="Commands\Basic\NetworkManagament\RequestNodeInfoCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Commands\Sources\SourcesCommandBase.cs" />
+    <Compile Include="Commands\Sources\DetectCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\SendNOPCommand.cs" />
+    <Compile Include="Commands\Basic\SetDefaultCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Commands\Basic\Misc\SetWakeupIntervalCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\SwitchAllOnOffCommand.cs" />
+    <Compile Include="Commands\Basic\Misc\ToggleBasicGetCommand.cs" />
+    <Compile Include="Commands\Basic\TopologyMap\TopologyMapReloadCommand.cs" />
+    <Compile Include="Commands\Basic\TopologyMap\TopologyMapCommandBase.cs" />
+    <Compile Include="Commands\CommandRunner.cs" />
+    <Compile Include="Commands\Sources\ConnectCommand.cs" />
+    <Compile Include="Commands\Sources\RefreshDataSourcesCommand.cs" />
+    <Compile Include="Commands\Sources\DiscoverCommand.cs" />
+    <Compile Include="Commands\Zip\UnsolicitedDestBaseCommand.cs" />
+    <Compile Include="Commands\Zip\UnsolicitedDestSecondaryStartStopCommand.cs" />
+    <Compile Include="Commands\Zip\UnsolicitedDestStartStopCommand.cs" />
+    <Compile Include="Commands\Zip\UnsolicitedDestApplyCommand.cs" />
+    <Compile Include="Configuration\ConfigurationItem.cs">
+      <DependentUpon>ConfigurationItem.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\ConfigurationItemExt.cs" />
+    <Compile Include="Configuration\IConfig.cs" />
+    <Compile Include="Configuration\PreKitting.cs">
+      <DependentUpon>PreKitting.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\Config.cs" />
+    <Compile Include="Constants\TopologyMap.cs" />
+    <Compile Include="Constants\Trace.cs" />
+    <Compile Include="ControllerConfigurations\GenericDeviceTypeColorItem.cs" />
+    <Compile Include="ControllerConfigurations\ControllerConfiguration.cs" />
+    <Compile Include="ControllerConfigurations\IControllerConfiguration.cs" />
+    <Compile Include="ControllerSessionCreator.cs" />
+    <Compile Include="ControllerSessionsContainer.cs" />
+    <Compile Include="Converters\ByteArrayToStringConverter.cs" />
+    <Compile Include="Converters\ControllerInfoVMConverter.cs" />
+    <Compile Include="Converters\HasBitVMConverter.cs" />
+    <Compile Include="Converters\IViewModelConverter.cs" />
+    <Compile Include="Converters\NodeEndPointVMConverter.cs" />
+    <Compile Include="Converters\NodeSecuritySchemesVMConverter.cs" />
+    <Compile Include="Converters\NodeTypeVMConverter.cs" />
+    <Compile Include="Enums\DeviceOptionsView.cs" />
+    <Compile Include="Enums\NotifyProperty.cs" />
+    <Compile Include="Enums\SecureType.cs" />
+    <Compile Include="Enums\CommandExecutionResult.cs" />
+    <Compile Include="Enums\SelectLocalIpViews.cs" />
+    <Compile Include="Extentions\GetNodeTypeExtention.cs" />
+    <Compile Include="Interfaces\IAppSettings.cs" />
+    <Compile Include="Interfaces\Models\CommandCollections\IPredefinedCommandsModel.cs" />
+    <Compile Include="Interfaces\Models\INetworkStatisticsModel.cs" />
+    <Compile Include="Interfaces\Models\CommandCollections\IPredefinedCommandGroup.cs" />
+    <Compile Include="Interfaces\Models\ISenderHistoryModel.cs" />
+    <Compile Include="Interfaces\Models\IULMonitorModel.cs" />
+    <Compile Include="Interfaces\Services\IJammingDetectionService.cs" />
+    <Compile Include="Interfaces\Services\IPredefinedPayloadsService.cs" />
+    <Compile Include="MappingProfile.cs" />
+    <Compile Include="Models\Basic\PredefinedPayload.cs" />
+    <Compile Include="Interfaces\Models\IConfigurationParamModel.cs" />
+    <Compile Include="Interfaces\IControllerSession.cs" />
+    <Compile Include="Interfaces\ICorrectRule.cs" />
+    <Compile Include="Interfaces\Models\IDefaultConfigurationParamModel.cs" />
+    <Compile Include="Interfaces\IIMADeviceInfo.cs" />
+    <Compile Include="Interfaces\Models\INVMBackupRestoreModel.cs" />
+    <Compile Include="Interfaces\Models\IOpenFileDialogModel.cs" />
+    <Compile Include="Interfaces\Models\ISaveFileDialogModel.cs" />
+    <Compile Include="Interfaces\ISecuritySchemaDialog.cs" />
+    <Compile Include="Interfaces\ISecuritySettings.cs" />
+    <Compile Include="Interfaces\ISerialPortMonitor.cs" />
+    <Compile Include="Interfaces\IEnumeratedConfigurationParam.cs" />
+    <Compile Include="Interfaces\IBitFieldConfigurationParam.cs" />
+    <Compile Include="Interfaces\IUnsignedIntegerConfigurationParam.cs" />
+    <Compile Include="Interfaces\ISignedIntegerConfigurationParam.cs" />
+    <Compile Include="Interfaces\ITraceCapture.cs" />
+    <Compile Include="Interfaces\Models\ISendDataSettingsModel.cs" />
+    <Compile Include="Interfaces\Models\ITraceCaptureSettingsModel.cs" />
+    <Compile Include="Interfaces\IValueSwitch.cs" />
+    <Compile Include="Interfaces\Models\Associations\IAssociationsModel.cs" />
+    <Compile Include="Interfaces\Models\IAddNodeWithCustomSettingsModel.cs" />
+    <Compile Include="Interfaces\Models\IApplicationModel.cs" />
+    <Compile Include="Interfaces\Models\ICommandClassesModel.cs" />
+    <Compile Include="Interfaces\Models\IConfigurationModel.cs" />
+    <Compile Include="Interfaces\Models\IConnectModel.cs" />
+    <Compile Include="Interfaces\Models\IEncryptDecryptModel.cs" />
+    <Compile Include="Interfaces\Models\IERTTModel.cs" />
+    <Compile Include="Interfaces\Models\IFirmwareUpdateModel.cs" />
+    <Compile Include="Interfaces\Models\IKEXSetConfirmModel.cs" />
+    <Compile Include="Interfaces\Models\IMA\IIMAFullNetworkModel.cs" />
+    <Compile Include="Interfaces\Models\INetworkManagementModel.cs" />
+    <Compile Include="Interfaces\Models\IPollDeviceInfo.cs" />
+    <Compile Include="Interfaces\Models\IPollingModel.cs" />
+    <Compile Include="Interfaces\Models\IRouteCollection.cs" />
+    <Compile Include="Interfaces\Models\IScanDSKModel.cs" />
+    <Compile Include="Interfaces\Models\ISetNodeInformationModel.cs" />
+    <Compile Include="Interfaces\Models\ISetupRouteModel.cs" />
+    <Compile Include="Interfaces\Models\Associations\IAssociativeApplication.cs" />
+    <Compile Include="Interfaces\Models\Associations\IAssociativeDevice.cs" />
+    <Compile Include="Interfaces\Models\Associations\IAssociativeGroup.cs" />
+    <Compile Include="Interfaces\Models\Associations\IAssociativeGroupInfo.cs" />
+    <Compile Include="Interfaces\Models\Associations\IAssociativeNode.cs" />
+    <Compile Include="Interfaces\Models\Associations\IAssociativeNodeCollection.cs" />
+    <Compile Include="Interfaces\Models\IMA\IIMAEntity.cs" />
+    <Compile Include="Interfaces\Models\IMA\IIMALine.cs" />
+    <Compile Include="Interfaces\Models\IMA\IIMATestResult.cs" />
+    <Compile Include="Interfaces\Models\ISmartStartModel.cs" />
+    <Compile Include="Interfaces\Models\ITopologyMapModel.cs" />
+    <Compile Include="Interfaces\Models\ITransmitSettingsModel.cs" />
+    <Compile Include="Interfaces\Services\IERTTService.cs" />
+    <Compile Include="Interfaces\Services\INodeInformationService.cs" />
+    <Compile Include="Interfaces\Services\INotify.cs" />
+    <Compile Include="Interfaces\Services\ISourcesInfoService.cs" />
+    <Compile Include="Interfaces\Services\IWakeUpNodesService.cs" />
+    <Compile Include="Models\Basic\IMAFullNetwork.cs" />
+    <Compile Include="Models\Basic\PayloadItem.cs" />
+    <Compile Include="Models\Basic\NetworkManagementModel.cs" />
+    <Compile Include="Models\Basic\SecuritySettingsModel.cs" />
+    <Compile Include="Models\BasicControllerSession.cs" />
+    <Compile Include="Enums\ConfigurationFormatTypes.cs" />
+    <Compile Include="Models\Basic\PayloadHistoryItem.cs" />
+    <Compile Include="ChipTypeSupported.cs" />
+    <Compile Include="Models\ConnectModel.cs" />
+    <Compile Include="Models\LogAction.cs" />
+    <Compile Include="Models\NetworkCanvasLayout.cs" />
+    <Compile Include="Models\NetworkGridLayout.cs" />
+    <Compile Include="Models\NotifyCommandData.cs" />
+    <Compile Include="Models\ProvisioningListItemData.cs" />
+    <Compile Include="Models\QRCode\QrCodeOptions.cs" />
+    <Compile Include="Models\QRCode\QrHeader.cs" />
+    <Compile Include="Models\QRCode\StringFamilyTree.cs" />
+    <Compile Include="Models\QRCode\Tlv.cs" />
+    <Compile Include="Models\RadioButtonsWrapper.cs" />
+    <Compile Include="Models\SerialPortMonitor.cs" />
+    <Compile Include="Models\TraceCaptureModel.cs" />
+    <Compile Include="Models\WakeupIntervalSetChecker.cs" />
+    <Compile Include="Models\ZipControllerSession.cs" />
+    <Compile Include="Interfaces\Services\IPollingService.cs" />
+    <Compile Include="Services\ERTTService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Interfaces\Services\ISenderHistoryService.cs" />
+    <Compile Include="Services\JammingDetectionService.cs" />
+    <Compile Include="Services\PredefinedPayloadsService.cs" />
+    <Compile Include="Services\LogBaseService.cs" />
+    <Compile Include="Services\NodeInformationService.cs" />
+    <Compile Include="Services\PollingService.cs" />
+    <Compile Include="Services\QRCodeEncoder.cs" />
+    <Compile Include="Services\SenderHistoryService.cs" />
+    <Compile Include="Services\SourcesInfoService.cs" />
+    <Compile Include="Interfaces\Models\ISelectLocalIpAddressModel.cs" />
+    <Compile Include="Interfaces\Models\IMpanItem.cs" />
+    <Compile Include="Interfaces\Models\IMpanTableConfigurationModel.cs" />
+    <Compile Include="Interfaces\Models\IMessageDialogModel.cs" />
+    <Compile Include="Interfaces\Models\IAddSocketSourceModel.cs" />
+    <Compile Include="Services\WakeUpNodesService.cs" />
+    <Compile Include="Services\WebCamCaptureService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Configuration\ConfigurationItem.xsd" />
+    <None Include="Configuration\ConfigurationItem.ps1" />
+    <None Include="Configuration\PreKitting.ps1" />
+    <None Include="Configuration\PreKitting.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\z-wave-tools-core\BasicApplication\BasicApplication.csproj">
+      <Project>{2E351174-ED53-4E8A-A065-3E15A7E228B5}</Project>
+      <Name>BasicApplication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\z-wave-tools-core\Utils\Utils.csproj">
+      <Project>{6C298CDF-2B64-4BE7-B9D4-449D5F30E57F}</Project>
+      <Name>Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\z-wave-tools-core\ZipApplication\ZipApplication.csproj">
+      <Project>{8ACFB772-98F3-48FE-85AE-3F06DA2EA60B}</Project>
+      <Name>ZipApplication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\z-wave-tools-core\ZWaveXml\ZWaveXml.csproj">
+      <Project>{feb030f9-a44a-4c72-9c28-c8fa186995fb}</Project>
+      <Name>ZWaveXml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\z-wave-tools-core\ZWave\ZWave.csproj">
+      <Project>{B214D482-57EB-42BE-AEC7-D64850F56514}</Project>
+      <Name>ZWave</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\z-wave-tools-core\XmlFiles\ZWave_cmd_classes.xml">
+      <Link>XmlFiles\ZWave_cmd_classes.xml</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\lib\WebCamCapture\win\wcvcap32.dll">
+      <Link>wcvcap32.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\lib\WebCamCapture\win\wcvcap64.dll">
+      <Link>wcvcap64.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoMapper">
+      <Version>10.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.1</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

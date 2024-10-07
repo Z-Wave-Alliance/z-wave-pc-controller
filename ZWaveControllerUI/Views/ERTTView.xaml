@@ -1,0 +1,186 @@
+﻿<UserControl x:Class="ZWaveControllerUI.Views.ERTTView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="clr-namespace:ZWaveControllerUI.Views"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             xmlns:converters="clr-namespace:ZWaveControllerUI.Converters">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <converters:NodeTypeConverter x:Key="NodeTypeConverter" ZWaveDefinition="{Binding ApplicationModel.ZWaveDefinition}" Network="{Binding ApplicationModel.Controller.Network}"/>
+            <converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
+            <converters:ByteToHexStringConverter x:Key="ByteToHexStringConverter"/>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <bind:CommandReference x:Key="StartStopCommandRef" Command="{Binding StartStopCommand}"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="276"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="40*"/>
+        </Grid.RowDefinitions>
+        <views:NodesListView Grid.Column="0" Grid.Row="0" DataContext="{Binding ApplicationModel}"/>
+        <views:NodeInfoView Grid.Column="0" Grid.Row="2" DataContext="{Binding ApplicationModel}"/>
+        <GridSplitter 
+            Grid.Column="0" 
+            Grid.Row="1" 
+            VerticalAlignment="Center"
+            HorizontalAlignment="Stretch"
+            Height="4"
+            ShowsPreview="True"
+            />
+        <GridSplitter 
+            Grid.Column="1" 
+            Grid.Row="0" 
+            Grid.RowSpan="3" 
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Center"
+            Width="4"
+            ShowsPreview="True"
+            />
+        <ScrollViewer Grid.Column="2" Grid.Row="0" Grid.RowSpan="3">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top">
+                    <StackPanel Margin="4" IsEnabled="{Binding IsTestReady}">
+                        <UniformGrid Columns="2">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" IsEnabled="{Binding IsRunForever, Converter={StaticResource InvertBoolConverter}}">
+                                    <TextBlock Width="80">Test Iterations:</TextBlock>
+                                    <controls:NumericUpDown Value="{Binding TestIterations, Mode=TwoWay}" Width="60" MaxValue="10000" MinValue="0"/>
+                                </StackPanel>
+                                <CheckBox x:Name="IsRunForever" IsChecked="{Binding IsRunForever}">Run forewer</CheckBox>
+                                <CheckBox IsChecked="{Binding IsStopOnError}">Stop on Error</CheckBox>
+                            </StackPanel>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Width="80">Tx Delay, ms</TextBlock>
+                                    <controls:NumericUpDown Width="60" Value="{Binding TxMode1Delay, Mode=TwoWay}" MaxValue="10000" MinValue="0"/>
+                                </StackPanel>
+                                <RadioButton IsChecked="{Binding IsBasicSetValue0}" VerticalAlignment="Top">Basic Set, Value 0</RadioButton>
+                                <RadioButton IsChecked="{Binding IsBasicSetValue255}" Grid.Row="1" VerticalAlignment="Top">Basic Set, Value 255</RadioButton>
+                                <RadioButton IsChecked="{Binding IsBasicSetValue0_255}" Grid.Row="2" VerticalAlignment="Top">Basic Set, Value 0/255</RadioButton>
+                            </StackPanel>
+                        </UniformGrid>
+                    </StackPanel>
+                    <StackPanel Margin="4" IsEnabled="{Binding IsTestReady}">
+                        <GroupBox Header="Transmit Options">
+                            <UniformGrid Columns="2">
+                                <StackPanel>
+                                    <CheckBox IsChecked="{Binding IsLowPower}" IsEnabled="{Binding IsCustomTxOptions, Converter={StaticResource InvertBoolConverter}}">Low power</CheckBox>
+                                </StackPanel>
+                                    <StackPanel Orientation="Horizontal" >
+                                        <CheckBox x:Name="IsCustomTxOptions" IsChecked="{Binding IsCustomTxOptions}">Custom (hex value)</CheckBox>
+                                        <controls:TextBoxHexMask Text="{Binding CustomTxOptions, Mode=TwoWay, Converter={StaticResource ByteToHexStringConverter}}" Width="60" IsEnabled="{Binding IsCustomTxOptions}"/>
+                                    </StackPanel>
+                                <StackPanel >
+                                    <CheckBox Visibility="{Binding Path=IsTxControlledByModuleEnabled , Converter={StaticResource BooleanToVisibilityConverter}}" IsChecked="{Binding IsRetransmission}" IsEnabled="{Binding IsCustomTxOptions, Converter={StaticResource InvertBoolConverter}}">Retransmission</CheckBox>
+                                </StackPanel>
+                            </UniformGrid>
+                        </GroupBox>
+                    </StackPanel>
+                    <StackPanel Margin="4" IsEnabled="{Binding IsTestReady}">
+                        <GroupBox>
+                            <GroupBox.Header>
+                                <CheckBox IsChecked="{Binding IsTxControlledByModule}" IsEnabled="{Binding IsTxControlledByModuleEnabled}" VerticalAlignment="Top">TX Controlled by Module</CheckBox>
+                            </GroupBox.Header>
+                            <StackPanel IsEnabled="{Binding IsTxControlledByModule}">
+                                <DockPanel>
+                                    <ComboBox Width="300" SelectedIndex="{Binding TestCommandIndex}" ItemsSource="{Binding TestCommands}" DockPanel.Dock="Right"/>
+                                    <TextBlock>Mode</TextBlock>
+                                </DockPanel>
+                                <DockPanel>
+                                    <controls:NumericUpDown Width="60" Value="{Binding TxMode2Delay, Mode=TwoWay}" DockPanel.Dock="Right" MaxValue="10000" MinValue="0"/>
+                                    <TextBlock>Tx Delay (1/100 sec.)</TextBlock>
+                                </DockPanel>
+                                <DockPanel>
+                                    <controls:NumericUpDown Width="60" Value="{Binding PayloadLength}" DockPanel.Dock="Right" MaxValue="10000" MinValue="0"/>
+                                    <TextBlock>Payload Length</TextBlock>
+                                </DockPanel>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                    <StackPanel Margin="4">
+                        <Button Command="{StaticResource StartStopCommandRef}" Content="Start/Stop" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                        <Rectangle Height="40"/>
+                    </StackPanel>
+                    <StackPanel Margin="4">
+                        <UniformGrid  Columns="2">
+                            <StackPanel>
+                                <DockPanel>
+                                    <TextBox Width="60" Text="{Binding PacketsSent}" DockPanel.Dock="Right" IsReadOnly="True" />
+                                    <TextBlock>Packets Sent:</TextBlock>
+                                </DockPanel>
+                                <DockPanel>
+                                    <TextBox Width="60" Text="{Binding PacketsWithRouteTriesSent}" DockPanel.Dock="Right" IsReadOnly="True" />
+                                    <TextBlock>Route Tries:</TextBlock>
+                                </DockPanel>
+                                <DockPanel>
+                                    <TextBox Width="60" Text="{Binding PacketsRecieved}" DockPanel.Dock="Right" IsReadOnly="True" />
+                                    <TextBlock>Packets Received:</TextBlock>
+                                </DockPanel>
+                                <DockPanel>
+                                    <TextBox Width="60" Text="{Binding UARTErrors}" DockPanel.Dock="Right" IsReadOnly="True" />
+                                    <TextBlock>UART Errors:</TextBlock>
+                                </DockPanel>
+                            </StackPanel>
+                        </UniformGrid>
+                    </StackPanel>
+                </StackPanel>
+                <ListView ItemsSource="{Binding ResultItems}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Id" Width="25">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Path=Device}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Type" Width="125">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock>
+                                            <TextBlock.Text>
+                                                <Binding Path="Device" Converter="{StaticResource NodeTypeConverter}"/>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Status" Width="80">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding TransmitStatus}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Elapsed, ms" Width="80">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding ElapsedMs}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Errors">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding ErrorsCount}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </DockPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

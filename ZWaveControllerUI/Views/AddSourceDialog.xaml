@@ -1,0 +1,87 @@
+﻿<Window x:Class="ZWaveControllerUI.Views.AddSourceDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+        xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+        xmlns:local="clr-namespace:ZWaveControllerUI.Views"
+        xmlns:ZWave="clr-namespace:ZWave.Layers;assembly=ZWave"
+        xmlns:cnv="clr-namespace:ZWaveControllerUI.Converters"
+        Title="Add Source" 
+        WindowStartupLocation="CenterOwner" 
+        ShowInTaskbar="False" 
+        Background="{StaticResource ViewBackground}" 
+        Foreground="{StaticResource ViewForeground}" 
+        VerticalContentAlignment="Stretch" 
+        HorizontalContentAlignment="Stretch" 
+        ResizeMode="NoResize" 
+        Height="166" 
+        Width="400" 
+        WindowStyle="ToolWindow"
+        >
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <bind:CommandReference x:Key="CommandOk" Command="{Binding CommandOk}"/>
+            <bind:CommandReference x:Key="CommandCancel" Command="{Binding CommandCancel}"/>
+            <cnv:InvertBoolToVisibilityConverter x:Key="InvertBoolToVisibilityConverter"/>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Grid.Row="0">Select Source Type:</TextBlock>
+            <ComboBox Grid.Column="1" Grid.Row="0" Width="100" HorizontalAlignment="Left"
+                      ItemsSource="{Binding Source={local:EnumBindingSource {x:Type ZWave:SoketSourceTypes}}}"
+                      SelectedItem="{Binding SelectedSourceType}">
+            </ComboBox>
+            <TextBlock Grid.Column="0" Grid.Row="1">IP Address:</TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="1" Style="{StaticResource TextBoxInError}">
+                <TextBox.Text>
+                    <Binding Path='IPAddress' UpdateSourceTrigger='PropertyChanged' Mode='OneWayToSource'>
+                        <Binding.ValidationRules>
+                            <bind:IPAddressValidationRule/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+            <TextBlock Grid.Column="0" Grid.Row="2">Port Number:</TextBlock>
+            <controls:NumericUpDown Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" Width="100" MinValue="1024" MaxValue="65535"
+                                    Value="{Binding PortNo, Mode=TwoWay, UpdateSourceTrigger='PropertyChanged'}"/>
+            <TextBlock Grid.Column="0" Grid.Row="3">Args:</TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="3">
+                <TextBox.Text>
+                    <Binding Path='Args' UpdateSourceTrigger='PropertyChanged'/>
+                </TextBox.Text>
+            </TextBox>
+        </Grid>
+        <StackPanel Grid.Row="1" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right"
+                    >
+            <Button Content="OK" 
+                    Command="{StaticResource CommandOk}" 
+                    IsDefault="True" 
+                    />
+            <Button Content="Cancel" 
+                    Command="{StaticResource CommandCancel}" 
+                    IsCancel="True"
+                    />
+        </StackPanel>
+    </Grid>
+</Window>

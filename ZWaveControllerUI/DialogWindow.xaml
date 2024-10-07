@@ -1,0 +1,34 @@
+﻿<Window x:Class="ZWaveControllerUI.DialogWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:cnv="clr-namespace:ZWaveControllerUI.Converters"
+        Title="{Binding Title}"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource ViewBackground}"
+        Foreground="{StaticResource ViewForeground}"
+        Width="{Binding DialogSettings.Width}"
+        Height="{Binding DialogSettings.Height}"
+        AutomationProperties.AutomationId="ID_DIALOG_WINDOW">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <cnv:InvertBoolConverter x:Key="InvertBoolConverter"/>
+            <ControlTemplate x:Key="DescriptionControl">
+                <StackPanel Margin="4,4,4,0">
+                    <TextBlock Text="{Binding Description}" TextWrapping="Wrap" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+                <ControlTemplate.Triggers>
+                    <DataTrigger Binding="{Binding Description}" Value="{x:Null}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+        </ResourceDictionary>
+    </Window.Resources>
+    <DockPanel>
+        <Control Template="{StaticResource DescriptionControl}" DockPanel.Dock="Top"/>
+        <ContentControl Content="{Binding}"/>
+    </DockPanel>
+</Window>

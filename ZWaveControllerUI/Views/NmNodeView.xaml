@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="ZWaveControllerUI.Views.NmNodeView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="40" />
+            <ColumnDefinition Width="40" />
+            <ColumnDefinition Width="40" />
+        </Grid.ColumnDefinitions>
+            
+        <TextBlock Text="Node Symbol" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <TextBlock Text="Generic type" Grid.Column="1"/>
+        <TextBlock Text="{Binding Item.Id}" Grid.Column="2" />
+        
+        <CheckBox IsChecked="True" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <CheckBox IsChecked="False" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+    </Grid>
+</UserControl>

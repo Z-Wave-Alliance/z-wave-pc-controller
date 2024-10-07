@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-16"?>
+
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
+-->
+
+<TestSecuritySettings AppVersion="">
+  <TestS2Settings>
+    <Parameters>
+      <Parameter ParameterType="Span" Value="050505050505060708090A0B0C0D0E0F" />
+    </Parameters>
+    <Frames>
+      <Frame FrameType="KEXGet" Delay="1" IsEncrypted="true" IsMulticast="true" IsBroadcast="true" Command="050505050505060708090A0B0C0D0E0F" NetworkKey="050505050505060708090A0B0C0D0E0F" IsTemp="true" />
+    </Frames>
+    <Extensions>
+      <Extension ExtensionType="Mos" MessageType="MulticastAll" IsEncrypted="true" Value="050505050505060708090A0B0C0D0E0F" NumOfUsage="1" IsMoreToFollow="true" IsCritical="true" ExtensionLength="1" />
+    </Extensions>
+    <IsActive>true</IsActive>
+  </TestS2Settings>
+  <TestS0Settings NonceInNetworkKeySet="010101030405060708090A0B0C0D0E0F" MACInNetworkKeySet="020202030405060708090A0B0C0D0E0F" ValueInNetworkKeySet="030303030405060708090A0B0C0D0E0F" ValueInSchemeGet="1" ValueInSchemeInherit="2" DelaySchemeGet="3" DelayNonceGet="4" DelayNetworkKeySet="5" DelayNonceReport="6" DelaySchemeInherit="7" NonceInNetworkKeyVerify="040404040405060708090A0B0C0D0E0F" MACInNetworkKeyVerify="050505050505060708090A0B0C0D0E0F" ValueInNetworkKeyVerify="060606060606060708090A0B0C0D0E0F" ValueInSchemeReport="8" DelaySchemeReport="9" DelayNonceReportIN="10" DelayNonceGetIN="11" DelayNetworkKeyVerify="12" DelaySchemeInheritReport="13">
+    <IsActive>true</IsActive>
+  </TestS0Settings>
+</TestSecuritySettings>

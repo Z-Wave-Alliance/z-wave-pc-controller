@@ -1,0 +1,686 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CBCD0B30-1DA2-4B4E-977C-631FF02887CA}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ZWaveControllerUI</RootNamespace>
+    <AssemblyName>ZWaveControllerUI</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ApplicationIcon>Images\App.ico</ApplicationIcon>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="Controls\NumericUpDownStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DataTemplates.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DataTemplates\IMADataTemplates.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StylesAndColors.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\DocumentStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\ListBoxStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\ListViewStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\TreeViewStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\AddNodeWithCustomSettingsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\AddSourceDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AssociationsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CommandClassesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PredefinedCommandsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\SenderHistoryView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\SendDataSettingsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\CommandQueueView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ConfigurationView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\KEXSetConfirmView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LogView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ScanDSKView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\SetLearnModeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\SetNodeInformationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MpanTableConfigurationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SmartStartScanDSKView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NetworkStatisticsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TransmitSettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ULMonitorView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\EncryptDecryptView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MessageDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ERTTView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FirmwareUpdateView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\IMAFullNetworkView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MainMenuView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NetworkManagamentView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NmNodeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NodeInfoView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NodesListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NVMBackupRestoreView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PollingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SelectCommandView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SettingsDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SetupRouteView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SecuritySettingsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DialogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\Colors.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\DefaultStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\SpecialStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\SpinnerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TopologyMapView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserInputView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SelectLocalIpAddressView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SmartStartView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Bind\DependencyPropertyProxy.cs" />
+    <Compile Include="Bind\NetworkGroupDescription.cs" />
+    <Compile Include="Commands\StartupInitCommand.cs" />
+    <Compile Include="Commands\ShowSecuritySettingsCommand.cs" />
+    <Compile Include="Commands\ShowSendDataSettingsCommand.cs" />
+    <Compile Include="Controls\TextBoxDecimalMask.cs" />
+    <Compile Include="Converters\NodesToStringConverter.cs" />
+    <Compile Include="Converters\EnumToBooleanConverter.cs" />
+    <Compile Include="Converters\HasBitConverter.cs" />
+    <Compile Include="Converters\IsValueInRangeConverter.cs" />
+    <Compile Include="Converters\NodeFlirsConverter.cs" />
+    <Compile Include="Converters\NodeFailedConverter.cs" />
+    <Compile Include="Converters\NodeForcedListeningConverter.cs" />
+    <Compile Include="Converters\NodeEndpointConverter.cs" />
+    <Compile Include="Converters\NodeLongRangeConverter.cs" />
+    <Compile Include="Converters\NodeSecuritySchemesConverter.cs" />
+    <Compile Include="Converters\NodeVirtualConverter.cs" />
+    <Compile Include="Converters\NodeSubjectConverter.cs" />
+    <Compile Include="Converters\NodeListeningConverter.cs" />
+    <Compile Include="Converters\NodeEndDeviceApiConverter.cs" />
+    <Compile Include="Converters\NodeToStringConverter.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Bind\BindableDocumentViewer.cs" />
+    <Compile Include="Bind\BindableFlowDocument.cs" />
+    <Compile Include="Bind\CollectionViewBehaviors.cs" />
+    <Compile Include="Bind\BytesValidationRule.cs" />
+    <Compile Include="Bind\GridItemWrapper.cs" />
+    <Compile Include="Bind\IPAddressValidationRule.cs" />
+    <Compile Include="Bind\ListViewBehaviors.cs" />
+    <Compile Include="Bind\NumbersValidationRule.cs" />
+    <Compile Include="Bind\SocketPortValidationRule.cs" />
+    <Compile Include="Bind\TreeViewBehaviors.cs" />
+    <Compile Include="Bind\CommandReference.cs" />
+    <Compile Include="Bind\FDReader.cs" />
+    <Compile Include="Bind\HexBytesValidationRule.cs" />
+    <Compile Include="Bind\HexByteValidationRule.cs" />
+    <Compile Include="Bind\ICorrectRule.cs" />
+    <Compile Include="Bind\ObjectReference.cs" />
+    <Compile Include="Bind\RuleReference.cs" />
+    <Compile Include="Bind\UCollection.cs" />
+    <Compile Include="Bind\UCollectionFactory.cs" />
+    <Compile Include="Bind\UCollectionView.cs" />
+    <Compile Include="Bind\UDispatcher.cs" />
+    <Compile Include="Converters\BoolToValueConverter.cs" />
+    <Compile Include="Converters\ByteArrayToDSKString.cs" />
+    <Compile Include="Converters\IsValueSpecifiedConverter.cs" />
+    <Compile Include="Converters\ParameterS2EnumDescriptionValueConverter.cs" />
+    <Compile Include="Converters\ParameterS2TypeToSymbolCountConverter.cs" />
+    <Compile Include="Converters\ValueSwitchToNullableConverter.cs" />
+    <Compile Include="Bind\ZWaveDefinitionReference.cs" />
+    <Compile Include="Controls\PopupBlock.cs" />
+    <Compile Include="Controls\TopologyMapMatrixControl.cs" />
+    <Compile Include="Controls\ListViewEx.cs" />
+    <Compile Include="Controls\MaskTextBox.cs" />
+    <Compile Include="Controls\NumericUpDown.cs" />
+    <Compile Include="Controls\TextBoxHexMask.cs" />
+    <Compile Include="Converters\AndConverter.cs" />
+    <Compile Include="Converters\AreEqualConvertor.cs" />
+    <Compile Include="Converters\AsciiToByteArrayConverter.cs" />
+    <Compile Include="Converters\AssociativeDeviceNameConverter.cs" />
+    <Compile Include="Converters\AssociativeGroupInfoConverter.cs" />
+    <Compile Include="Converters\BoolToBoldConverter.cs" />
+    <Compile Include="Converters\ByteArrayToDecimalConverter.cs" />
+    <Compile Include="Converters\ByteArrayToInt32Converter.cs" />
+    <Compile Include="Converters\ByteArrayToStringConverter.cs" />
+    <Compile Include="Converters\ByteArrayToBoolConverter.cs" />
+    <Compile Include="Converters\ByteToHexStringConverter.cs" />
+    <Compile Include="Converters\CollectionItemsCountConverter.cs" />
+    <Compile Include="Converters\CommandClassConverter.cs" />
+    <Compile Include="Converters\CommandClassTextConverter.cs" />
+    <Compile Include="Converters\ConnectorColorConverter.cs" />
+    <Compile Include="Converters\ControllerInfoConverter.cs" />
+    <Compile Include="Converters\BoolToVisibilityCollapsedConverter.cs" />
+    <Compile Include="Converters\ByteArrayToStringOfDecimalsConverter.cs" />
+    <Compile Include="Converters\GroupItemCountConverter.cs" />
+    <Compile Include="Converters\DataSourceToSourceTypeConverter.cs" />
+    <Compile Include="Converters\InvertBoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\SizeToMaxDecimalConverter.cs" />
+    <Compile Include="Converters\IsNotZero.cs" />
+    <Compile Include="Converters\IsPropertyChangedConverter.cs" />
+    <Compile Include="Converters\SizeConverter.cs" />
+    <Compile Include="Converters\NetworkGridLayoutConverter.cs" />
+    <Compile Include="Converters\PointConverter.cs" />
+    <Compile Include="Converters\SelectedSectionConverter.cs" />
+    <Compile Include="Converters\SocketDataSourceToPortNoConverter.cs" />
+    <Compile Include="Converters\SupportedCommandClassesConverter.cs" />
+    <Compile Include="Converters\UInt32ToColorPropertyInfoConverter.cs" />
+    <Compile Include="Converters\StringToIntConverter.cs" />
+    <Compile Include="Converters\IsFailedNodeColorConverter.cs" />
+    <Compile Include="Converters\MainVmToControllerTreeViewConverter.cs" />
+    <Compile Include="Converters\LogPacketDyeToBrushConverter.cs" />
+    <Compile Include="Converters\NodeTypeConverter.cs" />
+    <Compile Include="Converters\ObjectToIntConverter.cs" />
+    <Compile Include="Converters\DeviceInfoToNodeViewModelConverter.cs" />
+    <Compile Include="Converters\InvertBoolConverter.cs" />
+    <Compile Include="Converters\IsNotNullToBooleanConverter.cs" />
+    <Compile Include="Converters\IsNotNullToVisibilityConverter.cs" />
+    <Compile Include="Converters\NodesCountConverter.cs" />
+    <Compile Include="Converters\TreeViewItemIconByDepthConverter.cs" />
+    <Compile Include="DataTemplateSelectors\ZWaveDefinitionItemTemplateSelector.cs" />
+    <Compile Include="Drawing\DragItem.cs" />
+    <Compile Include="Drawing\DragThumb.cs" />
+    <Compile Include="Drawing\DrawCanvas.cs" />
+    <Compile Include="Drawing\DrawGrid.cs" />
+    <Compile Include="Drawing\DrawItem.cs" />
+    <Compile Include="Drawing\DrawItemLine.cs" />
+    <Compile Include="Drawing\ISelectableExt.cs" />
+    <Compile Include="Drawing\ISelector.cs" />
+    <Compile Include="Drawing\LinesAdorner.cs" />
+    <Compile Include="Drawing\NodeItem.cs" />
+    <Compile Include="Drawing\ResizeThumb.cs" />
+    <Compile Include="Drawing\SelectionAdorner.cs" />
+    <Compile Include="Drawing\SelectionService.cs" />
+    <Compile Include="Models\AboutViewModel.cs" />
+    <Compile Include="Models\AddSocketSourceViewModel.cs" />
+    <Compile Include="Models\Basic\AssociationModel.cs" />
+    <Compile Include="Models\Basic\AssociationViewModel.cs" />
+    <Compile Include="Models\Basic\CommandClassesViewModel.cs" />
+    <Compile Include="Models\Basic\CommandQueueViewModel.cs" />
+    <Compile Include="Models\Basic\ConfigurationViewModel.cs" />
+    <Compile Include="Models\Basic\EncryptDecryptViewModel.cs" />
+    <Compile Include="Models\Basic\ERTTViewModel.cs" />
+    <Compile Include="Models\Basic\FirmwareUpdateViewModel.cs" />
+    <Compile Include="Models\Basic\IMAFullNetworkViewModel.cs" />
+    <Compile Include="Models\Basic\KEXSetConfirmViewModel.cs" />
+    <Compile Include="Models\Basic\MainMenuViewModel.cs" />
+    <Compile Include="Models\Basic\MpanTableConfigurationViewModel.cs" />
+    <Compile Include="Models\Basic\NetworkManagementViewModel.cs" />
+    <Compile Include="Models\Basic\NVMBackupRestoreViewModel.cs" />
+    <Compile Include="Models\Basic\PollingViewModel.cs" />
+    <Compile Include="Models\Basic\ScanDSKViewModel.cs" />
+    <Compile Include="Models\Basic\SecuritySettingsViewModel.cs" />
+    <Compile Include="Models\Basic\SelectCommandViewModel.cs" />
+    <Compile Include="Models\Basic\SelectLocalIpAddressViewModel.cs" />
+    <Compile Include="Models\Basic\SendDataSettingsViewModel.cs" />
+    <Compile Include="Models\Basic\SetLearnModeViewModel.cs" />
+    <Compile Include="Models\Basic\SetNodeInformationViewModel.cs" />
+    <Compile Include="Models\Basic\NetworkStatisticsViewModel.cs" />
+    <Compile Include="Models\Basic\SetupRouteViewModel.cs" />
+    <Compile Include="Models\Basic\SmartStartScanDSKViewModel.cs" />
+    <Compile Include="Models\Basic\TopologyMapViewModel.cs" />
+    <Compile Include="Models\Basic\TransmitSettingsViewModel.cs" />
+    <Compile Include="Models\Basic\ULMonitorViewModel.cs" />
+    <Compile Include="Models\Basic\AddNodeWithCustomSettingsViewModel.cs" />
+    <Compile Include="Models\Dialogs\DialogVMBase.cs" />
+    <Compile Include="Models\Dialogs\FolderBrowserDialogViewModel.cs" />
+    <Compile Include="Models\Dialogs\MessageDialogViewModel.cs" />
+    <Compile Include="Models\Dialogs\OpenFileDialogViewModel.cs" />
+    <Compile Include="Models\Dialogs\SaveFileDialogViewModel.cs" />
+    <Compile Include="Models\Dialogs\SecuritySchemaDialogViewModel.cs" />
+    <Compile Include="Models\Dialogs\UserInputDialogViewModel.cs" />
+    <Compile Include="Models\CommandCollections\PredefinedCommandsViewModel.cs" />
+    <Compile Include="Models\LogViewModel.cs" />
+    <Compile Include="Models\MainViewModel.cs" />
+    <Compile Include="Models\MainVMBase.cs" />
+    <Compile Include="Models\NetAppSettings.cs" />
+    <Compile Include="Models\ParameterViewModel.cs" />
+    <Compile Include="Models\SelectableItem.cs" />
+    <Compile Include="Models\CommandCollections\SenderHistoryViewModel.cs" />
+    <Compile Include="Models\SettingsViewModel.cs" />
+    <Compile Include="Models\SmartStartViewModel.cs" />
+    <Compile Include="Models\TraceCaptureSettings.cs" />
+    <Compile Include="Models\VMBase.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <DependentUpon>Settings.settings</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Services\LogService.cs" />
+    <Compile Include="Views\AddNodeWithCustomSettingsView.xaml.cs">
+      <DependentUpon>AddNodeWithCustomSettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AddSourceDialog.xaml.cs">
+      <DependentUpon>AddSourceDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AssociationsView.xaml.cs">
+      <DependentUpon>AssociationsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CommandClassesView.xaml.cs">
+      <DependentUpon>CommandClassesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PredefinedCommandsView.xaml.cs">
+      <DependentUpon>PredefinedCommandsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SenderHistoryView.xaml.cs">
+      <DependentUpon>SenderHistoryView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SendDataSettingsWindow.xaml.cs">
+      <DependentUpon>SendDataSettingsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CommandQueueView.xaml.cs">
+      <DependentUpon>CommandQueueView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ConfigurationView.xaml.cs">
+      <DependentUpon>ConfigurationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\KEXSetConfirmView.xaml.cs">
+      <DependentUpon>KEXSetConfirmView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LogView.xaml.cs">
+      <DependentUpon>LogView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ScanDSKView.xaml.cs">
+      <DependentUpon>ScanDSKView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SetLearnModeView.xaml.cs">
+      <DependentUpon>SetLearnModeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SetNodeInformationView.xaml.cs">
+      <DependentUpon>SetNodeInformationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MpanTableConfigurationView.xaml.cs">
+      <DependentUpon>MpanTableConfigurationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SmartStartScanDSKView.xaml.cs">
+      <DependentUpon>SmartStartScanDSKView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NetworkStatisticsView.xaml.cs">
+      <DependentUpon>NetworkStatisticsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TransmitSettingsView.xaml.cs">
+      <DependentUpon>TransmitSettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ULMonitorView.xaml.cs">
+      <DependentUpon>ULMonitorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EncryptDecryptView.xaml.cs">
+      <DependentUpon>EncryptDecryptView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MessageDialog.xaml.cs">
+      <DependentUpon>MessageDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ERTTView.xaml.cs">
+      <DependentUpon>ERTTView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FirmwareUpdateView.xaml.cs">
+      <DependentUpon>FirmwareUpdateView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\IMAFullNetworkView.xaml.cs">
+      <DependentUpon>IMAFullNetworkView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NodeInfoView.xaml.cs">
+      <DependentUpon>NodeInfoView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NodesListView.xaml.cs">
+      <DependentUpon>NodesListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NVMBackupRestoreView.xaml.cs">
+      <DependentUpon>NVMBackupRestoreView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PollingView.xaml.cs">
+      <DependentUpon>PollingView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SelectCommandView.xaml.cs">
+      <DependentUpon>SelectCommandView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SettingsDialog.xaml.cs">
+      <DependentUpon>SettingsDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SetupRouteView.xaml.cs">
+      <DependentUpon>SetupRouteView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SecuritySettingsWindow.xaml.cs">
+      <DependentUpon>SecuritySettingsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MainMenuView.xaml.cs">
+      <DependentUpon>MainMenuView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NetworkManagamentView.xaml.cs">
+      <DependentUpon>NetworkManagamentView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NmNodeView.xaml.cs">
+      <DependentUpon>NmNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DialogWindow.xaml.cs">
+      <DependentUpon>DialogWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Styles\CutFirstCharConverter.cs" />
+    <Compile Include="Styles\FirstCharConverter.cs" />
+    <Compile Include="Views\SpinnerView.xaml.cs">
+      <DependentUpon>SpinnerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TopologyMapView.xaml.cs">
+      <DependentUpon>TopologyMapView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserInputView.xaml.cs">
+      <DependentUpon>UserInputView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SelectLocalIpAddressView.xaml.cs">
+      <DependentUpon>SelectLocalIpAddressView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SmartStartView.xaml.cs">
+      <DependentUpon>SmartStartView.xaml</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="..\App.ico">
+      <Link>App.ico</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Resource Include="Images\IMA_ControllerNode.png" />
+    <Resource Include="Images\IMA_DestinationNode.png" />
+    <Resource Include="Images\IMA_NeighbourLine.png" />
+    <Resource Include="Images\IMA_RedLine.png" />
+    <Resource Include="Images\IMA_SimpleLine.png" />
+    <Resource Include="Images\IMA_SimpleNode.png" />
+    <Resource Include="Images\IMA_SourceNode.png" />
+    <Resource Include="Images\field_16xMD.png" />
+    <Resource Include="Images\Member_16xLG.png" />
+    <Resource Include="Images\field_16xLG.png" />
+    <Resource Include="Images\class_16xLG.png" />
+    <Resource Include="Images\z-wave_logo128.png" />
+    <Resource Include="Images\z-wave_logo256.png" />
+    <Resource Include="Images\z-wave_logo.png" />
+    <Resource Include="Images\Office2.png" />
+    <Resource Include="Images\Office1.png" />
+    <Resource Include="Images\Class_Icon.png" />
+    <Resource Include="Images\Properties.png" />
+    <Resource Include="Images\Assembly.png" />
+    <Resource Include="Images\Listening.png" />
+    <Resource Include="Images\App.ico" />
+    <None Include="app.config" />
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\z-wave-tools-core\BasicApplication\BasicApplication.csproj">
+      <Project>{2E351174-ED53-4E8A-A065-3E15A7E228B5}</Project>
+      <Name>BasicApplication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\z-wave-tools-core\Utils\Utils.csproj">
+      <Project>{6C298CDF-2B64-4BE7-B9D4-449D5F30E57F}</Project>
+      <Name>Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\z-wave-tools-core\ZipApplication\ZipApplication.csproj">
+      <Project>{8ACFB772-98F3-48FE-85AE-3F06DA2EA60B}</Project>
+      <Name>ZipApplication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\z-wave-tools-core\ZWaveXml\ZWaveXml.csproj">
+      <Project>{FEB030F9-A44A-4C72-9C28-C8FA186995FB}</Project>
+      <Name>ZWaveXml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\z-wave-tools-core\ZWave\ZWave.csproj">
+      <Project>{B214D482-57EB-42BE-AEC7-D64850F56514}</Project>
+      <Name>ZWave</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ZWaveController\ZWaveController.csproj">
+      <Project>{DD57A974-E2E4-4E8E-9847-C7BAC0BB94A0}</Project>
+      <Name>ZWaveController</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\menu_icon_01.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\z-wave_logo_RGB_r.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\z-wave_logo_RGB_r_cropped.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Back icon.png" />
+    <Resource Include="Images\settings-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Very-Basic-Home-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\icon_+.png" />
+    <Resource Include="Images\icon_-.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\arrow_left32.png" />
+    <Resource Include="Images\arrow_left64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\zigzag_home.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\home.png" />
+    <Resource Include="Images\settings.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\arrow_left.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MaterialDesignColors">
+      <Version>2.0.4</Version>
+    </PackageReference>
+    <PackageReference Include="MaterialDesignThemes">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="ZXing.Net">
+      <Version>0.16.7</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

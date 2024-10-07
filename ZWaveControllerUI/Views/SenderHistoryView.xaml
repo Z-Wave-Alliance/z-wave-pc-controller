@@ -1,0 +1,209 @@
+﻿<UserControl x:Class="ZWaveControllerUI.Views.SenderHistoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             xmlns:local="clr-namespace:ZWaveController.Enums;assembly=ZWaveController"
+             xmlns:converters="clr-namespace:ZWaveControllerUI.Converters"
+             AutomationProperties.AutomationId="ID_SENDER_HISTORY_VIEW"
+             Height="550" Width="450">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <converters:ByteArrayToStringConverter x:Key="ByteArrayToStringConverter" />
+            <bind:CommandReference x:Key="EditHistoryItemCommand" Command="{Binding EditHistoryItemCommand}"/>
+            <bind:CommandReference x:Key="DeleteHistoryItemsCommand" Command="{Binding DeleteHistoryItemsCommand}"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <DockPanel>
+        <ScrollViewer DockPanel.Dock="Bottom" Margin="2" Height="auto"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <TextBox Text="{Binding SelectedItemDetails}" TextWrapping="Wrap"  VerticalAlignment="Top" 
+                     IsReadOnly="True"
+                     Height="100"
+                     BorderThickness="0"/>
+        </ScrollViewer>
+        <TextBlock Text="Command Details: " DockPanel.Dock="Bottom" Margin="2,0"/>
+        <ScrollViewer>
+            <ListView BorderThickness="0"
+                  IsSynchronizedWithCurrentItem="True"
+                  ItemsSource="{Binding FilteredHistory}"
+                  SelectedItem="{Binding SelectedHistoryRecord}"
+                  SelectionMode="Single"
+                  bind:ListViewBehavior.DoubleClick="{StaticResource EditHistoryItemCommand}">
+                <ListView.Resources>
+                    <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                    </Style>
+                </ListView.Resources>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Time">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Item.Timestamp, StringFormat='{}{0:HH:mm:ss}'}" Grid.Column="0"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Name">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Item.PayloadItem.CommandName}" Grid.Column="0"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn Header="Ver">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Item.PayloadItem.Version}" Grid.Column="0"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn Width="25">
+                            <GridViewColumnHeader Content="CRC" ToolTip="Is Crc16 Enabled"/>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox Margin="-4,0" IsEnabled="False" HorizontalAlignment="Center"
+                                                        Style="{StaticResource CheckBoxFlag}" Foreground="{StaticResource ButtonBackground}" 
+                                                        IsChecked="{Binding Path=Item.PayloadItem.IsCrc16Enabled}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn Width="25">
+                            <GridViewColumnHeader Content="MFU" ToolTip="Is Suppress Multicast Follow Up"/>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox Margin="-4,0" IsEnabled="False" HorizontalAlignment="Center"
+                                                        Style="{StaticResource CheckBoxFlag}" Foreground="{StaticResource ButtonBackground}" 
+                                                        IsChecked="{Binding Path=Item.PayloadItem.IsSuppressMulticastFollowUp}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn Width="25">
+                            <GridViewColumnHeader Content="FM" ToolTip="Is Force Multicast Enabled"/>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox Margin="-4,0" IsEnabled="False" HorizontalAlignment="Center"
+                                                        Style="{StaticResource CheckBoxFlag}" Foreground="{StaticResource ButtonBackground}" 
+                                                        IsChecked="{Binding Path=Item.PayloadItem.IsForceMulticastEnabled}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn Width="25">
+                            <GridViewColumnHeader Content="SG" ToolTip="Is Supervision Get Enabled"/>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox Margin="-4,0" IsEnabled="False" HorizontalAlignment="Center"
+                                                        Style="{StaticResource CheckBoxFlag}" Foreground="{StaticResource ButtonBackground}" 
+                                                        IsChecked="{Binding Path=Item.PayloadItem.IsSupervisionGetEnabled}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn Width="25">
+                            <GridViewColumnHeader Content="SGS" ToolTip="Is Supervision Get Status Updates Enabled"/>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox Margin="-4,0" IsEnabled="False" HorizontalAlignment="Center"
+                                                        Style="{StaticResource CheckBoxFlag}" Foreground="{StaticResource ButtonBackground}" 
+                                                        IsChecked="{Binding Path=Item.PayloadItem.IsSupervisionGetStatusUpdatesEnabled}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn Width="25">
+                            <GridViewColumnHeader Content="AIS" ToolTip="Is Auto Increment Supervision Session Id"/>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox Margin="-4,0" IsEnabled="False" HorizontalAlignment="Center"
+                                                        Style="{StaticResource CheckBoxFlag}" Foreground="{StaticResource ButtonBackground}" 
+                                                        IsChecked="{Binding Path=Item.PayloadItem.IsAutoIncSupervisionSessionId}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn >
+                            <GridViewColumnHeader Content="IS" ToolTip="Is Secured"/>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox Margin="-4,0" IsEnabled="False" HorizontalAlignment="Center" Foreground="{StaticResource ButtonBackground}">
+                                        <CheckBox.Style>
+                                            <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource CheckBoxNullableFlag}">
+                                                <Setter Property="IsChecked" Value="{x:Null}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Item.PayloadItem.SecureType}" Value="{x:Static local:SecureType.Secure}">
+                                                        <Setter Property="IsChecked" Value="True"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Item.PayloadItem.SecureType}" Value="{x:Static local:SecureType.NonSecure}">
+                                                        <Setter Property="IsChecked" Value="False"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </CheckBox.Style>
+                                    </CheckBox>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn >
+                            <GridViewColumnHeader Content="IB" ToolTip="Is Broadcasted"/>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox Margin="-4,0" IsEnabled="False" HorizontalAlignment="Center" Foreground="{StaticResource ButtonBackground}">
+                                        <CheckBox.Style>
+                                            <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource CheckBoxFlag}">
+                                                <Setter Property="IsChecked" Value="False"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Item.PayloadItem.SecureType}" Value="{x:Static local:SecureType.Broadcast}">
+                                                        <Setter Property="IsChecked" Value="True"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </CheckBox.Style>
+                                    </CheckBox>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn Width="25">
+                            <GridViewColumnHeader Content="MC" ToolTip="Is MultiChannel Enabled"/>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox Margin="-4,0" IsEnabled="False" HorizontalAlignment="Center"
+                                                        Style="{StaticResource CheckBoxFlag}" Foreground="{StaticResource ButtonBackground}" 
+                                                        IsChecked="{Binding Path=Item.PayloadItem.IsMultiChannelEnabled}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn Width="25">
+                            <GridViewColumnHeader Content="MCB" ToolTip="Is Bit Address"/>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox Margin="-4,0" IsEnabled="False" HorizontalAlignment="Center"
+                                                        Style="{StaticResource CheckBoxFlag}" Foreground="{StaticResource ButtonBackground}" 
+                                                        IsChecked="{Binding Path=Item.PayloadItem.IsBitAddress}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn Header="Data">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock  Margin="2" Text="{Binding Path=Item.PayloadItem.Payload,  Converter={StaticResource ByteArrayToStringConverter}}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

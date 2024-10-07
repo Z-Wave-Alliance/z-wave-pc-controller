@@ -1,0 +1,179 @@
+﻿<UserControl x:Class="ZWaveControllerUI.Views.FirmwareUpdateView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:views="clr-namespace:ZWaveControllerUI.Views"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             xmlns:converters="clr-namespace:ZWaveControllerUI.Converters">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <converters:ByteArrayToStringConverter x:Key="ByteArrayToStringConverter" />
+            <converters:ByteArrayToInt32Converter x:Key="ByteArrayToInt32Converter" />
+            <converters:IsPropertyChangedConverter x:Key="IsPropertyChangedConverter" />
+            <converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
+            <bind:CommandReference x:Key="FirmwareUpdateOTAGetCommand" Command="{Binding FirmwareUpdateOTAGetCommand}"/>
+            <bind:CommandReference x:Key="FirmwareUpdateOTABrowseFileCommand" Command="{Binding FirmwareUpdateOTABrowseFileCommand}"/>
+            <bind:CommandReference x:Key="FirmwareUpdateOTAUpdateCommand" Command="{Binding FirmwareUpdateOTAUpdateCommand}"/>
+            <bind:CommandReference x:Key="FirmwareUpdateOTAActivateCommand" Command="{Binding FirmwareUpdateOTAActivateCommand}"/>
+            <bind:CommandReference x:Key="FirmwareUpdateOTADownloadCommand" Command="{Binding FirmwareUpdateOTADownloadCommand}"/>
+            <bind:CommandReference x:Key="FirmwareUpdateOTASaveCommand" Command="{Binding FirmwareUpdateOTASaveCommand}"/>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <ControlTemplate x:Key="FirmwareUpdateBlock">
+                <UniformGrid Columns="2">
+                    <TextBlock>Firmware ID:</TextBlock>
+                    <TextBox Text="{Binding Path=SelectedFirmwareTarget.FirmwareId, Converter={StaticResource ByteArrayToStringConverter}}"/>
+                    <TextBlock>Fragment Size:</TextBlock>
+                    <controls:NumericUpDown x:Name="FragmentSizeNum" Width="Auto" HorizontalAlignment="Stretch"
+                                                Value="{Binding Path=FragmentSize, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                                MinValue="{Binding Path=MinFragmentSize}" MaxValue="255"/>
+                    <TextBlock >Checksum:</TextBlock>
+                    <TextBox Text="{Binding Path=FirmwareChecksum, Converter={StaticResource ByteArrayToStringConverter}}"/>
+                    <TextBlock Visibility="{Binding Path=IsV4Update, Converter={StaticResource BooleanToVisibilityConverter}}">Activation:</TextBlock>
+                    <CheckBox x:Name="ActivationCheck" IsChecked="{Binding Activation}" Visibility="Visible" />
+                    <TextBlock x:Name="DownloadReportsLabel" Visibility="Collapsed">Download reports:</TextBlock>
+                    <controls:NumericUpDown x:Name="DownloadReportsCount" Width="Auto" HorizontalAlignment="Stretch" Visibility="Collapsed"
+                                                Value="{Binding Path=DownloadNumberOfReports, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                                MinValue="1" MaxValue="255"/>
+                </UniformGrid>
+                <ControlTemplate.Triggers>
+                    <DataTrigger Binding="{Binding IsV4Update}" Value="False">
+                        <Setter TargetName="ActivationCheck" Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding CanChangeFragmentSize}" Value="False">
+                        <Setter TargetName="FragmentSizeNum" Property="IsEnabled" Value="False"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding FirmwareUpdateCommandClassVersion}" Value="5">
+                        <Setter TargetName="DownloadReportsCount" Property="Visibility" Value="Visible"/>
+                        <Setter TargetName="DownloadReportsLabel" Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="276" />
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="50*"/>
+        </Grid.RowDefinitions>
+        <views:NodesListView Grid.Column="0" Grid.Row="0" DataContext="{Binding ApplicationModel}"/>
+        <views:NodeInfoView Grid.Column="0" Grid.Row="2" DataContext="{Binding ApplicationModel}"/>
+        <GridSplitter 
+            Grid.Column="0" 
+            Grid.Row="1" 
+            VerticalAlignment="Center"
+            HorizontalAlignment="Stretch"
+            Height="4"
+            ShowsPreview="True"
+            />
+        <GridSplitter 
+            Grid.Column="1" 
+            Grid.Row="0" 
+            Grid.RowSpan="3" 
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Center"
+            Width="4"
+            ShowsPreview="True"
+            />
+        <Grid Grid.Column="2" Grid.Row="0" Grid.RowSpan="3">
+            <ScrollViewer>
+                <StackPanel Margin="4" Width="380" HorizontalAlignment="Left">
+                    <GroupBox Header="Current Firmware">
+                        <StackPanel>
+                            <UniformGrid Columns="2">
+                                <TextBlock>Command Class Version:</TextBlock>
+                                <TextBox IsEnabled="False" Text="{Binding Path=FirmwareUpdateCommandClassVersion, Mode=OneWay}"/>
+                                <TextBlock>Manufacturer ID:</TextBlock>
+                                <TextBox IsEnabled="True" Text="{Binding Path=ManufacturerID, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"/>
+                                <TextBlock>Firmware ID:</TextBlock>
+                                <TextBox IsEnabled="False" Text="{Binding Path=FirmwareID, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"/>
+                                <TextBlock>Firmware Version:</TextBlock>
+                                <TextBox IsEnabled="False" Text="{Binding Path=CurrentFirmwareVersion}"/>
+                                <TextBlock>Hardware Version:</TextBlock>
+                                <TextBox IsEnabled="False" Text="{Binding Path=HardwareVersion}"/>
+                                <TextBlock>Checksum:</TextBlock>
+                                <TextBox IsEnabled="False" Text="{Binding Path=Checksum, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"/>
+                                <TextBlock Text="{Binding Path=FirmwareUpgradableText}"/>
+                            </UniformGrid>
+                            <StackPanel Margin="0,4" Orientation="Horizontal">
+                                <Button Content="Get" Command="{StaticResource FirmwareUpdateOTAGetCommand}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Firmware Update">
+                        <StackPanel>
+                            <DockPanel>
+                                <TextBlock>File:</TextBlock>
+                                <Button DockPanel.Dock="Right" Command="{StaticResource FirmwareUpdateOTABrowseFileCommand}" Width="40">
+                                    <md:PackIcon Kind="Folder" Width="24" Height="24"/>
+                                </Button>
+                                <TextBox Height="Auto" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Path=FirmwareFileName}" IsReadOnly="True"/>
+                            </DockPanel>
+                            <CheckBox IsEnabled="False" IsChecked="{Binding UseFirmwareDataTruncated, Converter={StaticResource InvertBoolConverter}}">
+                                <TextBlock TextWrapping="Wrap">
+                                    <TextBlock.Text>
+                                        <Binding Path="FirmwareDataOffset"                                          
+                                                 StringFormat="Add padding to firmware update file (.ota and .hex files only), StartAddress: 0x{0:X2}"
+                                                 FallbackValue="Add padding to firmware update file (.ota and .hex files only)" TargetNullValue="0">
+                                        </Binding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </CheckBox>
+                            <TextBlock DockPanel.Dock="Top" Text="Firmware Targets:"/>
+                            <UniformGrid Columns="2">
+                                <ListBox ItemsSource="{Binding Path=FirmwareTargets}"
+                                         SelectedItem="{Binding Path=SelectedFirmwareTarget}"
+                                         SelectionMode="Single">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Path=Index, StringFormat='Target: {0} -'}" />
+                                                <TextBlock Text="{Binding Path=FirmwareId, StringFormat='Firmware Id: {0}', Converter={StaticResource ByteArrayToStringConverter}}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                                <StackPanel>
+                                    <Control Template="{StaticResource FirmwareUpdateBlock}"/>
+                                </StackPanel>
+                            </UniformGrid>
+                            <StackPanel Margin="0,4">
+                                <CheckBox IsChecked="{Binding IsStopOnNak}">
+                                    <TextBlock TextWrapping="Wrap" Text="Stop transmitting bulk reports on missing acknowledge"/>
+                                </CheckBox>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox IsChecked="{Binding IsReportsLimited}">
+                                        <TextBlock TextWrapping="Wrap" Text="Limit number of reports"/>
+                                    </CheckBox>
+                                    <controls:NumericUpDown Value="{Binding ReportsLimit, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinValue="0" MaxValue="100"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox IsChecked="{Binding IsDiscardLastReports}">
+                                        <TextBlock TextWrapping="Wrap" Text="Discard last reports count"/>
+                                    </CheckBox>
+                                    <controls:NumericUpDown Value="{Binding DiscardLastReportsCount, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinValue="0" MaxValue="100"/>
+                                </StackPanel>
+                            </StackPanel>
+                            
+                            <StackPanel Margin="0,4" Orientation="Horizontal">
+                                <Button Command="{StaticResource FirmwareUpdateOTAUpdateCommand}" Content="Update"/>
+                                <Button Command="{StaticResource FirmwareUpdateOTAActivateCommand}" Content="Activate"/>
+                                <Button Command="{StaticResource FirmwareUpdateOTADownloadCommand}" Content="Download"/>
+                            </StackPanel>
+                            <TextBlock FontWeight="Bold" Text="{Binding Path=UpdateResultStatus, StringFormat='Status: {0}'}"/>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>

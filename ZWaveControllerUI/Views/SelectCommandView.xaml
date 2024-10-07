@@ -1,0 +1,135 @@
+﻿<UserControl x:Class="ZWaveControllerUI.Views.SelectCommandView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:zx="clr-namespace:ZWave.Xml.Application;assembly=ZWaveXml"
+             xmlns:cm="clr-namespace:System.ComponentModel;assembly=WindowsBase"    
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+             xmlns:cnv="clr-namespace:ZWaveControllerUI.Converters" 
+             Loaded="UserControl_Loaded"
+             AutomationProperties.AutomationId="ID_SELECT_COMMAND_VIEW">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <cnv:SelectedSectionConverter x:Key="selectedConverter"/>
+            <cnv:CommandClassTextConverter x:Key="CommandClassTextConverter"/>
+            <cnv:SupportedCommandClassesConverter x:Key="SupportedCommandClassesConverter"/>
+            <CollectionViewSource x:Key="CommandClasses">
+                <CollectionViewSource.Source>
+                    <MultiBinding Converter="{StaticResource SupportedCommandClassesConverter}">
+                        <Binding Path="ApplicationModel.ZWaveDefinition.CommandClasses"/>
+                        <Binding Path="CommandClasses"/>
+                    </MultiBinding>
+                </CollectionViewSource.Source>
+                <CollectionViewSource.SortDescriptions>
+                    <cm:SortDescription PropertyName="Name"/>
+                    <cm:SortDescription PropertyName="Version"/>
+                </CollectionViewSource.SortDescriptions>
+            </CollectionViewSource>
+            <bind:CommandReference x:Key="CommandOk" Command="{Binding CommandOk}"/>
+            <bind:CommandReference x:Key="CommandCancel" Command="{Binding CommandCancel}"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Focusable="False">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="35*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="65*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Margin="4" Orientation="Horizontal">
+            <CheckBox Content="All Command Classes" IsChecked="{Binding Path=IsShowAllCommandClasses}" AutomationProperties.AutomationId="ID_CHK_ALL_COMMAND_CLASSES"/>
+            <TextBox Text="{Binding FilterCC, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="130" Visibility="{Binding Path=IsShowAllCommandClasses, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        </StackPanel>
+        <TreeView Grid.Row="1" x:Name="tvCC" MinWidth="100" 
+                  ItemsSource="{Binding Source={StaticResource CommandClasses}}" 
+                  bind:CollectionViewBehaviors.IsFilterEnabled="{Binding Path=IsShowAllCommandClasses, FallbackValue='false'}"
+                  bind:CollectionViewBehaviors.FilterText="{Binding Path=FilterCC, FallbackValue=''}"
+                  bind:TreeViewBehavior.Attach="true" 
+                  bind:TreeViewBehavior.SelectedItem="{Binding SelectedItem, Mode=TwoWay}"  AutomationProperties.AutomationId="ID_TVW_ALL_COMMAND_CLASSES_INFO">
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                    <Setter Property="AutomationProperties.AutomationId">
+                        <Setter.Value>
+                            <MultiBinding StringFormat="{}{0}_V{1}">
+                                <Binding Path="Name"/>
+                                <Binding Path="Version"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                    <EventSetter Event="MouseDoubleClick" Handler="OnItemMouseDoubleClick"/>
+                </Style>
+            </TreeView.ItemContainerStyle>
+            <TreeView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel MaxWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ContentPresenter, AncestorLevel=1}}" />
+                </ItemsPanelTemplate>
+            </TreeView.ItemsPanel>
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type zx:CommandClass}" ItemsSource="{Binding Command}">
+                    <HierarchicalDataTemplate.ItemContainerStyle>
+                        <Style TargetType="TreeViewItem"  BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                            <Setter Property="AutomationProperties.AutomationId" Value="{Binding Name}"/>
+                            <EventSetter Event="MouseDoubleClick" Handler="OnItemMouseDoubleClick"/>
+                        </Style>
+                    </HierarchicalDataTemplate.ItemContainerStyle>
+                    <StackPanel Orientation="Horizontal" ToolTip="{Binding Text}">
+                        <md:PackIcon Kind="FileCode" Foreground="{StaticResource ButtonBackground}"/>
+                        <TextBlock>
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat=" ver.{0} - {1}">
+                                    <Binding Path="Version"/>
+                                    <Binding Path="Text" Converter="{StaticResource CommandClassTextConverter}"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type zx:Command}">
+                    <StackPanel Orientation="Horizontal" ToolTip="{Binding Text}">
+                        <md:PackIcon Kind="CodeJson" Foreground="{StaticResource ButtonBackground}"/>
+                        <TextBlock>
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat=" {0}">
+                                    <Binding Path="Text"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type zx:Param}" ItemsSource="{Binding Param1}">
+                    <StackPanel Orientation="Horizontal">
+                        <md:PackIcon Kind="CodeJson" Foreground="{StaticResource ButtonBackground}"/>
+                        <TextBlock>
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat=" {0}">
+                                    <Binding Path="Text"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.Resources>
+        </TreeView>
+        <GridSplitter Focusable="False" Grid.Column="1" Grid.RowSpan="2" VerticalAlignment="Stretch" Width="4" ResizeBehavior="PreviousAndNext" ResizeDirection="Columns"/>
+        <FlowDocumentReader MinWidth="200" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" ViewingMode="Scroll" Zoom="90">
+            <bind:BindableFlowDocument IsColumnWidthFlexible="False" Background="{StaticResource EditBackground}"
+                        ColumnWidth="600" FontFamily="Arial" FontSize="13.5"
+                        BoundSection="{Binding SelectedItem, Converter={StaticResource selectedConverter}}"/>
+        </FlowDocumentReader>
+        <DockPanel Margin="4" Grid.Row="2" Grid.ColumnSpan="3">
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button Content="OK" Command="{StaticResource CommandOk}" IsDefault="True" AutomationProperties.AutomationId="ID_BTN_OK"/>
+                <Button Content="Cancel" Command="{StaticResource CommandCancel}" IsCancel="True" AutomationProperties.AutomationId="ID_BTN_CANCEL"/>
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+</UserControl>

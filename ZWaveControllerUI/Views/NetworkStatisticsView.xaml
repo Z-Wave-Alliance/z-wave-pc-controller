@@ -1,0 +1,83 @@
+﻿<UserControl x:Class="ZWaveControllerUI.Views.NetworkStatisticsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <bind:CommandReference x:Key="ClearNetworkStatsCommandRef" Command="{Binding ClearNetworkStatsCommand}"/>
+            <bind:CommandReference x:Key="GetNetworkStatsCommandRef" Command="{Binding GetNetworkStatsCommand}"/>
+            <bind:CommandReference x:Key="ClearTxTimerCommandRef" Command="{Binding ClearTxTimerCommand}"/>
+            <bind:CommandReference x:Key="GetTxTimerCommandRef" Command="{Binding GetTxTimerCommand}"/>
+            <bind:CommandReference x:Key="GetBackgroundRSSICommandRef" Command="{Binding GetBackgroundRSSICommand}"/>
+            <bind:CommandReference x:Key="JammingDetectionStartCommandRef" Command="{Binding JammingDetectionStartCommand}"/>
+            <bind:CommandReference x:Key="JammingDetectionStopCommandRef" Command="{Binding JammingDetectionStopCommand}"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <DockPanel Margin="4" DockPanel.Dock="Top">
+        <GroupBox DockPanel.Dock="Top" Header="Network Stats:">
+            <StackPanel>
+                <UniformGrid Columns="2" Margin="2,0">
+                    <TextBlock>Tx Frames:</TextBlock>
+                    <TextBox IsEnabled="False" Text="{Binding RFTxFrames}"/>
+                    <TextBlock>Rx Frames:</TextBlock>
+                    <TextBox IsEnabled="False" Text="{Binding RFRxFrames}"/>
+                    <TextBlock>Tx LBT Back Offs:</TextBlock>
+                    <TextBox IsEnabled="False" Text="{Binding RFTxLBTBackOffs}"/>
+                    <TextBlock>Rx LRC Errors:</TextBlock>
+                    <TextBox IsEnabled="False" Text="{Binding RFRxLRCErrors}"/>
+                    <TextBlock>Rx CRC16E rrors:</TextBlock>
+                    <TextBox IsEnabled="False" Text="{Binding RFRxCRC16Errors}"/>
+                    <TextBlock>Rx Foreign HomeID:</TextBlock>
+                    <TextBox IsEnabled="False" Text="{Binding RFRxForeignHomeID}"/>
+                </UniformGrid>
+                <StackPanel Margin="0,4" Orientation="Horizontal">
+                    <Button Content="Clear" Command="{StaticResource ClearNetworkStatsCommandRef}"/>
+                    <Button Content="Get" Command="{StaticResource GetNetworkStatsCommandRef}"/>
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Tx Timers:" DockPanel.Dock="Top">
+            <StackPanel>
+                <UniformGrid Columns="2" Margin="2,0">
+                    <TextBlock>Channel 0:</TextBlock>
+                    <TextBox IsEnabled="False" Text="{Binding TxTimeChannel0}"/>
+                    <TextBlock>Channel 1:</TextBlock>
+                    <TextBox IsEnabled="False" Text="{Binding TxTimeChannel1}"/>
+                    <TextBlock>Channel 2:</TextBlock>
+                    <TextBox IsEnabled="False" Text="{Binding TxTimeChannel2}"/>
+                    <TextBlock>Channel 3:</TextBlock>
+                    <TextBox IsEnabled="False" Text="{Binding TxTimeChannel3}"/>
+                    <TextBlock>Channel 4:</TextBlock>
+                    <TextBox IsEnabled="False" Text="{Binding TxTimeChannel4}"/>
+                </UniformGrid>
+                <StackPanel Margin="0,4" Orientation="Horizontal">
+                    <Button Content="Clear" Command="{StaticResource ClearTxTimerCommandRef}"/>
+                    <Button Content="Get" Command="{StaticResource GetTxTimerCommandRef}"/>
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Background RSSI Levels and Jamming Detection:" DockPanel.Dock="Bottom">
+            <StackPanel>
+                <UniformGrid Columns="2" Margin="2,0">
+                    <TextBlock>Channel 0:</TextBlock>
+                    <TextBox IsEnabled="False" Text="{Binding RSSI_Ch0}"/>
+                    <TextBlock>Channel 1:</TextBlock>
+                    <TextBox IsEnabled="False" Text="{Binding RSSI_Ch1}"/>
+                    <TextBlock>Channel 2:</TextBlock>
+                    <TextBox IsEnabled="False" Text="{Binding RSSI_Ch2}"/>
+                    <TextBlock>Channel 3:</TextBlock>
+                    <TextBox IsEnabled="False" Text="{Binding RSSI_Ch3}"/>
+                </UniformGrid>
+                <StackPanel Margin="0,4" Orientation="Horizontal">
+                    <Button Content="Get" Command="{StaticResource GetBackgroundRSSICommandRef}"/>
+                    <Button Content="Start" Command="{StaticResource JammingDetectionStartCommandRef}" ToolTip="Jamming Detection Start"/>
+                    <Button Content="Stop" Command="{StaticResource JammingDetectionStopCommandRef}" ToolTip="Jamming Detection Stop"/>
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+
+    </DockPanel>
+</UserControl>

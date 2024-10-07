@@ -1,0 +1,234 @@
+﻿<Window x:Class="ZWaveControllerUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+        xmlns:views="clr-namespace:ZWaveControllerUI.Views"
+        xmlns:converters="clr-namespace:ZWaveControllerUI.Converters"
+        xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+        Background="{StaticResource ViewBackground}" Foreground="{StaticResource ViewForeground}" 
+        Height="700" Width="773" Icon="/ZWaveControllerUI;component/Images/App.ico"
+        AutomationProperties.AutomationId="ID_MAIN_WINDOW">
+    <Window.Title>
+        <MultiBinding StringFormat="{}{0} - {1}">
+            <Binding Path="DataSource.SourceName" FallbackValue="" TargetNullValue=""/>
+            <Binding Path="Title"/>
+        </MultiBinding>
+    </Window.Title>
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <ScaleTransform x:Key="windowScaleTransform" ScaleX="1" ScaleY="1" />
+            <bind:CommandReference x:Key="NetworkManagementCommand" Command="{Binding MainMenuViewModel.ShowNetworkManagementCommand}"/>
+            <bind:CommandReference x:Key="SmartStartCommand" Command="{Binding MainMenuViewModel.ShowSmartStartCommand}"/>
+            <bind:CommandReference x:Key="CommandClassesCommand" Command="{Binding MainMenuViewModel.ShowCommandClassesCommand}"/>
+            <bind:CommandReference x:Key="SetupRouteCommand" Command="{Binding MainMenuViewModel.ShowSetupRouteCommand}"/>
+            <bind:CommandReference x:Key="ShowERTTCommand" Command="{Binding MainMenuViewModel.ShowERTTCommand}"/>
+            <bind:CommandReference x:Key="ShowPollingCommand" Command="{Binding MainMenuViewModel.ShowPollingCommand}"/>
+            <bind:CommandReference x:Key="ShowFirmwareUpdateCommand" Command="{Binding MainMenuViewModel.ShowFirmwareUpdateCommand}"/>
+            <bind:CommandReference x:Key="ShowNVMBackupRestoreCommand" Command="{Binding MainMenuViewModel.ShowNVMBackupRestoreCommand}"/>
+            <bind:CommandReference x:Key="ShowAssociationsCommand" Command="{Binding MainMenuViewModel.ShowAssociationsCommand}"/>
+
+            <bind:CommandReference x:Key="ShowCommandQueueCommand" Command="{Binding ShowCommandQueueCommand}"/>
+            <bind:CommandReference x:Key="ShowMainMenuCommand" Command="{Binding ShowMainMenuCommand}"/>
+            <bind:CommandReference x:Key="ShowSettingsCommand" Command="{Binding ShowSettingsCommand}"/>
+            <bind:CommandReference x:Key="ShowSecuritySettingsCommand" Command="{Binding ShowSecuritySettingsCommand}"/>
+            <bind:CommandReference x:Key="ShowLogCommand" Command="{Binding ShowLogWindowCommand}"/>
+            <bind:CommandReference x:Key="ShowSendDataSettingsCommand" Command="{Binding ShowSendDataSettingsCommand}"/>
+            
+            <converters:InvertBoolConverter x:Key="InvertBoolConverter" />
+            <converters:AndConverter x:Key="AndConverter"/>
+            <converters:IsNotNullToBooleanConverter x:Key="IsNotNullToBooleanConverter"/>
+            <converters:IsNotNullToVisibilityConverter x:Key="IsNotNullToVisibilityConverter"/>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:LogPacketDyeToBrushConverter x:Key="DyeToBrushConverter"/>
+            <converters:BoolToBoldConverter x:Key="BoolToBoldConverter" />
+            <ControlTemplate x:Key="SecuritySettingsTemplate">
+                <Grid>
+                    <md:PackIcon Kind="Security" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Grid x:Name="AlertIcon" Margin="-4" Visibility="Hidden" MinWidth="18" MinHeight="18" HorizontalAlignment="Right" VerticalAlignment="Top">
+                        <Rectangle Fill="{StaticResource SnkS2_UNAUTHENTICATED}" StrokeThickness="1" Stroke="{TemplateBinding Foreground}" RadiusX="3" RadiusY="3"/>
+                        <md:PackIcon Kind="Exclamation" Foreground="White" Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+                </Grid>
+                <ControlTemplate.Triggers>
+                    <DataTrigger Binding="{Binding HasActiveSecurityTestSettings}" Value="True">
+                        <Setter TargetName="AlertIcon" Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter TargetName="AlertIcon" Property="Visibility" Value="Hidden"/>
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+            <ControlTemplate x:Key="CommandQueueTemplate">
+                <Grid>
+                    <md:PackIcon Kind="Email" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Grid x:Name="QueueIcon" Margin="-4" Visibility="Visible" MinWidth="18" MinHeight="18" HorizontalAlignment="Right" VerticalAlignment="Top">
+                        <Rectangle Fill="{StaticResource SnkS2_AUTHENTICATED}" StrokeThickness="1" Stroke="{TemplateBinding Foreground}" RadiusX="3" RadiusY="3"/>
+                        <TextBlock Text="{Binding CommandQueueCollection.Count, FallbackValue=0}" Foreground="White"
+                                           HorizontalAlignment="Center" Margin="3,0"/>
+                    </Grid>
+                </Grid>
+                <ControlTemplate.Triggers>
+                    <DataTrigger Binding="{Binding CommandQueueCollection.Count}" Value="0">
+                        <Setter TargetName="QueueIcon" Property="Visibility" Value="Hidden"/>
+                    </DataTrigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter TargetName="QueueIcon" Property="Visibility" Value="Hidden"/>
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+            <ControlTemplate x:Key="ProvisioningTemplate">
+                <Grid>
+                    <md:PackIcon Kind="PlaylistCheck" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Grid x:Name="ProvisioningIcon" Margin="-4" Visibility="Hidden" MinWidth="18" MinHeight="18" HorizontalAlignment="Right" VerticalAlignment="Top">
+                        <Rectangle Fill="{StaticResource SnkS2_ACCESS}" StrokeThickness="1" Stroke="{TemplateBinding Foreground}" RadiusX="3" RadiusY="3"/>
+                        <TextBlock Text="{Binding ConfigurationItem.PreKitting.PendingProvisioningCount}" 
+                            Foreground="White" HorizontalAlignment="Center" Margin="3,0"/>
+                    </Grid>
+                </Grid>
+                <ControlTemplate.Triggers>
+                    <DataTrigger Binding="{Binding ConfigurationItem.PreKitting.PendingProvisioningCount, FallbackValue=0}" Value="0">
+                        <Setter TargetName="ProvisioningIcon" Property="Visibility" Value="Hidden"/>
+                    </DataTrigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter TargetName="ProvisioningIcon" Property="Visibility" Value="Hidden"/>
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid LayoutTransform="{StaticResource windowScaleTransform}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+
+        <DockPanel Grid.Column="1" Background="{StaticResource ViewBackground}">
+            <StackPanel Margin="2" DockPanel.Dock="Right" Orientation="Horizontal">
+                <StackPanel.Resources>
+                    <Style TargetType="md:PackIcon">
+                        <Setter Property="Height" Value="24" />
+                        <Setter Property="Width" Value="24" />
+                    </Style>
+                </StackPanel.Resources>
+                <Button ToolTip="Settings" Width="40" Command="{StaticResource ShowSettingsCommand}"  AutomationProperties.AutomationId="ID_BTN_SETTINGS">
+                    <md:PackIcon Kind="Settings"/>
+                </Button>
+                <Button ToolTip="Commands Queue" Width="40" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                        Command="{StaticResource ShowCommandQueueCommand}" AutomationProperties.AutomationId="ID_BTN_COMMAND_QUEUE">
+                    <Control Template="{StaticResource CommandQueueTemplate}"/>
+                </Button>
+                <Button ToolTip="Send Data Settings" Width="40" Command="{StaticResource ShowSendDataSettingsCommand}"  AutomationProperties.AutomationId="ID_BTN_SEND_DATA_SETTINGS">
+                    <md:PackIcon Kind="Send"/>
+                </Button>
+                <Button Width="40" 
+                        Command="{StaticResource ShowSecuritySettingsCommand}" AutomationProperties.AutomationId="ID_BTN_SECURITY_SETTINGS">
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                            <Setter Property="ToolTip" Value="Security Test Schema"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasActiveSecurityTestSettings}" Value="True">
+                                    <Setter Property="ToolTip" Value="Security Test Schema (Has Active Test Settings!)"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Control Template="{StaticResource SecuritySettingsTemplate}"/>
+                </Button>
+               
+            </StackPanel>
+            <StackPanel Margin="2" Orientation="Horizontal">
+                <TextBlock FontSize="20" Text="{Binding DataSource.SourceName, StringFormat='{}{0}', FallbackValue='Select Source', TargetNullValue=''}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding DataSource.SourceName, FallbackValue=-1}" Value="-1">
+                                    <Setter Property="Foreground" Value="Red" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <TextBlock FontSize="20" Text="{Binding CurrentViewModel.Title, StringFormat=' - {0}', FallbackValue='', TargetNullValue=''}"/>
+            </StackPanel>
+        </DockPanel>
+        <ScrollViewer Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" 
+                      Visibility="{Binding Path=IsWorkspaceVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                      Background="{StaticResource ButtonBackground}">
+            <StackPanel>
+                <StackPanel.Resources>
+                    <Style TargetType="md:PackIcon">
+                        <Setter Property="Height" Value="24" />
+                        <Setter Property="Width" Value="24" />
+                    </Style>
+                </StackPanel.Resources>
+                <Button Width="40" Command="{StaticResource ShowMainMenuCommand}" AutomationProperties.AutomationId="ID_BTN_MAIN_MENU" ToolTip="Main Menu">
+                    <md:PackIcon Kind="Home"/>
+                </Button>
+                <Button Width="40" Command="{StaticResource NetworkManagementCommand}" ToolTip="Network Management">
+                    <md:PackIcon Kind="RouterWireless"/>
+                </Button>
+                <Button Width="40" Command="{StaticResource SmartStartCommand}" ToolTip="Smart Start">
+                    <Control Template="{StaticResource ProvisioningTemplate}"/>
+                </Button>
+                <Button Width="40" Command="{StaticResource CommandClassesCommand}" ToolTip="Command Classes">
+                    <md:PackIcon Kind="CodeJson"/>
+                </Button>
+                <Button Width="40" Command="{StaticResource ShowAssociationsCommand}" ToolTip="Associations">
+                    <md:PackIcon Kind="FileTree"/>
+                </Button>
+                <Button Width="40" Command="{StaticResource SetupRouteCommand}" ToolTip="Setup Route">
+                    <md:PackIcon Kind="DirectionsFork"/>
+                </Button>
+                <Button Width="40" Command="{StaticResource ShowERTTCommand}" ToolTip="ERTT">
+                    <md:PackIcon Kind="PlaylistPlay"/>
+                </Button>
+                <Button Width="40" Command="{StaticResource ShowPollingCommand}" ToolTip="Polling">
+                    <md:PackIcon Kind="Poll"/>
+                </Button>
+                <Button Width="40" Command="{StaticResource ShowFirmwareUpdateCommand}" ToolTip="OTA Firmware Update">
+                    <md:PackIcon Kind="Upload"/>
+                </Button>
+                <Button Width="40" Command="{StaticResource ShowNVMBackupRestoreCommand}" ToolTip="NVM Backup/Restore">
+                    <md:PackIcon Kind="BackupRestore"/>
+                </Button>
+            </StackPanel>
+        </ScrollViewer>
+        <ContentControl Name="CurrentView" Grid.Column="1" Grid.Row="1" Content="{Binding CurrentViewModel}">
+            <ContentControl.IsEnabled>
+                <MultiBinding Converter="{StaticResource AndConverter}">
+                    <Binding Path="IsBusy" Converter="{StaticResource InvertBoolConverter}"/>
+                    <Binding Path="IsErrorMessageVisible" Converter="{StaticResource InvertBoolConverter}"/>
+                </MultiBinding>
+            </ContentControl.IsEnabled>
+        </ContentControl>
+        <DockPanel Margin="2" Grid.Column="1" Grid.Row="2" Background="{StaticResource ViewBackground}">
+            <Button DockPanel.Dock="Right" Command="{StaticResource ShowLogCommand}" ToolTip="Show Log" Width="40" AutomationProperties.AutomationId="ID_BTN_SHOWLOG">
+                <md:PackIcon Kind="Receipt" Width="24" Height="24"/>
+            </Button>
+            <TextBox Background="Transparent"
+                     IsReadOnly="True" BorderThickness="0" VerticalAlignment="Stretch" Height="Auto" VerticalContentAlignment="Bottom" TextWrapping="Wrap"
+                     Foreground="{Binding Path=LogDialog.LastLogActionPacket.Dye, Converter={StaticResource DyeToBrushConverter}}" >
+                <TextBox.Text>
+                    <MultiBinding StringFormat="{}{0:HH:mm:ss.fff} {1}" FallbackValue="">
+                        <Binding Path="LogDialog.LastLogActionPacket.Timestamp" FallbackValue=""/>
+                        <Binding Path="LogDialog.LastLogActionPacket.Text" FallbackValue=""/>
+                    </MultiBinding>
+                </TextBox.Text>
+            </TextBox>
+        </DockPanel>
+        <views:SpinnerView Margin="8,8,60,8" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Bottom" Visibility="{Binding Path=IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" AutomationProperties.AutomationId="ID_BUSY_VIEW"/>
+    </Grid>
+</Window>

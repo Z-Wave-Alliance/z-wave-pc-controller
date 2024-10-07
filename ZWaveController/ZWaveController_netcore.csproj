@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AssemblyName>ZWaveController</AssemblyName>
+		<TargetFrameworks>net6.0</TargetFrameworks>
+		<EnableDefaultCompileItems>False</EnableDefaultCompileItems>
+	</PropertyGroup>
+	<Target Name="ClearObjFolderTarget" BeforeTargets="Restore">
+		<ItemGroup>
+			<FilesToDelete Include="obj\**\*" />
+		</ItemGroup>
+		<Delete Files="@(FilesToDelete)" />
+	</Target>
+  <ItemGroup>
+    <Content Include="..\..\z-wave-tools-core\XmlFiles\ZWave_cmd_classes.xml">
+      <Link>XmlFiles\ZWave_cmd_classes.xml</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+	<ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
+		<Content Include="..\lib\WebCamCapture\win\wcvcap64.dll" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x86'">
+		<Content Include="..\lib\WebCamCapture\win\wcvcap32.dll" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\z-wave-tools-core\BasicApplication\BasicApplication_netcore.csproj" />
+		<ProjectReference Include="..\..\z-wave-tools-core\Utils\Utils_netcore.csproj" />
+		<ProjectReference Include="..\..\z-wave-tools-core\ZipApplication\ZipApplication_netcore.csproj" />
+		<ProjectReference Include="..\..\z-wave-tools-core\ZWave\ZWave_netcore.csproj" />
+		<ProjectReference Include="..\..\z-wave-tools-core\ZWaveXml\ZWaveXml_netcore.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Include="**\*.cs" Exclude="Properties\**" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Configuration\NetAppSettings.cs" />
+		<Compile Remove="obj\**" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="AutoMapper" Version="13.0.1" />
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+</Project>

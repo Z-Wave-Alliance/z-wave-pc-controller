@@ -1,0 +1,856 @@
+﻿<UserControl x:Class="ZWaveControllerUI.Views.CommandClassesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+             xmlns:views="clr-namespace:ZWaveControllerUI.Views"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             xmlns:local="clr-namespace:ZWaveController.Enums;assembly=ZWaveController"
+             xmlns:converters="clr-namespace:ZWaveControllerUI.Converters"
+             xmlns:dataTemplateSelectors="clr-namespace:ZWaveControllerUI.DataTemplateSelectors"
+             AutomationProperties.AutomationId="ID_COMMAND_CLASSES_VIEW">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <converters:CommandClassTextConverter x:Key="CommandClassTextConverter"/>
+            <converters:ByteArrayToStringConverter x:Key="ByteArrayToStringConverter" />
+            <converters:ByteToHexStringConverter x:Key="ByteToHexStringConverter" />
+            <converters:IsNotNullToBooleanConverter x:Key="IsNotNullToBooleanConverter"/>
+            <converters:IsNotNullToVisibilityConverter x:Key="IsNotNullToVisibilityConverter" />
+            <converters:AsciiToByteArrayConverter x:Key="AsciiToByteArrayConverter" />
+            <converters:ByteArrayToBoolConverter x:Key="ByteArrayToBoolConverter" />
+            <converters:StringToIntConverter x:Key="StringToIntConverter" />
+            <converters:ByteArrayToDecimalConverter x:Key="ByteArrayToDecimalConverter" />
+            <converters:ComparisonConverter x:Key="ComparisonConverter" />
+            <converters:SizeToMaxDecimalConverter x:Key="SizeToMaxDecimalConverter" />
+            <converters:ByteArrayToStringOfDecimalsConverter x:Key="ByteArrayToStringOfDecimalsConverter" />
+            <bind:CommandReference x:Key="SendCommandReference" Command="{Binding SendCommand}" />
+            <bind:CommandReference x:Key="ReloadXmlCommandReference" Command="{Binding ReloadXmlCommand}"/>
+            <bind:CommandReference x:Key="ShowSelectCommandCommand" Command="{Binding ShowSelectCommandCommand}"/>
+            <!--repeat list refs:-->
+            <bind:CommandReference x:Key="AddPredefinedCommandRef" Command="{Binding AddPredefinedItemCommand}"/>
+            <bind:CommandReference x:Key="ShowRecentCommandsViewCommandRef" Command="{Binding ShowRecentCommandsViewCommand}"/>
+            <bind:CommandReference x:Key="ShowPredefinedCommandsViewCommandRef" Command="{Binding ShowPredefinedCommandsViewCommand}"/>
+            <bind:CommandReference x:Key="EditHistoryItemCommandRef" Command="{Binding ApplicationModel.SenderHistoryModel.EditHistoryItemCommand}"/>
+            <bind:CommandReference x:Key="EditSelectedPredefinedItemCommandRef" Command="{Binding ApplicationModel.PredefinedCommandsModel.EditSelectedItemCommand}"/>
+            <bind:CommandReference x:Key="SendPredefinedGroupCommandRef" Command="{Binding ApplicationModel.PredefinedCommandsModel.SendPredefinedGroupCommand}"/>
+
+            <!--Additional refs:-->
+            <bind:CommandReference x:Key="GetNodeInfoCommandRef" Command="{Binding ApplicationModel.NetworkManagementModel.RequestNodeInfoCommand}"/>
+            <bind:CommandReference x:Key="ResetSPANCommandRef" Command="{Binding ApplicationModel.NetworkManagementModel.ResetSPANCommand}"/>
+            <bind:CommandReference x:Key="NextSPANCommandRef" Command="{Binding ApplicationModel.NetworkManagementModel.NextSPANCommand}"/>
+            <bind:CommandReference x:Key="ShowMPANTableRef" Command="{Binding ApplicationModel.NetworkManagementModel.ShowMpanTableConfigurationCommand}"/>
+            <bind:CommandReference x:Key="SetActiveSecuritySchemeRef" Command="{Binding ApplicationModel.NetworkManagementModel.SetS2Command}"/>
+            <!--DATA TEMPLATES-->
+            <ControlTemplate x:Key="CommandParamName">
+                <TextBlock TextWrapping="Wrap">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0}{1}">
+                            <Binding Path="Text"/>
+                            <Binding Path="Description" TargetNullValue=""/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </ControlTemplate>
+
+            <HierarchicalDataTemplate x:Key="ParameterDefaultDataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <TextBox Grid.Column="1"></TextBox>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate x:Key="ParamDataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <controls:TextBoxHexMask Width="150" Height="34" TextWrapping="Wrap" Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay, UpdateSourceTrigger='PropertyChanged'}"
+                         SymbolsCount="{Binding Path=Length}"/>
+                        <TextBlock Text="hex" />
+                    </StackPanel>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate x:Key="ParamBytesDataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <controls:TextBoxDecimalMask Width="150" Height="34" TextWrapping="Wrap" Style="{StaticResource TextBoxInError}">
+                            <controls:TextBoxDecimalMask.Text>
+                                <Binding Path='Value' Converter="{StaticResource ByteArrayToStringOfDecimalsConverter}" UpdateSourceTrigger='PropertyChanged' Mode='TwoWay'>
+                                    <!--<Binding.ValidationRules>
+                                        <bind:BytesValidationRule/>
+                                    </Binding.ValidationRules>-->
+                                </Binding>
+                            </controls:TextBoxDecimalMask.Text>
+                        </controls:TextBoxDecimalMask>
+                        <TextBlock Text="byte array, dec" />
+                    </StackPanel>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate x:Key="ParamCharDataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <controls:TextBoxHexMask TextWrapping="Wrap" Width="100" Height="34" SymbolsCount="{Binding Path=Length}" Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, 
+                            UpdateSourceTrigger='PropertyChanged', Mode=TwoWay}"/>
+                        <TextBlock Text="hex" />
+                        <Rectangle Width="8"/>
+                        <TextBox x:Name="tbValue" TextWrapping="Wrap" Width="100" Height="34"/>
+                        <StackPanel DockPanel.Dock="Right">
+                            <RadioButton IsChecked="{Binding IsUTF8Encode}">UTF8</RadioButton>
+                            <RadioButton IsChecked="{Binding IsASCIIEncode}">ASCII</RadioButton>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+                <HierarchicalDataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding IsUTF8Encode}" Value="True">
+                        <Setter TargetName="tbValue" Property="Text" Value="{Binding Path=Value, Converter={StaticResource AsciiToByteArrayConverter}, ConverterParameter='utf-8', Mode=TwoWay, UpdateSourceTrigger='PropertyChanged'}"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding IsUTF8Encode}" Value="False">
+                        <Setter TargetName="tbValue" Property="Text" Value="{Binding Path=Value, Converter={StaticResource AsciiToByteArrayConverter}, ConverterParameter='ascii', Mode=TwoWay, UpdateSourceTrigger='PropertyChanged'}"/>
+                    </DataTrigger>
+                </HierarchicalDataTemplate.Triggers>
+            </HierarchicalDataTemplate>
+
+
+            <HierarchicalDataTemplate x:Key="ParamNumber1DataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <Grid Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="AA"/>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="AB"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,8,0" Orientation="Horizontal" HorizontalAlignment="Left">
+                            <controls:TextBoxHexMask Width="24" SymbolsCount="{Binding Path=Length}" Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, 
+                                UpdateSourceTrigger='PropertyChanged', Mode=TwoWay}"/>
+                            <TextBlock Text="hex" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,8,0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                            <controls:NumericUpDown Width="40" MinValue="0" MaxValue="{Binding Bits, Converter={StaticResource SizeToMaxDecimalConverter}}"
+                                                Value="{Binding Path=Value, Converter={StaticResource ByteArrayToDecimalConverter}, 
+                                ConverterParameter=1, UpdateSourceTrigger='PropertyChanged', Mode=TwoWay}"/>
+                            <TextBlock Text="dec" />
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate x:Key="ParamNumber2DataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <Grid Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="AA"/>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="AB"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,8,0" Orientation="Horizontal" HorizontalAlignment="Left">
+                            <controls:TextBoxHexMask Width="44" SymbolsCount="{Binding Path=Length}" Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, 
+                                UpdateSourceTrigger='PropertyChanged', Mode=TwoWay}"/>
+                            <TextBlock Text="hex" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,8,0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                            <controls:NumericUpDown Width="54" MinValue="0" MaxValue="65535" Value="{Binding Path=Value, Converter={StaticResource ByteArrayToDecimalConverter}, 
+                                ConverterParameter=2, UpdateSourceTrigger='PropertyChanged', Mode=TwoWay}"/>
+                            <TextBlock Text="dec" />
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate x:Key="ParamNumber3DataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <Grid Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="AA"/>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="AB"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,8,0" Orientation="Horizontal" HorizontalAlignment="Left">
+                            <controls:TextBoxHexMask Width="64" SymbolsCount="{Binding Path=Length}" Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, 
+                                UpdateSourceTrigger='PropertyChanged', Mode=TwoWay}"/>
+                            <TextBlock Text="hex" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,8,0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                            <controls:NumericUpDown Width="72" MinValue="0" MaxValue="16777215" Value="{Binding Path=Value, Converter={StaticResource ByteArrayToDecimalConverter}, 
+                                ConverterParameter=3, UpdateSourceTrigger='PropertyChanged', Mode=TwoWay}"/>
+                            <TextBlock Text="dec" />
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate x:Key="ParamNumber4DataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <Grid Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="AA"/>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="AB"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,8,0" Orientation="Horizontal" HorizontalAlignment="Left">
+                            <controls:TextBoxHexMask Width="84" SymbolsCount="{Binding Path=Length}" Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, 
+                                UpdateSourceTrigger='PropertyChanged', Mode=TwoWay}"/>
+                            <TextBlock Text="hex" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,8,0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                            <controls:NumericUpDown Width="78" MinValue="0" MaxValue="268435455" Value="{Binding Path=Value, Converter={StaticResource ByteArrayToDecimalConverter}, 
+                                ConverterParameter=4, UpdateSourceTrigger='PropertyChanged', Mode=TwoWay}"/>
+                            <TextBlock Text="dec" />
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate x:Key="ParamMarkerDataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <controls:TextBoxHexMask Width="44" Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay, UpdateSourceTrigger='PropertyChanged'}" 
+                                                 SymbolsCount="{Binding Path=Length}" />
+                        <TextBlock Text="hex" />
+                    </StackPanel>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate x:Key="PropertyDataTemplate" ItemsSource="{Binding Parameters}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <TextBox  Width="150" IsReadOnly="True" Text="{Binding Path=Value, Converter={StaticResource ByteArrayToStringConverter}, UpdateSourceTrigger='PropertyChanged'}" />
+                    </StackPanel>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate x:Key="ParamBooleanDataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding Path=Value, Converter={StaticResource ByteArrayToBoolConverter}, Mode=TwoWay, UpdateSourceTrigger='PropertyChanged'}"/>
+                    </StackPanel>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate x:Key="ParamDefineDataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <Grid Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="AA"/>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="AB"/>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="AC"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,8,0" Orientation="Horizontal" HorizontalAlignment="Left">
+                            <controls:TextBoxHexMask Width="24" SymbolsCount="{Binding Path=Length}" Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, 
+                                UpdateSourceTrigger='PropertyChanged', Mode=TwoWay}"/>
+                            <TextBlock Text="hex" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,8,0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                            <controls:NumericUpDown Width="40" MinValue="0" MaxValue="{Binding Bits, Converter={StaticResource SizeToMaxDecimalConverter}}"
+                                                Value="{Binding Path=Value, Converter={StaticResource ByteArrayToDecimalConverter}, 
+                                ConverterParameter=1, UpdateSourceTrigger='PropertyChanged', Mode=TwoWay}"/>
+                            <TextBlock Text="dec" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,8,0" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Left">
+                            <ComboBox Width="150" ItemsSource="{Binding Path=Defines}" 
+                                  SelectedItem="{Binding Path=SelectedDefine, Mode=TwoWay}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock>
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0}-{1}">
+                                                    <Binding Path="Item.KeyId" Converter="{StaticResource ByteToHexStringConverter}"/>
+                                                    <Binding Path="Item.Name"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate x:Key="ParamBitmaskDataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <controls:ListBoxEx Height="Auto" Width="200"
+                                        ItemsSource="{Binding Path=Defines}" 
+                                        SelectedItemsEx="{Binding Path=SelectedDefines, Mode=TwoWay}"
+                                        SelectionMode="Multiple">
+                            <controls:ListBoxEx.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                                </Style>
+                            </controls:ListBoxEx.ItemContainerStyle>
+                            <controls:ListBoxEx.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox  HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
+                                        <TextBlock Text="{Binding Item.KeyId, Converter={StaticResource ByteToHexStringConverter}}" />
+                                        <TextBlock Text="-" />
+                                        <TextBlock Text="{Binding Item.Text}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </controls:ListBoxEx.ItemTemplate>
+                        </controls:ListBoxEx>
+                    </StackPanel>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate x:Key="VariantGroupDataTemplate" ItemsSource="{Binding Parameters}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.Resources>
+                        <bind:CommandReference x:Key="AddVariantGroupItemCommandRef" Command="{Binding AddVariantGroupItem}"/>
+                        <bind:CommandReference x:Key="RemoveVariantGroupItemCommandRef" Command="{Binding RemoveVariantGroupItem}"/>
+                    </Grid.Resources>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <Button Content="+" Command="{StaticResource AddVariantGroupItemCommandRef}" Width="30" Height="30"/>
+                        <Button Content="-" Command="{StaticResource RemoveVariantGroupItemCommandRef}" Width="30" Height="30"/>
+                    </StackPanel>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate x:Key="CommandClassRefDataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <controls:TextBoxHexMask Width="24" SymbolsCount="{Binding Path=Length}" Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, 
+                            UpdateSourceTrigger='PropertyChanged', Mode=TwoWay}"/>
+                        <TextBlock Text="hex" />
+                        <Rectangle Width="8"/>
+                        <ComboBox Width="150" SelectedItem="{Binding Path=SelectedCommandClassRefItem}"
+                              ItemsSource="{Binding Path=CommandClassRefItemList}">
+                            <ComboBox.ItemContainerStyle>
+                                <Style>
+                                    <Setter Property="AutomationProperties.Name">
+                                        <Setter.Value>
+                                            <MultiBinding StringFormat="{}{0} {1}">
+                                                <Binding Path="Name"></Binding>
+                                                <Binding Path="Version"></Binding>
+                                            </MultiBinding>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <Run Text="{Binding KeyId, Converter={StaticResource ByteToHexStringConverter}}"/>
+                                        <Run Text="-"/>
+                                        <Run Text="{Binding Text, Converter={StaticResource CommandClassTextConverter}}"/>
+                                        <Run Text=" v."/>
+                                        <Run Text="{Binding Version}"/>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate x:Key="CommandRefDataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <controls:TextBoxHexMask Width="24" SymbolsCount="{Binding Path=Length}" Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, 
+                            UpdateSourceTrigger='PropertyChanged', Mode=TwoWay}"/>
+                        <TextBlock Text="hex" />
+                        <Rectangle Width="8"/>
+                        <ComboBox Width="150" SelectedItem="{Binding Path=SelectedCommandRefItem}" ItemsSource="{Binding Path=CommandRefItemList}" AutomationProperties.AutomationId="">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <Run Text="{Binding KeyId, Converter={StaticResource ByteToHexStringConverter}}"/>
+                                        <Run Text="-"/>
+                                        <Run Text="{Binding Text, Converter={StaticResource CommandClassTextConverter}}"/>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate x:Key="BasicDeviceClassRefDataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <controls:TextBoxHexMask Width="24" SymbolsCount="{Binding Path=Length}" Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, 
+                            UpdateSourceTrigger='PropertyChanged', Mode=TwoWay}"/>
+                        <TextBlock Text="hex" />
+                        <Rectangle Width="8"/>
+                        <ComboBox Width="150" SelectedItem="{Binding Path=SelectedBasicDeviceClassRefItem}"
+                              ItemsSource="{Binding Path=BasicDeviceClassRefItemList}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding KeyId, Converter={StaticResource ByteToHexStringConverter}}" />
+                                        <TextBlock Text="-" />
+                                        <TextBlock Text="{Binding Name}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate x:Key="GenericDeviceClassRefDataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <controls:TextBoxHexMask Width="24" SymbolsCount="{Binding Path=Length}" Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, 
+                            UpdateSourceTrigger='PropertyChanged', Mode=TwoWay}"/>
+                        <TextBlock Text="hex" />
+                        <Rectangle Width="8"/>
+                        <ComboBox Width="150" SelectedItem="{Binding Path=SelectedGenericDeviceClassRefItem}"
+                              ItemsSource="{Binding Path=GenericDeviceClassRefItemList}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding KeyId, Converter={StaticResource ByteToHexStringConverter}}" />
+                                        <TextBlock Text="-" />
+                                        <TextBlock Text="{Binding Name}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate x:Key="SpecificDeviceClassRefDataTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Control Template="{StaticResource CommandParamName}" Focusable="False"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <controls:TextBoxHexMask Width="24" SymbolsCount="{Binding Path=Length}" Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, 
+                            UpdateSourceTrigger='PropertyChanged', Mode=TwoWay}"/>
+                        <TextBlock Text="hex" />
+                        <Rectangle Width="8"/>
+                        <ComboBox Width="150" SelectedItem="{Binding Path=SelectedSpecificDeviceClassRefItem}"
+                              ItemsSource="{Binding Path=SpecificDeviceClassRefItemList}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding KeyId, Converter={StaticResource ByteToHexStringConverter}}" />
+                                        <TextBlock Text="-" />
+                                        <TextBlock Text="{Binding Name}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
+            </HierarchicalDataTemplate>
+            <!--DATA TEMPLATES-->
+
+            <dataTemplateSelectors:ZWaveDefinitionItemTemplateSelector  x:Key="ZWaveDefinitionItemTemplateSelector"
+               ParameterDefaultDataTemplate="{StaticResource ParameterDefaultDataTemplate}" 
+               ParamDataTemplate="{StaticResource ParamDataTemplate}" 
+               PropertyDataTemplate="{StaticResource PropertyDataTemplate}" 
+               ParamBooleanDataTemplate="{StaticResource ParamBooleanDataTemplate}"         
+               ParamDefineDataTemplate="{StaticResource ParamDefineDataTemplate}"         
+               ParamBitmaskDataTemplate="{StaticResource ParamBitmaskDataTemplate}"  
+               VariantGroupDataTemplate="{StaticResource VariantGroupDataTemplate}"  
+               CommandClassRefDataTemplate="{StaticResource CommandClassRefDataTemplate}"
+               CommandRefDataTemplate="{StaticResource CommandRefDataTemplate}"
+               BasicDeviceClassRefDataTemplate="{StaticResource BasicDeviceClassRefDataTemplate}"
+               GenericDeviceClassRefDataTemplate="{StaticResource GenericDeviceClassRefDataTemplate}"
+               SpecificDeviceClassRefDataTemplate="{StaticResource SpecificDeviceClassRefDataTemplate}"
+               ParamMarkerDataTemplate="{StaticResource ParamMarkerDataTemplate}"
+               ParamCharDataTemplate="{StaticResource ParamCharDataTemplate}"
+               ParamNumber1DataTemplate="{StaticResource ParamNumber1DataTemplate}"
+               ParamNumber2DataTemplate="{StaticResource ParamNumber2DataTemplate}"
+               ParamNumber3DataTemplate="{StaticResource ParamNumber3DataTemplate}"
+               ParamNumber4DataTemplate="{StaticResource ParamNumber4DataTemplate}"
+               ParamBytesDataTemplate="{StaticResource ParamBytesDataTemplate}" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="276" />
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="50*"/>
+        </Grid.RowDefinitions>
+        <GridSplitter 
+            Grid.Column="0" 
+            Grid.Row="1" 
+            VerticalAlignment="Center"
+            HorizontalAlignment="Stretch"
+            Height="4"
+            ShowsPreview="True"/>
+        <GridSplitter 
+            Grid.Column="1" 
+            Grid.Row="0" 
+            Grid.RowSpan="3" 
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Center"
+            Width="4"
+            ShowsPreview="True"/>
+        <views:NodesListView Grid.Column="0" Grid.Row="0" DataContext="{Binding ApplicationModel}"/>
+        <views:NodeInfoView Grid.Column="0" Grid.Row="2" DataContext="{Binding ApplicationModel}"/>
+        <DockPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="3">
+            <CheckBox Margin="2,0" DockPanel.Dock="Top" Content="Floating View" IsChecked="{Binding Path=DialogSettings.IsFloating}" HorizontalAlignment="Right"/>
+            <StackPanel DockPanel.Dock="Top" Orientation="Vertical" Visibility="Collapsed">
+                <ContentControl Content="{Binding Path=ApplicationModel.SenderHistoryModel}" Height="90"/>
+            </StackPanel>
+
+            <StackPanel Margin="2" DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Command="{StaticResource GetNodeInfoCommandRef}" Content="Node Info" AutomationProperties.AutomationId="ID_BTN_NODE_INFO"/>
+                <Button Command="{StaticResource SetActiveSecuritySchemeRef}">
+                    <TextBlock Text="Security Scheme" TextWrapping="Wrap"/>
+                </Button>
+                <Button Command="{StaticResource ResetSPANCommandRef}" Content="Reset SPAN"/>
+                <Button Command="{StaticResource NextSPANCommandRef}" Content="Next SPAN"/>
+                <Button Command="{StaticResource ShowMPANTableRef}" Content="MPAN Table" />
+            </StackPanel>
+            <DockPanel Margin="2" DockPanel.Dock="Bottom">
+                <DockPanel DockPanel.Dock="Right">
+                    <Button Name="SendListCommand" DockPanel.Dock="Right" HorizontalAlignment="Right" IsDefault="False"
+                        Command="{StaticResource SendPredefinedGroupCommandRef}" AutomationProperties.AutomationId="ID_BTN_SEND_LIST">
+                        <StackPanel Orientation="Horizontal">
+                            <!--<md:PackIcon Kind="PlaylistPlay" Width="24" Height="24" Margin="1"/>-->
+                            <TextBlock Text="Send List"/>
+                        </StackPanel>
+                    </Button>
+                    <Button DockPanel.Dock="Right" Content="Reload XML" Command="{StaticResource ReloadXmlCommandReference}"/>
+                </DockPanel>
+                <UniformGrid Columns="3">
+                    <RadioButton IsChecked="{Binding Path=SecureType, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static local:SecureType.DefaultSecurity}}" AutomationProperties.AutomationId="ID_RB_DEFAULT">Default</RadioButton>
+                    <RadioButton IsChecked="{Binding Path=SecureType, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static local:SecureType.Secure}}" AutomationProperties.AutomationId="ID_RB_SECURE">Secure</RadioButton>
+                    <RadioButton IsChecked="{Binding Path=SecureType, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static local:SecureType.NonSecure}}" AutomationProperties.AutomationId="ID_RB_NONSECURE">Non-Secure</RadioButton>
+                    <RadioButton IsChecked="{Binding Path=SecureType, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static local:SecureType.Broadcast}}" AutomationProperties.AutomationId="ID_RB_BROADCAST">Broadcast</RadioButton>
+                    <RadioButton IsChecked="{Binding Path=SecureType, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static local:SecureType.SerialApi}}" AutomationProperties.AutomationId="ID_RB_SERIAL_API">Serial API</RadioButton>
+                </UniformGrid>
+            </DockPanel>
+            <DockPanel Margin="2" DockPanel.Dock="Bottom">
+                <CheckBox Content="Expect command" IsChecked="{Binding Path=IsExpectCommand}" AutomationProperties.AutomationId="ID_CHK_EXPECTCOMM">
+                    <CheckBox.IsEnabled>
+                        <Binding Path="SelectedCommand" Converter="{StaticResource IsNotNullToBooleanConverter}"/>
+                    </CheckBox.IsEnabled>
+                </CheckBox>
+
+                <Button Name="SendCommand" DockPanel.Dock="Right" HorizontalAlignment="Right" IsDefault="True" 
+                        Command="{StaticResource SendCommandReference}" AutomationProperties.AutomationId="ID_BTN_SEND" >
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}" >
+                            <Setter Property="Content" Value="Send"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=IsExpectCommand}" Value="True">
+                                    <Setter Property="Content" Value="Request"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <ComboBox ItemsSource="{Binding Path=SelectedCommand.Parent.Command}" SelectedValue="{Binding SelectedExpectCommand, Mode=TwoWay}">
+                    <ComboBox.IsEnabled>
+                        <Binding Path="IsExpectCommand"/>
+                    </ComboBox.IsEnabled>
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding FallbackValue="" StringFormat="{}{0} - {1}">
+                                            <Binding Path="Key" FallbackValue="{x:Null}"/>
+                                            <Binding Path="Name" FallbackValue="{x:Null}"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </DockPanel>
+            <DockPanel>
+                <StackPanel Margin="2" DockPanel.Dock="Top">
+                    <WrapPanel>
+                        <CheckBox Content="CRC16, " IsChecked="{Binding Path=IsCrc16Enabled}" AutomationProperties.AutomationId="ID_CHK_CRC16"/>
+                        <CheckBox Content="Suppress Multicast Follow up, " IsChecked="{Binding Path=IsSuppressMulticastFollowUp}" AutomationProperties.AutomationId="ID_CHK_SUPPRESS_MULTICAST_FOLLOW_UP"/>
+                        <CheckBox Content="Force Multicast, " IsChecked="{Binding Path=IsForceMulticastEnabled}" AutomationProperties.AutomationId="ID_CHK_FORCE_MULTICAST"/>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Content="Supervision Get (" IsChecked="{Binding Path=IsSupervisionGetEnabled}" AutomationProperties.AutomationId="ID_CHK_SUPERVISION_GET"/>
+                            <CheckBox Content="Status Updates; " IsChecked="{Binding Path=IsSupervisionGetStatusUpdatesEnabled}" IsEnabled="{Binding IsSupervisionGetEnabled}" AutomationProperties.AutomationId="ID_CHK_STATUS_UPDATES"/>
+                            <TextBlock>Session ID</TextBlock>
+                            <controls:TextBoxHexMask Text="{Binding SupervisionSessionId, Converter={StaticResource ByteToHexStringConverter}, Mode=TwoWay, UpdateSourceTrigger='PropertyChanged'}" 
+                                                 SymbolsCount="2" Width="30" AutomationProperties.AutomationId="ID_TB_SESSION_ID">
+                                <controls:TextBoxHexMask.Style>
+                                    <Style TargetType="{x:Type controls:TextBoxHexMask}" BasedOn="{StaticResource {x:Type controls:TextBoxHexMask}}">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding IsSupervisionGetEnabled}" Value="True"/>
+                                                    <Condition Binding="{Binding IsAutoIncSupervisionSessionId}" Value="False"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </controls:TextBoxHexMask.Style>
+                            </controls:TextBoxHexMask>
+                            <CheckBox Content="Auto Increment" IsChecked="{Binding Path=IsAutoIncSupervisionSessionId}" IsEnabled="{Binding IsSupervisionGetEnabled}" AutomationProperties.AutomationId="ID_CHK_AUTO_INCREMENT"/>
+                            <TextBlock>)</TextBlock>
+                        </StackPanel>
+                    </WrapPanel>
+                    <WrapPanel >
+                        <CheckBox Content="Multi Channel (" IsChecked="{Binding Path=IsMultiChannelEnabled}" AutomationProperties.AutomationId="ID_CHK_MULTI_CHANNEL"/>
+                        <TextBlock>Src. End Point</TextBlock>
+                        <controls:TextBoxHexMask Text="{Binding SourceEndPoint, Converter={StaticResource ByteToHexStringConverter}, Mode=TwoWay, UpdateSourceTrigger='PropertyChanged'}" 
+                                             SymbolsCount="2" Width="30" IsEnabled="{Binding IsMultiChannelEnabled}" AutomationProperties.AutomationId="ID_TB_SRC_END_POINT"/>
+                        <TextBlock>Dest. End Point</TextBlock>
+                        <controls:TextBoxHexMask Text="{Binding DestinationEndPoint, Converter={StaticResource ByteToHexStringConverter}, Mode=TwoWay, UpdateSourceTrigger='PropertyChanged'}"
+                                             SymbolsCount="2" Width="30" IsEnabled="{Binding IsMultiChannelEnabled}" AutomationProperties.AutomationId="ID_TB_DEST_END_POINT"/>
+                        <CheckBox Content="Bit Address" IsChecked="{Binding Path=IsBitAddress}" IsEnabled="{Binding IsMultiChannelEnabled}" AutomationProperties.AutomationId="ID_CHK_BIT_ADDRESS"/>
+                        <TextBlock>)</TextBlock>
+                    </WrapPanel>
+                </StackPanel>
+                <DockPanel Margin="2" DockPanel.Dock="Top">
+                    <ToggleButton x:Name="viewRecentsButton" HorizontalAlignment="Right" IsChecked="False" DockPanel.Dock="Right" 
+                                  Command="{StaticResource ShowRecentCommandsViewCommandRef}"
+                                  ToolTip="Open Recents"
+                                  Width="40">
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Kind="Recent" Width="24" Height="24" Margin="2"/>
+                        </StackPanel>
+                    </ToggleButton>
+                    <ToggleButton x:Name="viewPredefinedButton" HorizontalAlignment="Right" IsChecked="False" DockPanel.Dock="Right"
+                                  Command="{StaticResource ShowPredefinedCommandsViewCommandRef}"   
+                                  ToolTip="Open Predefined Commands"
+                                  Width="40">
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Kind="PlaylistStar" Width="24" Height="24" Margin="2"/>
+                        </StackPanel>
+                    </ToggleButton>
+                    <Button DockPanel.Dock="Right" Command="{StaticResource ShowSelectCommandCommand}" AutomationProperties.AutomationId="ID_TBN_SHOW_SELECT_COMMAND">
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Kind="Dictionary" Width="24" Height="24" Margin="2"/>
+                            <TextBlock Text="Select" Margin="2"/>
+                        </StackPanel>
+                    </Button>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Command class"/>
+                        <TextBox Grid.Column="1" IsReadOnly="True">
+                            <MultiBinding FallbackValue="" StringFormat="{}{0} - {1} ver.{2}">
+                                <Binding Path="SelectedCommand.Parent.Key" FallbackValue="{x:Null}"/>
+                                <Binding Path="SelectedCommand.Parent.Name" FallbackValue="{x:Null}"/>
+                                <Binding Path="SelectedCommand.Parent.Version" FallbackValue="{x:Null}"/>
+                            </MultiBinding>
+                        </TextBox>
+                        <TextBlock Text="Command" Grid.Row="1"/>
+                        <ComboBox Grid.Column="1" Grid.Row="1" 
+                              ItemsSource="{Binding Path=SelectedCommand.Parent.Command}"
+                              SelectedValue="{Binding SelectedCommand, Mode=TwoWay}">
+                            <ComboBox.IsEnabled>
+                                <Binding Path="SelectedCommand" Converter="{StaticResource IsNotNullToBooleanConverter}"/>
+                            </ComboBox.IsEnabled>
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock>
+                                            <TextBlock.Text>
+                                                <MultiBinding FallbackValue="" StringFormat="{}{0} - {1}">
+                                                    <Binding Path="Key" FallbackValue="{x:Null}"/>
+                                                    <Binding Path="Name" FallbackValue="{x:Null}"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Grid>
+                </DockPanel>
+                <DockPanel Margin="2" DockPanel.Dock="Bottom">
+                    <TextBlock DockPanel.Dock="Top" Text="Send Data:" />
+                    <controls:TextBoxHexMask 
+                        Text="{Binding Payload, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay, UpdateSourceTrigger='PropertyChanged'}"
+                        TextWrapping="Wrap" Height="50" VerticalScrollBarVisibility="Auto" AutomationProperties.AutomationId="ID_TB_COMMAND_TO_SEND"/>
+                </DockPanel>
+                <TreeView ItemsSource="{Binding Path=Parameters}" MinHeight="100"
+                          ItemTemplateSelector="{StaticResource ZWaveDefinitionItemTemplateSelector}"
+                          KeyboardNavigation.TabNavigation="Cycle" AutomationProperties.AutomationId="ID_TVW_COMMAND_CLASSES_INFO"
+                          Grid.IsSharedSizeScope="True">
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                            <Setter Property="IsExpanded" Value="True"/>
+                            <Setter Property="Width" Value="Auto"/>
+                            <Setter Property="KeyboardNavigation.TabNavigation" Value="Continue"/>
+                            <Setter Property="AutomationProperties.AutomationId" Value="{Binding Name}"/>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                </TreeView>
+            </DockPanel>
+        </DockPanel>
+        
+        <!--<Popup IsOpen="{Binding IsChecked, ElementName=viewRecentsButton, Mode=TwoWay}"
+               Height="auto" Width="auto" MaxHeight="200" MaxWidth="250" Placement="Mouse" StaysOpen="False">
+            <Border Background="White" BorderThickness="1" BorderBrush="{StaticResource ButtonBackground}">
+                <DockPanel Margin="2">
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="1">
+                        <Button Command="{StaticResource ShowRecentCommandsViewCommandRef}" Content="View Details"
+                                ToolTip="Open detailed view for Recent Commands Manager"/>
+                    </StackPanel>
+                    <ListBox BorderThickness="0" SelectionMode="Single" Margin="-1"
+                             IsSynchronizedWithCurrentItem="True"
+                             ItemsSource="{Binding Path=ApplicationModel.SenderHistoryModel.FilteredHistory}"
+                             SelectedItem="{Binding Path=ApplicationModel.SenderHistoryModel.SelectedHistoryRecord}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Item.PayloadItem.CommandName}"/>
+                                    <StackPanel.InputBindings>
+                                        <MouseBinding MouseAction="LeftDoubleClick" Command="{StaticResource EditHistoryItemCommandRef}"/>
+                                    </StackPanel.InputBindings>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+        </Popup>-->
+
+        <!--<Popup IsOpen="{Binding IsChecked, ElementName=viewPredefinedButton, Mode=TwoWay}"
+               Height="auto" Width="auto" MaxHeight="200" MaxWidth="250" Placement="Mouse" StaysOpen="False">
+            <Border Background="White" BorderThickness="1" BorderBrush="{StaticResource ButtonBackground}">
+                <DockPanel Margin="2">
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="1">
+                        <Button Command="{StaticResource AddPredefinedCommandRef}" Width="40"
+                                ToolTip="Add new predefined command to selected group">
+                            <StackPanel Orientation="Horizontal">
+                                <md:PackIcon Kind="PlaylistAdd" Width="24" Height="24" Margin="2"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{StaticResource ShowPredefinedCommandsViewCommandRef}" Content="View Details"
+                                ToolTip="Open detailed view for Predefined Commands Manager"/>
+                    </StackPanel>
+                    <ComboBox HorizontalAlignment="Stretch" DockPanel.Dock="Top" Margin="2"
+                      ItemsSource="{Binding Path=ApplicationModel.PredefinedCommandsModel.PredefinedGroups}"
+                      SelectedItem="{Binding Path=ApplicationModel.PredefinedCommandsModel.SelectedGroup, Mode=TwoWay}" >
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Name}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <ListBox BorderThickness="0" SelectionMode="Single" Margin="-1"
+                             IsSynchronizedWithCurrentItem="True"
+                             ItemsSource="{Binding Path=ApplicationModel.PredefinedCommandsModel.SelectedGroup.Items}"
+                             SelectedItem="{Binding Path=ApplicationModel.PredefinedCommandsModel.SelectedItem}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Item.PayloadItem.CommandName}"/>
+                                    <StackPanel.InputBindings>
+                                        <MouseBinding MouseAction="LeftDoubleClick" Command="{StaticResource EditSelectedPredefinedItemCommandRef}"/>
+                                    </StackPanel.InputBindings>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+        </Popup>-->
+        
+    </Grid>
+</UserControl>

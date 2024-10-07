@@ -1,0 +1,199 @@
+﻿<UserControl x:Class="ZWaveControllerUI.Views.MainMenuView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+             xmlns:converters="clr-namespace:ZWaveControllerUI.Converters"
+             AutomationProperties.AutomationId="ID_MAIN_MENU_VIEW">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StylesAndColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <bind:CommandReference x:Key="NetworkManagementCommand" Command="{Binding ShowNetworkManagementCommand}"/>
+            <bind:CommandReference x:Key="CommandClassesCommand" Command="{Binding ShowCommandClassesCommand}"/>
+            <bind:CommandReference x:Key="SetupRouteCommand" Command="{Binding ShowSetupRouteCommand}"/>
+            <bind:CommandReference x:Key="ShowERTTCommand" Command="{Binding ShowERTTCommand}"/>
+            <bind:CommandReference x:Key="ShowFirmwareUpdateCommand" Command="{Binding ShowFirmwareUpdateCommand}"/>
+            <bind:CommandReference x:Key="ShowPollingCommand" Command="{Binding ShowPollingCommand}"/>
+            <bind:CommandReference x:Key="ShowTransmitSettingsCommand" Command="{Binding ShowTransmitSettingsCommand}"/>
+            <bind:CommandReference x:Key="ShowNetworkStatisticsCommand" Command="{Binding ShowNetworkStatisticsCommand}"/>
+            <bind:CommandReference x:Key="ShowTopologyMapCommand" Command="{Binding ShowTopologyMapCommand}"/>
+            <bind:CommandReference x:Key="ShowIMAFullNetworkCommand" Command="{Binding ShowIMAFullNetworkCommand}"/>
+            <bind:CommandReference x:Key="ShowNVMBackupRestoreCommand" Command="{Binding ShowNVMBackupRestoreCommand}"/>
+            <bind:CommandReference x:Key="ShowAssociationsCommand" Command="{Binding ShowAssociationsCommand}"/>
+            <bind:CommandReference x:Key="ShowLogCommand" Command="{Binding ApplicationModel.ShowLogWindowCommand}"/>
+            <bind:CommandReference x:Key="FirmwareUpdateLocalCommand" Command="{Binding FirmwareUpdateLocalCommand}"/>
+            <bind:CommandReference x:Key="NVMRestoreCommand" Command="{Binding NVMRestoreCommand}"/>
+            <bind:CommandReference x:Key="NVMBackupCommand" Command="{Binding NVMBackupCommand}"/>
+            <bind:CommandReference x:Key="ShowEncryptDecryptCommand" Command="{Binding ShowEncryptDecryptCommand}" />
+            <bind:CommandReference x:Key="ShowConfigurationCommand" Command="{Binding ShowConfigurationCommand}" />
+            <bind:CommandReference x:Key="ShowULMonitorCommand" Command="{Binding ShowULMonitorCommand}" />
+            <bind:CommandReference x:Key="ShowSmartStartCommand" Command="{Binding ShowSmartStartCommand}" />
+            <bind:CommandReference x:Key="ShowNodeInformationCommand" Command="{Binding ShowNodeInformationCommand}"/>
+
+            <converters:ControllerInfoConverter x:Key="ControllerInfoConverter" />
+            <converters:NodesCountConverter x:Key="NodesCountConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <bind:ObjectReference x:Key="MainViewModelReference" Value="{Binding ApplicationModel}" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <DockPanel Margin="4">
+        <DockPanel.Resources>
+            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Padding" Value="2"/>
+                <Setter Property="Width" Value="118"/>
+                <Setter Property="Height" Value="118"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            </Style>
+        </DockPanel.Resources>
+        <StackPanel Margin="4" DockPanel.Dock="Bottom">
+            <TextBlock>
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="Version {0}.{1}.{2}">
+                        <Binding Path="ApplicationModel.AboutDialog.VersionMajor" FallbackValue="0"/>
+                        <Binding Path="ApplicationModel.AboutDialog.VersionMinor" FallbackValue="0"/>
+                        <Binding Path="ApplicationModel.AboutDialog.VersionPatch" FallbackValue="0"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <StackPanel.Resources>
+                <Style TargetType="md:PackIcon">
+                    <Setter Property="Height" Value="48"/>
+                    <Setter Property="Width" Value="48"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                </Style>
+            </StackPanel.Resources>
+            <WrapPanel Margin="4" Grid.Column="0" Width="240">
+                <Button Width="238" AutomationProperties.AutomationId="ID_BTN_NETWORK_MANAGEMENT" Command="{StaticResource NetworkManagementCommand}">
+                    <DockPanel>
+                        <TextBlock Text="{Binding ApplicationModel.ConfigurationItem.Nodes, Converter={StaticResource NodesCountConverter}}" DockPanel.Dock="Top" HorizontalAlignment="Right"/>
+                        <TextBlock Text="Network Management" DockPanel.Dock="Bottom"/>
+                        <UniformGrid Columns="2">
+                            <md:PackIcon Kind="RouterWireless"/>
+                        </UniformGrid>
+                    </DockPanel>
+                </Button>
+                <Button AutomationProperties.AutomationId="ID_BTN_COMMAND_CLASSES" Command="{StaticResource CommandClassesCommand}">
+                    <DockPanel>
+                        <TextBlock Text="Command Classes" DockPanel.Dock="Bottom"/>
+                        <md:PackIcon Kind="CodeJson"/>
+                    </DockPanel>
+                </Button>
+                <Button AutomationProperties.AutomationId="ID_BTN_ENCRYPT_DECRYPT" Command="{StaticResource ShowEncryptDecryptCommand}">
+                    <DockPanel>
+                        <TextBlock Text="Encrypt / Decrypt" DockPanel.Dock="Bottom"/>
+                        <md:PackIcon Kind="SwapVertical"/>
+                    </DockPanel>
+                </Button>
+                <Button Command="{StaticResource ShowERTTCommand}">
+                    <DockPanel>
+                        <TextBlock Text="{Binding ApplicationModel.ERTTModel.Counter}" DockPanel.Dock="Top" HorizontalAlignment="Right"/>
+                        <TextBlock Text="ERTT" DockPanel.Dock="Bottom"/>
+                        <md:PackIcon Kind="PlaylistPlay"/>
+                    </DockPanel>
+                </Button>
+                <Button Command="{StaticResource ShowPollingCommand}">
+                    <DockPanel>
+                        <TextBlock Text="{Binding ApplicationModel.PollingModel.Counter}" DockPanel.Dock="Top" HorizontalAlignment="Right"/>
+                        <TextBlock Text="Polling" DockPanel.Dock="Bottom"/>
+                        <md:PackIcon Kind="Poll"/>
+                    </DockPanel>
+                </Button>
+                <Button Command="{StaticResource ShowTransmitSettingsCommand}">
+                    <DockPanel>
+                        <md:PackIcon Kind="SettingsBox" Height="24" Width="24" DockPanel.Dock="Top" HorizontalAlignment="Right"/>
+                        <TextBlock Text="Transmit Settings" DockPanel.Dock="Bottom"/>
+                        <md:PackIcon Kind="SettingsInputAntenna"/>
+                    </DockPanel>
+                </Button>
+                <Button Command="{StaticResource ShowNetworkStatisticsCommand}">
+                    <DockPanel>
+                        <TextBlock Text="Network Statistics" DockPanel.Dock="Bottom"/>
+                        <md:PackIcon Kind="TrendingUp"/>
+                    </DockPanel>
+                </Button>
+            </WrapPanel>
+            <WrapPanel Margin="4" Grid.Column="1" Width="240">
+                <Border Margin="1" Width="238" Height="118" Background="{StaticResource ButtonForeground}" BorderThickness="1" BorderBrush="{StaticResource ButtonBackground}">
+                    <TextBlock HorizontalAlignment="Center" Foreground="{StaticResource ButtonBackground}" TextWrapping="Wrap"
+                            Text="{Binding Path=ApplicationModel.Controller, Converter={StaticResource ControllerInfoConverter}, ConverterParameter={StaticResource MainViewModelReference}}"/>
+                </Border>
+                <Button AutomationProperties.AutomationId="ID_BTN_SETUP_ROUTE" Command="{StaticResource SetupRouteCommand}">
+                    <DockPanel>
+                        <TextBlock Text="Setup Route" DockPanel.Dock="Bottom"/>
+                        <md:PackIcon Kind="DirectionsFork"/>
+                    </DockPanel>
+                </Button>
+                <Button Command="{StaticResource ShowTopologyMapCommand}">
+                    <DockPanel>
+                        <TextBlock Text="Topology Map" DockPanel.Dock="Bottom"/>
+                        <md:PackIcon Kind="Checkerboard"/>
+                    </DockPanel>
+                </Button>
+                <Button Command="{StaticResource ShowAssociationsCommand}" AutomationProperties.AutomationId="ID_BTN_ASSOCIATIONS">
+                    <DockPanel>
+                        <TextBlock Text="Associations" DockPanel.Dock="Bottom"/>
+                        <md:PackIcon Kind="FileTree"/>
+                    </DockPanel>
+                </Button>
+                <Button Command="{StaticResource ShowIMAFullNetworkCommand}">
+                    <DockPanel>
+                        <TextBlock Text="IMA Network" DockPanel.Dock="Bottom"/>
+                        <md:PackIcon Kind="Blur"/>
+                    </DockPanel>
+                </Button>
+            </WrapPanel>
+            <WrapPanel Margin="4" Grid.Column="2" Width="240">
+                <Button Command="{StaticResource ShowFirmwareUpdateCommand}">
+                    <DockPanel>
+                        <TextBlock Text="OTA Firmware Update" TextWrapping="Wrap" DockPanel.Dock="Bottom"/>
+                        <md:PackIcon Kind="Upload"/>
+                    </DockPanel>
+                </Button>
+                <Button Command="{StaticResource FirmwareUpdateLocalCommand}">
+                    <DockPanel>
+                        <TextBlock Text="OTW Firmware Update" TextWrapping="Wrap" DockPanel.Dock="Bottom"/>
+                        <md:PackIcon Kind="FolderUpload"/>
+                    </DockPanel>
+                </Button>
+                <Button Command="{StaticResource ShowNVMBackupRestoreCommand}">
+                    <DockPanel>
+                        <TextBlock Text="NVM Backup/Restore" TextWrapping="Wrap" DockPanel.Dock="Bottom"/>
+                        <md:PackIcon Kind="BackupRestore"/>
+                    </DockPanel>
+                </Button>
+                <Button Command="{StaticResource ShowConfigurationCommand}">
+                    <DockPanel>
+                        <TextBlock Text="Configuration Parameters" TextWrapping="Wrap" DockPanel.Dock="Bottom"/>
+                        <md:PackIcon Kind="RenameBox"/>
+                    </DockPanel>
+                </Button>
+                <Button Visibility="Visible" Command="{StaticResource ShowULMonitorCommand}">
+                    <DockPanel>
+                        <TextBlock Text="UL Tool" DockPanel.Dock="Bottom"/>
+                        <md:PackIcon Kind="Poll"/>
+                    </DockPanel>
+                </Button>
+                <Button Command="{StaticResource ShowSmartStartCommand}" AutomationProperties.AutomationId="ID_BTN_SMART_START">
+                    <DockPanel>
+                        <TextBlock Text="Smart Start" DockPanel.Dock="Bottom"/>
+                        <md:PackIcon Kind="PlaylistCheck"/>
+                    </DockPanel>
+                </Button>
+                <Button Command="{StaticResource ShowNodeInformationCommand}" AutomationProperties.AutomationId="ID_BTN_SET_CONTROLLER_NODE_INFO">
+                    <DockPanel>
+                        <TextBlock Text="Set Controller Node Info" TextWrapping="Wrap" DockPanel.Dock="Bottom"/>
+                        <md:PackIcon Kind="TagOutline"/>
+                    </DockPanel>
+                </Button>
+
+            </WrapPanel>
+        </StackPanel>
+    </DockPanel>
+</UserControl>

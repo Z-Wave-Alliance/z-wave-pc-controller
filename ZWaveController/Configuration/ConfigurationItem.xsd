@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
+-->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" >
+
+  <!-- **** ConfigurationItem *********************************************** -->
+  <xs:element name="ConfigurationItem">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="PreKitting" type="xs:string" maxOccurs="1" minOccurs="0"/>
+        <xs:element name="ViewSettings" type="ViewSettings" maxOccurs="1" minOccurs="0"/>
+        <xs:element ref="SecuritySettings" maxOccurs="1" minOccurs="0"/>
+        <xs:element name="Node" type="xs:string" maxOccurs="unbounded" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute name="AppVersion" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- **** TestSecuritySettings *********************************************** -->
+  <xs:element name="TestSecuritySettings">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="TestS2Settings" type="TestS2Settings" maxOccurs="1" minOccurs="0"/>
+        <xs:element name="TestS0Settings" type="TestS0Settings" maxOccurs="1" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute name="AppVersion" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- **** SecuritySettings *********************************************** -->
+  <xs:element name="SecuritySettings">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="NetworkKey" type="xs:string" maxOccurs="unbounded" minOccurs="0"/>
+        <xs:element name="TestS2Settings" type="TestS2Settings" maxOccurs="1" minOccurs="0"/>
+        <xs:element name="TestS0Settings" type="TestS0Settings" maxOccurs="1" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute name="IsCsaEnabled" type="xs:boolean" use="optional"/>
+      <xs:attribute name="IsPaused" type="xs:boolean" use="optional" />
+      <xs:attribute name="CommandClasses" type="xs:hexBinary" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- **** TestS2Settings ************************************************* -->
+  <xs:complexType name="TestS2Settings">
+    <xs:sequence>
+      <xs:element name="Parameters" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Parameter" type="xs:string" maxOccurs="unbounded" nillable="true" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Frames" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Frame" type="xs:string" maxOccurs="unbounded"  nillable="true" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Extensions" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Extension" type="xs:string" maxOccurs="unbounded"  nillable="true" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="IsOverrideExistingExtensions" type="xs:boolean" use="optional"/>
+  </xs:complexType>
+
+  <!-- **** TestS0Settings ************************************************* -->
+  <xs:complexType name="TestS0Settings">
+    <xs:attribute name="NonceInNetworkKeySet" type="xs:hexBinary" use="optional"/>
+    <xs:attribute name="MACInNetworkKeySet" type="xs:hexBinary" use="optional"/>
+    <xs:attribute name="ValueInNetworkKeySet" type="xs:hexBinary" use="optional"/>
+    <xs:attribute name="ValueInSchemeGet" type="xs:unsignedByte" use="optional"/>
+    <xs:attribute name="ValueInSchemeInherit" type="xs:unsignedByte" use="optional"/>
+    <xs:attribute name="DelaySchemeGet" type="xs:unsignedByte" use="optional"/>
+    <xs:attribute name="DelayNonceGet" type="xs:unsignedByte" use="optional"/>
+    <xs:attribute name="DelayNetworkKeySet" type="xs:unsignedByte" use="optional"/>
+    <xs:attribute name="DelayNonceReport" type="xs:unsignedByte" use="optional"/>
+    <xs:attribute name="DelaySchemeInherit" type="xs:unsignedByte" use="optional"/>
+
+    <xs:attribute name="NonceInNetworkKeyVerify" type="xs:hexBinary" use="optional"/>
+    <xs:attribute name="MACInNetworkKeyVerify" type="xs:hexBinary" use="optional"/>
+    <xs:attribute name="ValueInNetworkKeyVerify" type="xs:hexBinary" use="optional"/>
+    <xs:attribute name="ValueInSchemeReport" type="xs:unsignedByte" use="optional"/>
+    <xs:attribute name="DelaySchemeReport" type="xs:unsignedByte" use="optional"/>
+    <xs:attribute name="DelayNonceReportIN" type="xs:unsignedByte" use="optional"/>
+    <xs:attribute name="DelayNonceGetIN" type="xs:unsignedByte" use="optional"/>
+    <xs:attribute name="DelayNetworkKeyVerify" type="xs:unsignedByte" use="optional"/>
+    <xs:attribute name="DelaySchemeInheritReport" type="xs:unsignedByte" use="optional"/>
+
+    <xs:attribute name="ReuseReceiverNonceInSecondFragment" type="xs:boolean" default="false"/>
+  </xs:complexType>
+
+  <!-- **** ViewSettings *************************************************** -->
+  <xs:complexType name="ViewSettings">
+    <xs:sequence>
+      <xs:element name="IMAView" type="IMAView" maxOccurs="1" minOccurs="0"/>
+      <xs:element name="SecurityView" type="SecurityView" maxOccurs="1" minOccurs="0"/>
+      <xs:element name="EncryptDecryptView" type="EncryptDecryptView" maxOccurs="1" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- **** IMAView ******************************************************** -->
+  <xs:complexType name="IMAView">
+    <xs:attribute name="NetworkLayoutString" type="xs:string" use="required"/>
+    <xs:attribute name="NetworkBackgroundImagePath" type="xs:string" use="optional"/>
+    <xs:attribute name="NetworkBackgroundColor" type="xs:hexBinary" use="optional"/>
+    <xs:attribute name="UseNetworkBackgroundColor" type="xs:boolean" use="required"/>
+  </xs:complexType>
+
+  <!-- **** SecurityView *************************************************** -->
+  <xs:complexType name="SecurityView">
+    <xs:attribute name="IsTabS0Selected" type="xs:boolean" use="required"/>
+  </xs:complexType>
+
+  <!-- **** EncryptDecryptView ********************************************* -->
+  <xs:complexType name="EncryptDecryptView">
+    <xs:attribute name="IsTabS0Selected" type="xs:boolean" use="required"/>
+  </xs:complexType>
+</xs:schema>
