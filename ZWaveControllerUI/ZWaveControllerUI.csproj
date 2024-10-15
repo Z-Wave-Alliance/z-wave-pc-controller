@@ -609,23 +609,23 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\z-wave-tools-core\BasicApplication\BasicApplication.csproj">
+    <ProjectReference Include="..\lib\z-wave-tools-core\BasicApplication\BasicApplication.csproj">
       <Project>{2E351174-ED53-4E8A-A065-3E15A7E228B5}</Project>
       <Name>BasicApplication</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\z-wave-tools-core\Utils\Utils.csproj">
+    <ProjectReference Include="..\lib\z-wave-tools-core\Utils\Utils.csproj">
       <Project>{6C298CDF-2B64-4BE7-B9D4-449D5F30E57F}</Project>
       <Name>Utils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\z-wave-tools-core\ZipApplication\ZipApplication.csproj">
+    <ProjectReference Include="..\lib\z-wave-tools-core\ZipApplication\ZipApplication.csproj">
       <Project>{8ACFB772-98F3-48FE-85AE-3F06DA2EA60B}</Project>
       <Name>ZipApplication</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\z-wave-tools-core\ZWaveXml\ZWaveXml.csproj">
+    <ProjectReference Include="..\lib\z-wave-tools-core\ZWaveXml\ZWaveXml.csproj">
       <Project>{FEB030F9-A44A-4C72-9C28-C8FA186995FB}</Project>
       <Name>ZWaveXml</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\z-wave-tools-core\ZWave\ZWave.csproj">
+    <ProjectReference Include="..\lib\z-wave-tools-core\ZWave\ZWave.csproj">
       <Project>{B214D482-57EB-42BE-AEC7-D64850F56514}</Project>
       <Name>ZWave</Name>
     </ProjectReference>
