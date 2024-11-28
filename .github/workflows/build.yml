@@ -24,20 +24,20 @@ jobs:
       - name: Checkout z-wave-pc-controller 
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GH_ZWAVE_ACCESS_TOKEN }}
           path: '/z-wave-pc-controller'
 
       - name: Checkout z-wave-tools-core
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GH_ZWAVE_ACCESS_TOKEN }}
           repository: 'Z-Wave-Alliance/z-wave-tools-core'
           path: '/z-wave-tools-core'
 
       - name: Checkout z-wave-blobs
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GH_ZWAVE_ACCESS_TOKEN }}
           repository: 'Z-Wave-Alliance/z-wave-blobs'
           path: '/z-wave-blobs'
 
