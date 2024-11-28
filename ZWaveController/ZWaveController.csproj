@@ -346,49 +346,44 @@
     <None Include="Configuration\PreKitting.xsd" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\lib\z-wave-tools-core\BasicApplication\BasicApplication.csproj">
-      <Project>{2E351174-ED53-4E8A-A065-3E15A7E228B5}</Project>
-      <Name>BasicApplication</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\lib\z-wave-tools-core\Utils\Utils.csproj">
-      <Project>{6C298CDF-2B64-4BE7-B9D4-449D5F30E57F}</Project>
-      <Name>Utils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\lib\z-wave-tools-core\ZipApplication\ZipApplication.csproj">
-      <Project>{8ACFB772-98F3-48FE-85AE-3F06DA2EA60B}</Project>
-      <Name>ZipApplication</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\lib\z-wave-tools-core\ZWaveXml\ZWaveXml.csproj">
-      <Project>{feb030f9-a44a-4c72-9c28-c8fa186995fb}</Project>
-      <Name>ZWaveXml</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\lib\z-wave-tools-core\ZWave\ZWave.csproj">
-      <Project>{B214D482-57EB-42BE-AEC7-D64850F56514}</Project>
-      <Name>ZWave</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\lib\z-wave-tools-core\XmlFiles\ZWave_cmd_classes.xml">
+    <Content Include="..\..\z-wave-tools-core\XmlFiles\ZWave_cmd_classes.xml">
       <Link>XmlFiles\ZWave_cmd_classes.xml</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\lib\WebCamCapture\win\wcvcap32.dll">
+    <Content Include="..\..\z-wave-blobs\z-wave-pc-controller\WebCamCapture\win\wcvcap32.dll">
       <Link>wcvcap32.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\lib\WebCamCapture\win\wcvcap64.dll">
+    <Content Include="..\..\z-wave-blobs\z-wave-pc-controller\WebCamCapture\win\wcvcap64.dll">
       <Link>wcvcap64.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AutoMapper">
-      <Version>10.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>13.0.1</Version>
-    </PackageReference>
+    <PackageReference Include="AutoMapper" Version="10.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\z-wave-tools-core\BasicApplication\BasicApplication.csproj">
+      <Project>{2e351174-ed53-4e8a-a065-3e15a7e228b5}</Project>
+      <Name>BasicApplication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\z-wave-tools-core\Utils\Utils.csproj">
+      <Project>{6c298cdf-2b64-4be7-b9d4-449d5f30e57f}</Project>
+      <Name>Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\z-wave-tools-core\ZipApplication\ZipApplication.csproj">
+      <Project>{8acfb772-98f3-48fe-85ae-3f06da2ea60b}</Project>
+      <Name>ZipApplication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\z-wave-tools-core\ZWaveXml\ZWaveXml.csproj">
+      <Project>{feb030f9-a44a-4c72-9c28-c8fa186995fb}</Project>
+      <Name>ZWaveXml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\z-wave-tools-core\ZWave\ZWave.csproj">
+      <Project>{b214d482-57eb-42be-aec7-d64850f56514}</Project>
+      <Name>ZWave</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
