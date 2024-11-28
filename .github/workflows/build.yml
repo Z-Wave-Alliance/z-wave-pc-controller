@@ -17,10 +17,25 @@ jobs:
       run:
         shell: powershell
     env:
-      Solution_Path: ZWaveController.sln
+      Solution_Path: z-wave-pc-controller/ZWaveController.sln
       Artifact_Path: ${{ github.workspace }}/artifacts # MSBuild does not support relative paths
       
     steps:
+      - name: Checkout z-wave-pc-controller 
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          path: '/z-wave-pc-controller'
+
+      - name: Checkout z-wave-tools-core
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          repository: 'Z-Wave-Alliance/z-wave-tools-core'
+          path: '/z-wave-tools-core'
+
+      - name: Checkout z-wave-blobs
+        uses: actions/checkout@v4
       - name: Checkout z-wave-pc-controller 
         uses: actions/checkout@v4
         with:
