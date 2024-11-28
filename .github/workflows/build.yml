@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-test-z-wave-tools-core:
+  build-and-test-z-wave-pc-controller:
     runs-on: windows-latest
     defaults:
       run:
@@ -36,25 +36,10 @@ jobs:
 
       - name: Checkout z-wave-blobs
         uses: actions/checkout@v4
-      - name: Checkout z-wave-pc-controller 
-        uses: actions/checkout@v4
         with:
           token: ${{ secrets.GH_PAT }}
-          path: '/z-wave-pc-controller'
-
-      - name: Checkout z-wave-tools-core
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_PAT }}
-          repository: 'Z-Wave-Alliance/z-wave-tools-core'
-          path: '/z-wave-tools-core'
-
-      - name: Checkout z-wave-blobs
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_PAT }}
-          repository: '-Wave-Alliance/z-wave-blobs'
-          path: '/z-wave-tools-core'
+          repository: 'Z-Wave-Alliance/z-wave-blobs'
+          path: '/z-wave-blobs'
 
       - name: Add MSBuild.exe to Path
         uses: microsoft/setup-msbuild@v1.1
