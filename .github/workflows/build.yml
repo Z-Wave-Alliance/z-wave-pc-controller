@@ -42,7 +42,7 @@ jobs:
       - name: Checkout z-wave-pc-controller 
         uses: actions/checkout@v3
         with:
-          path: '/z-wave-pc-controller'
+          path: 'z-wave-pc-controller'
 
       - name: Checkout z-wave-tools-core
         uses: actions/checkout@v3
