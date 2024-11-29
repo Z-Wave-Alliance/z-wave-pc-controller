@@ -11,62 +11,79 @@ on:
   workflow_dispatch:
 
 jobs:
+  legal-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{  env.debian_packages }}
+        env:
+          debian_packages: reuse
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Legal check
+        run: reuse lint
+
   build-and-test-z-wave-pc-controller:
     runs-on: windows-latest
     defaults:
       run:
         shell: powershell
     env:
-      Solution_Path: z-wave-pc-controller/ZWaveController.sln
-      Artifact_Path: ${{ github.workspace }}/artifacts # MSBuild does not support relative paths
+      Configuration: Release
+      TargetPlatform: "Any CPU"
+      Solution_Path: ${{ github.workspace}}\z-wave-pc-controller\ZWaveController.sln
+      Artifact_Path: ${{ github.workspace}}\artifacts # MSBuild does not support relative paths
       
     steps:
       - name: Checkout z-wave-pc-controller 
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GH_ZWAVE_ACCESS_TOKEN }}
           path: '/z-wave-pc-controller'
 
       - name: Checkout z-wave-tools-core
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           token: ${{ secrets.GH_ZWAVE_ACCESS_TOKEN }}
           repository: 'Z-Wave-Alliance/z-wave-tools-core'
-          path: '/z-wave-tools-core'
+          path: 'z-wave-tools-core'
 
+      # TODO: https://github.com/Z-Wave-Alliance/z-wave-tools-core/issues/5
       - name: Checkout z-wave-blobs
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           token: ${{ secrets.GH_ZWAVE_ACCESS_TOKEN }}
           repository: 'Z-Wave-Alliance/z-wave-blobs'
-          path: '/z-wave-blobs'
+          path: 'z-wave-blobs'
 
       - name: Add MSBuild.exe to Path
         uses: microsoft/setup-msbuild@v1.1
 
       - name: Restore NuGet Packages for Z-Wave Tools Core Solution
-        run: msbuild $env:Solution_Path -restore -verbosity:minimal
+        run: |
+          MSBuild.exe ${{env.Solution_Path}} -restore -verbosity:minimal
 
       - name: Build Z-Wave PC Controller Solution in Release
-        run: |
-          msbuild $env:Solution_Path -property:Platform=$env:TargetPlatform -property:Configuration=$env:Configuration -verbosity:minimal
         env:
           Configuration: Release
-          TargetPlatform: Any CPU
+        run: |
+          MSBuild.exe ${{env.Solution_Path}} -property:Platform="${{env.TargetPlatform}}" -property:Configuration=${{env.Configuration}} -verbosity:minimal
 
       - name: Build Z-Wave PC Controller Solution in Debug
-        run: |
-          msbuild $env:Solution_Path -p:Platform=$env:TargetPlatform -p:Configuration=$env:Configuration -verbosity:minimal
         env:
           Configuration: Debug
-          TargetPlatform: Any CPU
+        run: |
+          MSBuild.exe ${{env.Solution_Path}} -property:Platform="${{env.TargetPlatform}}" -property:Configuration=${{env.Configuration}} -verbosity:minimal
 
       - name: Publish Z-Wave PC Controller Artifacts
         # Release build without debug symbols
-        run: msbuild $env:Solution_Path -p:Platform=$env:TargetPlatform -p:Configuration=$env:Configuration -p:OutputPath=$env:Artifact_Path -p:DebugType=None -p:DebugSymbols=false -verbosity:minimal
         env:
           Configuration: Release
-          TargetPlatform: Any CPU
+        run: |
+          MSBuild.exe ${{env.Solution_Path}} -p:Platform="${{env.TargetPlatform}}" -p:Configuration=${{env.Configuration}} -p:OutputPath=${{env.Artifact_Path}} -p:DebugType=None -p:DebugSymbols=false -verbosity:minimal
 
       - name: Upload published artifacts
         uses: actions/upload-artifact@v4
