@@ -41,6 +41,7 @@ jobs:
       - name: Checkout z-wave-pc-controller 
         uses: actions/checkout@v3
         with:
+          token: ${{ secrets.GH_ZWAVE_ACCESS_TOKEN }}
           path: 'z-wave-pc-controller'
 
       
