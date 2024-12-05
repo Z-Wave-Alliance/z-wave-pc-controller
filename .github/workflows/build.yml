@@ -6,8 +6,7 @@ name: Build and Test Z-Wave PC Controller
 
 on:
   pull_request:
-    branches:
-      - main
+  push:
   workflow_dispatch:
 
 jobs:
@@ -44,6 +43,7 @@ jobs:
         with:
           path: 'z-wave-pc-controller'
 
+      
       - name: Checkout z-wave-tools-core
         uses: actions/checkout@v3
         with:
@@ -51,7 +51,7 @@ jobs:
           repository: 'Z-Wave-Alliance/z-wave-tools-core'
           path: 'z-wave-tools-core'
 
-      # TODO: https://github.com/Z-Wave-Alliance/z-wave-tools-core/issues/5
+      # TODO: https://github.com/Z-Wave-Alliance/z-wave-tools-core/issues/8
       - name: Checkout z-wave-blobs
         uses: actions/checkout@v3
         with:
