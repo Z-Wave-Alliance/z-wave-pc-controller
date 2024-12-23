@@ -2,9 +2,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # SPDX-FileCopyrightText: 2024 Z-Wave Alliance
 # Demo copied from https://docs.github.com/en/actions/quickstart
+---
 name: Build and Test Z-Wave PC Controller
 
-on:
+on:  # yamllint disable-line rule:truthy
   pull_request:
   push:
   workflow_dispatch:
@@ -34,17 +35,20 @@ jobs:
     env:
       Configuration: Release
       TargetPlatform: "Any CPU"
-      Solution_Path: ${{ github.workspace}}\z-wave-pc-controller\ZWaveController.sln
-      Artifact_Path: ${{ github.workspace}}\artifacts # MSBuild does not support relative paths
-      
+      # MSBuild does not support relative paths
+      Solution_Path: >-
+        ${{ github.workspace }}\z-wave-pc-controller\ZWaveController.sln
+      Artifact_Path: >-
+        ${{ github.workspace }}\artifacts
+
     steps:
-      - name: Checkout z-wave-pc-controller 
+      - name: Checkout z-wave-pc-controller
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.GH_ZWAVE_ACCESS_TOKEN }}
           path: 'z-wave-pc-controller'
 
-      
+
       - name: Checkout z-wave-tools-core
         uses: actions/checkout@v3
         with:
@@ -64,34 +68,46 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1
 
       - name: Restore NuGet Packages for Z-Wave Tools Core Solution
-        run: |
+        run: >
           MSBuild.exe ${{env.Solution_Path}} -restore -verbosity:minimal
 
       - name: Build Z-Wave PC Controller Solution in Release
         env:
           Configuration: Release
-        run: |
-          MSBuild.exe ${{env.Solution_Path}} -property:Platform="${{env.TargetPlatform}}" -property:Configuration=${{env.Configuration}} -verbosity:minimal
+        run: >
+          MSBuild.exe ${{env.Solution_Path}}
+          -property:Platform="${{env.TargetPlatform}}"
+          -property:Configuration=${{env.Configuration}}
+          -verbosity:minimal
 
       - name: Build Z-Wave PC Controller Solution in Debug
         env:
           Configuration: Debug
-        run: |
-          MSBuild.exe ${{env.Solution_Path}} -property:Platform="${{env.TargetPlatform}}" -property:Configuration=${{env.Configuration}} -verbosity:minimal
+        run: >
+          MSBuild.exe ${{env.Solution_Path}}
+          -property:Platform="${{env.TargetPlatform}}"
+          -property:Configuration=${{env.Configuration}}
+          -verbosity:minimal
 
       - name: Publish Z-Wave PC Controller Artifacts
         # Release build without debug symbols
         env:
           Configuration: Release
-        run: |
-          MSBuild.exe ${{env.Solution_Path}} -p:Platform="${{env.TargetPlatform}}" -p:Configuration=${{env.Configuration}} -p:OutputPath=${{env.Artifact_Path}} -p:DebugType=None -p:DebugSymbols=false -verbosity:minimal
+        run: >
+          MSBuild.exe ${{env.Solution_Path}}
+          -p:Platform="${{env.TargetPlatform}}"
+          -p:Configuration=${{env.Configuration}}
+          -p:OutputPath=${{env.Artifact_Path}}
+          -p:DebugType=None -p:DebugSymbols=false
+          -verbosity:minimal
 
       - name: Upload published artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ZWavePCController
           # Windows only tool
-          # Explicitly specify the path to the artifacts because the default is the working directory
+          # Explicitly specify the path to the artifacts
+          # because the default is the working directory
           path: ${{ env.Artifact_Path }}/*
           retention-days: 5
           if-no-files-found: error
