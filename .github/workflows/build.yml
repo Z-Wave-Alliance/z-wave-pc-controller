@@ -2,37 +2,113 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # SPDX-FileCopyrightText: 2024 Z-Wave Alliance
 # Demo copied from https://docs.github.com/en/actions/quickstart
-name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+---
+name: Build and Test Z-Wave PC Controller
 
-on:
+on:  # yamllint disable-line rule:truthy
   pull_request:
-    branches:
-      - main
   push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
-  Explore-GitHub-Actions:
+  legal-check:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Install dependencies
-        run: >
+        run: |
           sudo apt-get update
-          && sudo apt-get install -y
-          reuse
+          sudo apt-get install -y ${{  env.debian_packages }}
+        env:
+          debian_packages: reuse
+
       - name: Check out repository code
         uses: actions/checkout@v4
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
+
       - name: Legal check
         run: reuse lint
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+
+  build-and-test-z-wave-pc-controller:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: powershell
+    env:
+      Configuration: Release
+      TargetPlatform: "Any CPU"
+      # MSBuild does not support relative paths
+      Solution_Path: >-
+        ${{ github.workspace }}\z-wave-pc-controller\ZWaveController.sln
+      Artifact_Path: >-
+        ${{ github.workspace }}\artifacts
+
+    steps:
+      - name: Checkout z-wave-pc-controller
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_ZWAVE_ACCESS_TOKEN }}
+          path: 'z-wave-pc-controller'
+
+      # TODO: https://github.com/Z-Wave-Alliance/z-wave-tools-core/issues/5
+      - name: Checkout z-wave-tools-core
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_ZWAVE_ACCESS_TOKEN }}
+          repository: 'Z-Wave-Alliance/z-wave-tools-core'
+          path: 'z-wave-tools-core'
+
+      # TODO: https://github.com/Z-Wave-Alliance/z-wave-pc-controller/issues/8
+      - name: Checkout z-wave-blobs
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_ZWAVE_ACCESS_TOKEN }}
+          repository: 'Z-Wave-Alliance/z-wave-blobs'
+          path: 'z-wave-blobs'
+          ref: 'v0.1.1'
+
+      - name: Add MSBuild.exe to Path
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Restore NuGet Packages for Z-Wave Tools Core Solution
+        run: >
+          MSBuild.exe ${{env.Solution_Path}} -restore -verbosity:minimal
+
+      - name: Build Z-Wave PC Controller Solution in Release
+        env:
+          Configuration: Release
+        run: >
+          MSBuild.exe ${{env.Solution_Path}}
+          -property:Platform="${{env.TargetPlatform}}"
+          -property:Configuration=${{env.Configuration}}
+          -verbosity:minimal
+
+      - name: Build Z-Wave PC Controller Solution in Debug
+        env:
+          Configuration: Debug
+        run: >
+          MSBuild.exe ${{env.Solution_Path}}
+          -property:Platform="${{env.TargetPlatform}}"
+          -property:Configuration=${{env.Configuration}}
+          -verbosity:minimal
+
+      - name: Publish Z-Wave PC Controller Artifacts
+        # Release build without debug symbols
+        env:
+          Configuration: Release
+        run: >
+          MSBuild.exe ${{env.Solution_Path}}
+          -p:Platform="${{env.TargetPlatform}}"
+          -p:Configuration=${{env.Configuration}}
+          -p:OutputPath=${{env.Artifact_Path}}
+          -p:DebugType=None -p:DebugSymbols=false
+          -verbosity:minimal
+
+      - name: Upload published artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZWavePCController
+          # Windows only tool
+          # Explicitly specify the path to the artifacts
+          # because the default is the working directory
+          path: ${{ env.Artifact_Path }}/*
+          retention-days: 5
+          if-no-files-found: error
