@@ -36,6 +36,7 @@ bld/
 [Ll]og/
 /NorthstarDb.Data/Import Schema Logs
 /NorthstarDb.Data/NorthstarDb.Data.jfm
+/packages/NUnit*
 
 # IntelliJ Idea's Webstorm
 .idea
