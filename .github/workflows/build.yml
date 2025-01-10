@@ -39,7 +39,7 @@ jobs:
       Solution_Path: >-
         ${{ github.workspace }}\z-wave-pc-controller\ZWaveController.sln
       Artifact_Path: >-
-        ${{ github.workspace }}\artifacts
+        ${{ github.workspace }}\artifacts\${{ github.event.repository.name }}
 
     steps:
       - name: Checkout z-wave-pc-controller
@@ -47,6 +47,13 @@ jobs:
         with:
           token: ${{ secrets.GH_ZWAVE_ACCESS_TOKEN }}
           path: 'z-wave-pc-controller'
+
+      - id: describe
+        name: Describe HEAD
+        run: |
+          git config --system --add safe.directory ${PWD}
+          echo "describe=$(git -C ${{ github.event.repository.name }} describe --tags --always)" >> $GITHUB_OUTPUT
+        shell: bash
 
       # TODO: https://github.com/Z-Wave-Alliance/z-wave-tools-core/issues/5
       - name: Checkout z-wave-tools-core
@@ -102,10 +109,30 @@ jobs:
           -p:DebugType=None -p:DebugSymbols=false
           -verbosity:minimal
 
+      - name: Package asset
+        run: |
+          echo "Propagate deps licences"
+          Copy-Item "*\LICENSE*" -Destination "${{env.Artifact_Path}}" -Recurse -Force
+          Copy-Item "${{ github.event.repository.name }}\LICENSE*" -Destination "${{env.Artifact_Path}}" -Recurse -Force
+          Copy-Item "${{ github.event.repository.name }}\*.md" -Destination "${{env.Artifact_Path}}" -Recurse -Force
+          $zipFile = "${{ github.workspace }}\${{ github.event.repository.name }}-${{ steps.describe.outputs.describe }}.zip"
+          $sourceFolder = "${{env.Artifact_Path}}"
+          echo "Fix for IO.Compression.ZipFile issue: https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/48"
+          Install-Module Microsoft.PowerShell.Archive -MinimumVersion 1.2.3.0 -Repository PSGallery -Force
+          Compress-Archive -Path $sourceFolder -DestinationPath $zipFile
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          token: ${{ secrets.GH_ZWAVE_ACCESS_TOKEN }}
+          files: ${{ github.event.repository.name }}*.zip
+
       - name: Upload published artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ZWavePCController
+          name: ${{ github.event.repository.name }}
           # Windows only tool
           # Explicitly specify the path to the artifacts
           # because the default is the working directory
