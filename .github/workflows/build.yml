@@ -55,6 +55,7 @@ jobs:
           token: ${{ secrets.GH_ZWAVE_ACCESS_TOKEN }}
           repository: 'Z-Wave-Alliance/z-wave-tools-core'
           path: 'z-wave-tools-core'
+          ref: 'v25.1.0'
 
       # TODO: https://github.com/Z-Wave-Alliance/z-wave-pc-controller/issues/8
       - name: Checkout z-wave-blobs
