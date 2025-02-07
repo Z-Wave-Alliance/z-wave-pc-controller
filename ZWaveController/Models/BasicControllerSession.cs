@@ -216,7 +216,7 @@ namespace ZWaveController.Models
                                     ApplicationModel.ERTTModel.IsTxControlledByModule = false;
                             }
                             ApplicationModel.SmartStartModel.IsMetadataEnabled = false;
-                            if (ChipTypeSupported.TransmitSettings(_device.ChipType) && _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetDcdcMode))
+                            if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetDcdcMode))
                             {
                                 var res = _device.GetDcdcMode();
                                 ApplicationModel.TransmitSettingsModel.DcdcMode = res.DcdcMode;
@@ -3730,8 +3730,7 @@ namespace ZWaveController.Models
             var busyText = $"Trying {caption}...";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (ChipTypeSupported.TransmitSettings(_device.ChipType) &&
-                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdSetDcdcMode))
+                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdSetDcdcMode))
                 {
                     var res = _device.SetDcdcMode(dcdcMode);
                     ret = res ? CommandExecutionResult.OK : ret;
@@ -3753,8 +3752,7 @@ namespace ZWaveController.Models
             var busyText = $"Trying {caption}...";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (ChipTypeSupported.TransmitSettings(_device.ChipType) &&
-                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetDcdcMode))
+                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetDcdcMode))
                 {
                     var res = _device.GetDcdcMode();
                     ApplicationModel.TransmitSettingsModel.DcdcMode = res.DcdcMode;
@@ -3815,8 +3813,7 @@ namespace ZWaveController.Models
             var busyText = "Trying Get LR Channel...";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (ChipTypeSupported.TransmitSettings(_device.ChipType) &&
-                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetLRChannel))
+                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetLRChannel))
                 {
                     var res = _device.GetLRChannel();
                     ApplicationModel.TransmitSettingsModel.LRChannel = res.Channel;
@@ -3838,8 +3835,7 @@ namespace ZWaveController.Models
             var busyText = $"Tying to {caption}...";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (ChipTypeSupported.TransmitSettings(_device.ChipType) &&
-                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdSetLRChannel))
+                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdSetLRChannel))
                 {
                     var res = _device.SetLRChannel(channel);
                     ret = res ? CommandExecutionResult.OK : ret;
@@ -3861,8 +3857,7 @@ namespace ZWaveController.Models
             var busyText = $"Trying Get {caption}...";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (ChipTypeSupported.TransmitSettings(_device.ChipType) &&
-                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetRadioPTI))
+                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetRadioPTI))
                 {
                     var res = _device.IsRadioPTI();
                     ApplicationModel.TransmitSettingsModel.IsRadioPTIEnabled = res && res.IsEnabled;
@@ -3886,8 +3881,7 @@ namespace ZWaveController.Models
             var expectToken = _device.Expect(new ByteIndex[] { 0x00, 0x0A }, 5000, null);
             using (var logAction = ReportAction(caption, busyText, expectToken))
             {
-                if (ChipTypeSupported.TransmitSettings(_device.ChipType) &&
-                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdEnableRadioPTI))
+                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdEnableRadioPTI))
                 {
                     var res = _device.EnableRadioPTI(isEnabled);
                     ret = res ? CommandExecutionResult.OK : ret;
