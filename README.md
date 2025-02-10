@@ -2,9 +2,8 @@
 
 ## Description
 
-PC Controller is a GUI tool used to setup a Z-Wave network, and operate nodes.
-It needs a Z-Wave Serial API controller (connected to host using USB or IP network).
-
+The Z-Wave PC Controller is a GUI tool used to setup a Z-Wave network and operate nodes.
+It needs a Z-Wave Serial API controller (connected via USB or IP).
 
 ## Usage
 
@@ -23,16 +22,24 @@ and
 [z-wave-pc-controller](https://github.com/Z-Wave-Alliance/z-wave-pc-controller)
 must be at the same level.
 
+The PC tools can be built on command line using [Build Tools for Visual Studio 2022](https://visualstudio.microsoft.com/downloads/).
+
 ## Build
 
-On the Command Prompt:
+Run this once:
+```
+MSBuild.exe z-wave-pc-controller\ZWaveController.sln -restore -verbosity:minimal
+```
 
+Build for debug:
+```
+MSBuild.exe z-wave-pc-controller\ZWaveController.sln -property:Platform="Any CPU" -property:Configuration=Debug -p:OutputPath=artifacts\debug -verbosity:minimal
+```
 
-    MSBuild.exe z-wave-pc-controller\ZWaveController.sln -restore -verbosity:minimal
-
-    MSBuild.exe z-wave-pc-controller\ZWaveController.sln -property:Platform="Any CPU" -property:Configuration=Release -p:OutputPath=artifacts\release -p:DebugType=None -p:DebugSymbols=false -verbosity:minimal
-
-    MSBuild.exe z-wave-pc-controller\ZWaveController.sln -property:Platform="Any CPU" -property:Configuration=Debug -p:OutputPath=artifacts\debug -verbosity:minimal
+Build for release:
+```
+MSBuild.exe z-wave-pc-controller\ZWaveController.sln -property:Platform="Any CPU" -property:Configuration=Release -p:OutputPath=artifacts\release -p:DebugType=None -p:DebugSymbols=false -verbosity:minimal
+```
 
 ## References
 
