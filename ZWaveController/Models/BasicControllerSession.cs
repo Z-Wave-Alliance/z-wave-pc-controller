@@ -3669,21 +3669,18 @@ namespace ZWaveController.Models
         {
             CommandExecutionResult ret = CommandExecutionResult.Failed;
             rfRegion = RfRegions.Undefined;
-            if (ChipTypeSupported.TransmitSettings(_device.ChipType))
+            var res = _device.GetRfRegion();
+            if (res)
             {
-                var res = _device.GetRfRegion();
-                if (res)
-                {
-                    rfRegion = res.RfRegion;
-                    ret = CommandExecutionResult.OK;
-                }
+                rfRegion = res.RfRegion;
+                ret = CommandExecutionResult.OK;
             }
             return ret;
         }
 
         public CommandExecutionResult SetRfRegion(RfRegions rfRegion)
         {
-            if (ChipTypeSupported.TransmitSettings(_device.ChipType) && _device.SetRfRegion(rfRegion))
+            if (_device.SetRfRegion(rfRegion))
             {
                 var expectToken = _device.Expect(new ByteIndex[] { 0x00, 0x0A }, 5000, null);
                 var caption = "Set Rf Region";
