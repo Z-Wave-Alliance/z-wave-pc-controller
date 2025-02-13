@@ -123,18 +123,7 @@
         <Button Grid.Row="5" Grid.Column="2" Command="{StaticResource SetRfRegionCommandRef}" Margin="4" Content="Set" AutomationProperties.AutomationId="ID_BTN_SET_RF_REGION_LEVEL"/>
 
         <TextBlock Grid.Row="6" Grid.Column="0" Text="LR Channel:" />
-        <ComboBox Grid.Row="6" Grid.Column="1"  Name="cbLRChannels" ItemsSource="{Binding Source={StaticResource lrChEnm}}" SelectedItem="{Binding Path=LRChannel}">
-            <!--<ComboBox.Style>
-                <Style TargetType="{x:Type ComboBox}">
-                    <Setter Property="IsEnabled" Value="False"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsRfRegionLR}" Value="True">
-                            <Setter Property="IsEnabled" Value="True"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </ComboBox.Style>-->
-        </ComboBox>
+        <ComboBox Grid.Row="6" Grid.Column="1"  Name="cbLRChannels" ItemsSource="{Binding Source={StaticResource lrChEnm}}" SelectedItem="{Binding Path=LRChannel}"/>
         <Button Grid.Row="6" Grid.Column="2" Command="{StaticResource SetLRChannelCommandRef}" Margin="4" Content="Set" AutomationProperties.AutomationId="ID_BTN_SET_LR_CHANNEL"/>
 
         <Separator Grid.Row="7" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Height="2"/>
