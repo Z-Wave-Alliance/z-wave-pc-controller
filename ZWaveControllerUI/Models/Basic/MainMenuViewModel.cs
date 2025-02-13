@@ -34,7 +34,7 @@ namespace ZWaveControllerUI.Models
                 c => ApplicationModel.Controller != null && !ApplicationModel.IsBusy);
         public CommandBase ShowTransmitSettingsCommand => CommandsFactory.CommandBaseGet<CommandBase>(
                 p => ApplicationModel.CurrentViewModel = (VMBase)ApplicationModel.TransmitSettingsModel,
-                c => ApplicationModel.Controller != null && !ApplicationModel.IsBusy && ChipTypeSupported.TransmitSettings(ApplicationModel.Controller.ChipType));
+                c => ApplicationModel.Controller != null && !ApplicationModel.IsBusy);
         public CommandBase ShowTopologyMapCommand => CommandsFactory.CommandBaseGet<CommandBase>(
                 p => ApplicationModel.CurrentViewModel = (VMBase)ApplicationModel.TopologyMapModel,
                 c => ApplicationModel.Controller is IController && !ApplicationModel.IsActiveSessionZip);
