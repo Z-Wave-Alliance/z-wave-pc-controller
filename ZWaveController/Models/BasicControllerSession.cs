@@ -3903,8 +3903,7 @@ namespace ZWaveController.Models
             var busyText = "Trying Clear Network Stats..";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (ChipTypeSupported.NetworkStatistics(_device.ChipType) &&
-                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdClearNetworkStats))
+                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdClearNetworkStats))
                 {
                     var res = _device.ClearNetworkStats();
                     ApplicationModel.Invoke(() =>
@@ -3934,8 +3933,7 @@ namespace ZWaveController.Models
             var busyText = "Trying Get Network Stats..";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (ChipTypeSupported.NetworkStatistics(_device.ChipType) &&
-                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetNetworkStats))
+                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetNetworkStats))
                 {
                     var res = _device.GetNetworkStats();
                     if (res)
@@ -3968,8 +3966,7 @@ namespace ZWaveController.Models
             var busyText = "Trying Clear Tx Timer..";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (ChipTypeSupported.NetworkStatistics(_device.ChipType) &&
-                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdClearTxTimer))
+                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdClearTxTimer))
                 {
                     var res = _device.ClearTxTimers();
                     if (res)
@@ -4001,8 +3998,7 @@ namespace ZWaveController.Models
             var busyText = "Trying Get Tx Timer..";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (ChipTypeSupported.NetworkStatistics(_device.ChipType) &&
-                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetTxTimer))
+                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetTxTimer))
                 {
                     var res = _device.GetTxTimer();
                     if (res)
