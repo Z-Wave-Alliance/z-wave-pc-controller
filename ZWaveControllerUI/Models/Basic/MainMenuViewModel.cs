@@ -41,7 +41,7 @@ namespace ZWaveControllerUI.Models
         public CommandBase ShowIMAFullNetworkCommand => CommandsFactory.CommandBaseGet<CommandBase>(ShowIMAFullNetwork, c => ApplicationModel.Controller is IController && !ApplicationModel.IsBusy);
         public CommandBase ShowNetworkStatisticsCommand => CommandsFactory.CommandBaseGet<CommandBase>(
                 p => ApplicationModel.CurrentViewModel = (VMBase)ApplicationModel.NetworkStatisticsModel,
-                c => ApplicationModel.Controller is IController && !ApplicationModel.IsBusy && ChipTypeSupported.NetworkStatistics(ApplicationModel.Controller.ChipType));
+                c => ApplicationModel.Controller is IController && !ApplicationModel.IsBusy);
         public CommandBase ShowNVMBackupRestoreCommand => CommandsFactory.CommandBaseGet<CommandBase>(
                 p => ApplicationModel.CurrentViewModel = (VMBase)ApplicationModel.NVMBackupRestoreModel,
                 c => ApplicationModel.Controller is IController && !ApplicationModel.IsActiveSessionZip && !ApplicationModel.IsBusy);
