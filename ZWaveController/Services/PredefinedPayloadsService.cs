@@ -1,6 +1,7 @@
 /// SPDX-License-Identifier: BSD-3-Clause
 /// SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
-﻿using Newtonsoft.Json;
+//﻿/ SPDX-FileCopyrightText: 2025 Trident IoT, LLC <https://www.tridentiot.com>
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -103,7 +104,7 @@ namespace ZWaveController.Services
                     File.WriteAllText(path, json);
                     ret = CommandExecutionResult.OK;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Return error to Command. If needed.
                 }

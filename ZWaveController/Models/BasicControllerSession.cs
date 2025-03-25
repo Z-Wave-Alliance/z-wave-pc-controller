@@ -1,6 +1,7 @@
 /// SPDX-License-Identifier: BSD-3-Clause
 /// SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
-﻿using System;
+﻿//﻿/ SPDX-FileCopyrightText: 2025 Trident IoT, LLC <https://www.tridentiot.com>
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -145,13 +146,29 @@ namespace ZWaveController.Models
                     {
                         _device = appLayer.CreateBridgeController(_device, false);
                         _device.Library = versionRes.Library;
-                        _device.Version = versionRes.Version;
+                        if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdZWaveGetProtocolVersion))
+                        {
+                            ProtocolVersionResult protocolVersionRes = _device.GetProtocolVersion();
+                            _device.Version = protocolVersionRes.ZWaveProtocolVersion;
+                        }
+                        else
+                        {
+                            _device.Version = versionRes.Version;
+                        }
                     }
                     else if (versionRes.Library == Libraries.EndDeviceLib || versionRes.Library == Libraries.EndDeviceSysTestLib)
                     {
                         _device = appLayer.CreateEndDevice(_device, false);
                         _device.Library = versionRes.Library;
-                        _device.Version = versionRes.Version;
+                        if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdZWaveGetProtocolVersion))
+                        {
+                            ProtocolVersionResult protocolVersionRes = _device.GetProtocolVersion();
+                            _device.Version = protocolVersionRes.ZWaveProtocolVersion;
+                        }
+                        else
+                        {
+                            _device.Version = versionRes.Version;
+                        }
                         _device.DSK = _device.GetSecurityS2PublicDSK().DSK;
                     }
                     _device.SerialApiSetNodeIdBaseType(2);
