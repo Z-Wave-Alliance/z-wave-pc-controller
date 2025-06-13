@@ -1,6 +1,6 @@
 /// SPDX-License-Identifier: BSD-3-Clause
 /// SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -146,44 +146,27 @@ namespace ZWaveController.Configuration
             //From Node List View
             if (Nodes.Count > 0)
             {
-                var toRemove = Nodes.Where(n => n.Item.Parent == node).Select(n => n.Item).ToList();
-                for (int i = Nodes.Count - 1; i >= 0; i--)
+                var toRemove = Nodes.Where(n => n.Item.Parent == node).ToList();
+                foreach (var item in toRemove)
                 {
-                    var removeNode = toRemove.FirstOrDefault(rNode => rNode == Nodes[i].Item);
-                    if (removeNode != NodeTag.Empty)
-                    {
-                        Nodes.RemoveAt(i);
-                        toRemove.Remove(removeNode);
-                    }
+                    Nodes.Remove(item);
                 }
             }
             //From Confirutaion file
             if (Node.Count > 0)
             {
-                var toRemove = Node.Where(n => n.NodeTag.Parent == node).Select(n => n.NodeTag).ToList();
-                for (int i = Node.Count - 1; i >= 0; i--)
+                var toRemove = Node.Where(n => n.NodeTag.Parent == node).ToList();
+                foreach (var item in toRemove)
                 {
-                    var removeNode = toRemove.FirstOrDefault(rNode => rNode == Node[i].NodeTag);
-                    if (removeNode != NodeTag.Empty)
-                    {
-                        Node.RemoveAt(i);
-                        toRemove.Remove(removeNode);
-                    }
+                    Node.Remove(item);
                 }
-            }
-
-            ProvisioningItem[] removePItems = this.PreKitting.ProvisioningList.Where(p => p.NodeId == node.Id).ToArray();
-            foreach (var item in removePItems)
-            {
-                item.NodeId = 0;
-                item.State = PreKittingState.Pending;
-                PreKitting.PendingProvisioningCount++;
             }
             Save();
         }
 
         public void AddOrUpdateNode(NodeTag node)
         {
+            RemoveNode(node);
             var cnode = Node.FirstOrDefault(x => x.NodeTag == node);
             if (cnode == null)
             {
@@ -195,18 +178,6 @@ namespace ZWaveController.Configuration
             if (snode == null)
             {
                 snode = CreateSelectedNodeItem(node);
-                Nodes.Add(snode);
-            }
-            else
-            {
-                if (snode.Item == NodeTag.Empty)
-                {
-                    Nodes.Remove(snode);
-                }
-                else
-                {
-                    RemoveNode(node);
-                }
                 Nodes.Add(snode);
             }
 

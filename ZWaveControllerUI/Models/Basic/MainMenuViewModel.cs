@@ -34,14 +34,14 @@ namespace ZWaveControllerUI.Models
                 c => ApplicationModel.Controller != null && !ApplicationModel.IsBusy);
         public CommandBase ShowTransmitSettingsCommand => CommandsFactory.CommandBaseGet<CommandBase>(
                 p => ApplicationModel.CurrentViewModel = (VMBase)ApplicationModel.TransmitSettingsModel,
-                c => ApplicationModel.Controller != null && !ApplicationModel.IsBusy);
+                c => ApplicationModel.Controller != null && !ApplicationModel.IsBusy && ChipTypeSupported.TransmitSettings(ApplicationModel.Controller.ChipType));
         public CommandBase ShowTopologyMapCommand => CommandsFactory.CommandBaseGet<CommandBase>(
                 p => ApplicationModel.CurrentViewModel = (VMBase)ApplicationModel.TopologyMapModel,
                 c => ApplicationModel.Controller is IController && !ApplicationModel.IsActiveSessionZip);
         public CommandBase ShowIMAFullNetworkCommand => CommandsFactory.CommandBaseGet<CommandBase>(ShowIMAFullNetwork, c => ApplicationModel.Controller is IController && !ApplicationModel.IsBusy);
         public CommandBase ShowNetworkStatisticsCommand => CommandsFactory.CommandBaseGet<CommandBase>(
                 p => ApplicationModel.CurrentViewModel = (VMBase)ApplicationModel.NetworkStatisticsModel,
-                c => ApplicationModel.Controller is IController && !ApplicationModel.IsBusy);
+                c => ApplicationModel.Controller is IController && !ApplicationModel.IsBusy && ChipTypeSupported.NetworkStatistics(ApplicationModel.Controller.ChipType));
         public CommandBase ShowNVMBackupRestoreCommand => CommandsFactory.CommandBaseGet<CommandBase>(
                 p => ApplicationModel.CurrentViewModel = (VMBase)ApplicationModel.NVMBackupRestoreModel,
                 c => ApplicationModel.Controller is IController && !ApplicationModel.IsActiveSessionZip && !ApplicationModel.IsBusy);
