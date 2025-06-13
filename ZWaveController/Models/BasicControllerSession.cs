@@ -1,43 +1,42 @@
 /// SPDX-License-Identifier: BSD-3-Clause
 /// SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
-﻿using System;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Utils;
+using Utils.UI.Interfaces;
+using Utils.UI.Logging;
 using ZWave;
 using ZWave.BasicApplication;
 using ZWave.BasicApplication.CommandClasses;
 using ZWave.BasicApplication.Devices;
 using ZWave.BasicApplication.Enums;
 using ZWave.BasicApplication.Operations;
+using ZWave.BasicApplication.Security;
 using ZWave.BasicApplication.Tasks;
+using ZWave.BasicApplication.TransportService;
 using ZWave.CommandClasses;
 using ZWave.Configuration;
 using ZWave.Devices;
 using ZWave.Enums;
-using ZWave.Xml.Application;
-using ZWaveController.Enums;
-using System.Threading.Tasks;
-using ZWave.BasicApplication.TransportService;
-using ZWave.BasicApplication.Security;
-using ZWave.Security;
-using ZWave.Layers.Session;
-using ZWave.Layers.Transport;
-using ZWave.Security.S2;
-using ZWaveController.Commands;
-using Utils.UI.Interfaces;
-using ZWaveController.Services;
-using ZWaveController.Commands.Basic.Misc;
-using Utils.UI.Logging;
-using ZWaveController.Configuration;
-using System.Collections;
-using ZWaveController.Interfaces;
-using System.Runtime.CompilerServices;
 using ZWave.Layers;
+using ZWave.Layers.Session;
+using ZWave.Security;
+using ZWave.Security.S2;
+using ZWave.Xml.Application;
+using ZWaveController.Commands;
+using ZWaveController.Commands.Basic.Misc;
+using ZWaveController.Configuration;
+using ZWaveController.Enums;
+using ZWaveController.Interfaces;
+using ZWaveController.Services;
 #if !NETCOREAPP
 //using ZWaveController.Properties;
 #endif
@@ -216,7 +215,7 @@ namespace ZWaveController.Models
                                     ApplicationModel.ERTTModel.IsTxControlledByModule = false;
                             }
                             ApplicationModel.SmartStartModel.IsMetadataEnabled = false;
-                            if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetDcdcMode))
+                            if (ChipTypeSupported.TransmitSettings(_device.ChipType) && _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetDcdcMode))
                             {
                                 var res = _device.GetDcdcMode();
                                 ApplicationModel.TransmitSettingsModel.DcdcMode = res.DcdcMode;
@@ -2238,7 +2237,7 @@ namespace ZWaveController.Models
 
         public void RequestNodeInfo(NodeTag node, ActionToken token)
         {
-            if (ApplicationModel.SelectedNode.Item.EndPointId == 0)
+            if (node.EndPointId == 0)
             {
                 var caption = "Request Node information from the network";
                 token = _device.NodeInfo(node, null);
@@ -2248,9 +2247,8 @@ namespace ZWaveController.Models
                     var ret = nodeInfoResult.RequestNodeInfo;
                     if (ret && ret.Generic != 0)
                     {
-                        //TODO: Review, Maybe needed update NIF from protocol - will fix props1-3 (Case: Slave in the Cotroller secition after update smt.)
-                        //var protocolResult = (_device as Controller).GetProtocolInfo(node);
-                        //_device.Network.SetNodeInfo(node, protocolResult.NodeInfo);
+                        var protocolResult = (_device as Controller).GetProtocolInfo(node);
+                        _device.Network.SetNodeInfo(node, protocolResult.NodeInfo);
                         _device.Network.SetNodeInfo(node, ret.Basic, ret.Generic, ret.Specific);
                         _device.Network.SetCommandClasses(node, ret.CommandClasses?.ToArray());
                         _device.Network.SetSecureCommandClasses(node, ret.SecureCommandClasses?.ToArray());
@@ -2363,16 +2361,43 @@ namespace ZWaveController.Models
                 var ret = token.WaitCompletedSignal();
                 if (ret)
                 {
-                    ApplicationModel.Invoke(() =>
-                    {
-                        ApplicationModel.ConfigurationItem.RemoveNode(node);
-                        ApplicationModel.NotifyControllerChanged(NotifyProperty.NodesList);
-                        ApplicationModel.NotifyControllerChanged(NotifyProperty.CommandSucceeded, new NotifyCommandData { CommandName = nameof(RemoveFailedCommand), Message = "Failed Removed" });
-                    });
+                    RemoveNodeCallback(node, nameof(RemoveFailedCommand), "Failed Node Removed");
                 }
                 StartSmartListener();
                 return ret;
             }
+        }
+
+        /// <summary>
+        /// Removes a node from the configuration and updates related provisioning data.
+        /// </summary>
+        /// <remarks>This method performs the following operations: <list type="bullet">
+        /// <item><description>Removes the specified node from the configuration.</description></item>
+        /// <item><description>Updates the provisioning list and sets the state of the related item to <see
+        /// cref="PreKittingState.Pending"/>.</description></item> <item><description>Notifies the application of
+        /// changes to the node list and the success of the removal operation.</description></item> </list> The method
+        /// executes these operations on the application's main thread using <see
+        /// cref="ApplicationModel.Invoke(Action)"/>.</remarks>
+        /// <param name="node">The <see cref="NodeTag"/> representing the node to be removed.</param>
+        /// <param name="actionName">The name of the action associated with the removal operation. This is used for notification purposes.</param>
+        /// <param name="message">An optional message to include in the notification. If null or empty, a default message is used.</param>
+        private void RemoveNodeCallback(NodeTag node, string actionName, string message = null)
+        {
+            ApplicationModel.Invoke(() =>
+            {
+                ApplicationModel.ConfigurationItem.RemoveNode(node);
+                var item = ApplicationModel.ConfigurationItem.PreKitting.ProvisioningList.FirstOrDefault(i => i.NodeId == node.Id);
+                if (item != null)
+                {
+                    ApplicationModel.ConfigurationItem.PreKitting.UpdateProvisioningItem(item.Dsk, new NodeTag(), PreKittingState.Pending);
+                }
+                ApplicationModel.NotifyControllerChanged(NotifyProperty.NodesList);
+                ApplicationModel.NotifyControllerChanged(NotifyProperty.CommandSucceeded, new NotifyCommandData
+                {
+                    CommandName = actionName,
+                    Message = string.IsNullOrEmpty(message) ? "Node Removed" : message
+                });
+            });
         }
 
         public ActionResult IsFailedNode(NodeTag node, out ActionToken requestToken)
@@ -2414,12 +2439,9 @@ namespace ZWaveController.Models
                     Thread.Sleep(WAIT_AFTER_ADD_REMOVE_NODE_TIMEOUT); // Wait a little for child action (remove node) to be completed.
                     if (result)
                     {
-                        ApplicationModel.Invoke(() =>
-                        {
-                            ApplicationModel.ConfigurationItem.RemoveNode(result.Node);
-                            ApplicationModel.NotifyControllerChanged(NotifyProperty.NodesList);
-                            ApplicationModel.NotifyControllerChanged(NotifyProperty.CommandSucceeded, new NotifyCommandData { CommandName = nameof(RemoveNodeCommand), Message = "Node Removed" });
-                        });
+                        RemoveNodeCallback(result.Node, nameof(RemoveNodeCommand), "Node Removed");
+
+
                     }
                     else if (result.State == ActionStates.Cancelled)
                     {
@@ -2550,12 +2572,8 @@ namespace ZWaveController.Models
                 Thread.Sleep(WAIT_AFTER_ADD_REMOVE_NODE_TIMEOUT); // Wait a little for child action (remove node) to be completed
                 if (ret)
                 {
-                    ApplicationModel.Invoke(() =>
-                    {
-                        ApplicationModel.ConfigurationItem.RemoveNode(ret.Node);
-                        ApplicationModel.NotifyControllerChanged(NotifyProperty.NodesList);
-                        ApplicationModel.NotifyControllerChanged(NotifyProperty.CommandSucceeded, new NotifyCommandData { CommandName = nameof(RemoveNodeCommand), Message = "Node Removed" });
-                    });
+                    RemoveNodeCallback(ret.Node, nameof(RemoveNodeCommand), "Node Removed");
+
                     WakeUpNodesService.WakeUpNodeHealthStatuses.TryRemove(ret.Node, out var container);
                 }
                 StartSmartListener();
@@ -2948,11 +2966,11 @@ namespace ZWaveController.Models
                 {
                     ThreadPool.QueueUserWorkItem((y) =>
                     {
-                        Thread.Sleep(1200); //Device is not fast enough to reset itself (S2 behaviour) 600 + Broadcast frame 600
-                        var item = ApplicationModel.ConfigurationItem.PreKitting.ProvisioningList.FirstOrDefault(i => i.NodeId == node.Id);
-                        _device.SendData(node, new byte[1], ControllerSessionsContainer.Config.TxOptions);
                         if (!_device.IsEndDeviceApi)
                         {
+                            Thread.Sleep(1200); //Device is not fast enough to reset itself (S2 behaviour) 600 + Broadcast frame 600
+                            var item = ApplicationModel.ConfigurationItem.PreKitting.ProvisioningList.FirstOrDefault(i => i.NodeId == node.Id);
+                            _device.SendData(node, new byte[1], ControllerSessionsContainer.Config.TxOptions); // nop to ensure that device is reset
                             var removeFailedRes = RemoveFailedNode(node, out _removeFailedToken);
                             if (removeFailedRes && item != null && ApplicationModel.SmartStartModel.IsRemoveDSK)
                             {
@@ -3137,11 +3155,7 @@ namespace ZWaveController.Models
                         }
                         break;
                     case ControllerUpdateStatuses.DeleteDone:
-                        ApplicationModel.Invoke(() =>
-                        {
-                            ApplicationModel.ConfigurationItem.RemoveNode(node);
-                            ApplicationModel.NotifyControllerChanged(NotifyProperty.NodesList);
-                        });
+                        RemoveNodeCallback(node, nameof(ControllerUpdateCallback), "Node Removed by Secondary");
                         break;
                     case ControllerUpdateStatuses.SucId:
                         {
@@ -3669,18 +3683,21 @@ namespace ZWaveController.Models
         {
             CommandExecutionResult ret = CommandExecutionResult.Failed;
             rfRegion = RfRegions.Undefined;
-            var res = _device.GetRfRegion();
-            if (res)
+            if (ChipTypeSupported.TransmitSettings(_device.ChipType))
             {
-                rfRegion = res.RfRegion;
-                ret = CommandExecutionResult.OK;
+                var res = _device.GetRfRegion();
+                if (res)
+                {
+                    rfRegion = res.RfRegion;
+                    ret = CommandExecutionResult.OK;
+                }
             }
             return ret;
         }
 
         public CommandExecutionResult SetRfRegion(RfRegions rfRegion)
         {
-            if (_device.SetRfRegion(rfRegion))
+            if (ChipTypeSupported.TransmitSettings(_device.ChipType) && _device.SetRfRegion(rfRegion))
             {
                 var expectToken = _device.Expect(new ByteIndex[] { 0x00, 0x0A }, 5000, null);
                 var caption = "Set Rf Region";
@@ -3727,7 +3744,8 @@ namespace ZWaveController.Models
             var busyText = $"Trying {caption}...";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdSetDcdcMode))
+                if (ChipTypeSupported.TransmitSettings(_device.ChipType) &&
+                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdSetDcdcMode))
                 {
                     var res = _device.SetDcdcMode(dcdcMode);
                     ret = res ? CommandExecutionResult.OK : ret;
@@ -3749,7 +3767,8 @@ namespace ZWaveController.Models
             var busyText = $"Trying {caption}...";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetDcdcMode))
+                if (ChipTypeSupported.TransmitSettings(_device.ChipType) &&
+                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetDcdcMode))
                 {
                     var res = _device.GetDcdcMode();
                     ApplicationModel.TransmitSettingsModel.DcdcMode = res.DcdcMode;
@@ -3810,7 +3829,8 @@ namespace ZWaveController.Models
             var busyText = "Trying Get LR Channel...";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetLRChannel))
+                if (ChipTypeSupported.TransmitSettings(_device.ChipType) &&
+                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetLRChannel))
                 {
                     var res = _device.GetLRChannel();
                     ApplicationModel.TransmitSettingsModel.LRChannel = res.Channel;
@@ -3832,7 +3852,8 @@ namespace ZWaveController.Models
             var busyText = $"Tying to {caption}...";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdSetLRChannel))
+                if (ChipTypeSupported.TransmitSettings(_device.ChipType) &&
+                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdSetLRChannel))
                 {
                     var res = _device.SetLRChannel(channel);
                     ret = res ? CommandExecutionResult.OK : ret;
@@ -3854,7 +3875,8 @@ namespace ZWaveController.Models
             var busyText = $"Trying Get {caption}...";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetRadioPTI))
+                if (ChipTypeSupported.TransmitSettings(_device.ChipType) &&
+                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetRadioPTI))
                 {
                     var res = _device.IsRadioPTI();
                     ApplicationModel.TransmitSettingsModel.IsRadioPTIEnabled = res && res.IsEnabled;
@@ -3878,7 +3900,8 @@ namespace ZWaveController.Models
             var expectToken = _device.Expect(new ByteIndex[] { 0x00, 0x0A }, 5000, null);
             using (var logAction = ReportAction(caption, busyText, expectToken))
             {
-                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdEnableRadioPTI))
+                if (ChipTypeSupported.TransmitSettings(_device.ChipType) &&
+                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdEnableRadioPTI))
                 {
                     var res = _device.EnableRadioPTI(isEnabled);
                     ret = res ? CommandExecutionResult.OK : ret;
@@ -3903,7 +3926,8 @@ namespace ZWaveController.Models
             var busyText = "Trying Clear Network Stats..";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdClearNetworkStats))
+                if (ChipTypeSupported.NetworkStatistics(_device.ChipType) &&
+                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdClearNetworkStats))
                 {
                     var res = _device.ClearNetworkStats();
                     ApplicationModel.Invoke(() =>
@@ -3933,7 +3957,8 @@ namespace ZWaveController.Models
             var busyText = "Trying Get Network Stats..";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetNetworkStats))
+                if (ChipTypeSupported.NetworkStatistics(_device.ChipType) &&
+                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetNetworkStats))
                 {
                     var res = _device.GetNetworkStats();
                     if (res)
@@ -3966,7 +3991,8 @@ namespace ZWaveController.Models
             var busyText = "Trying Clear Tx Timer..";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdClearTxTimer))
+                if (ChipTypeSupported.NetworkStatistics(_device.ChipType) &&
+                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdClearTxTimer))
                 {
                     var res = _device.ClearTxTimers();
                     if (res)
@@ -3998,7 +4024,8 @@ namespace ZWaveController.Models
             var busyText = "Trying Get Tx Timer..";
             using (var logAction = ReportAction(caption, busyText, null))
             {
-                if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetTxTimer))
+                if (ChipTypeSupported.NetworkStatistics(_device.ChipType) &&
+                    _device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdGetTxTimer))
                 {
                     var res = _device.GetTxTimer();
                     if (res)

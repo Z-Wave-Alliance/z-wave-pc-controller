@@ -1,6 +1,6 @@
 /// SPDX-License-Identifier: BSD-3-Clause
 /// SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
-﻿using System.Linq;
+using System.Linq;
 using Utils;
 using ZWave.Devices;
 using ZWave.BasicApplication.Enums;
@@ -32,6 +32,7 @@ namespace ZWaveController.Commands
             TopologyMapModel.Legend.Clear();
             foreach (ISelectableItem<NodeTag> node in ControllerSession.ApplicationModel.ConfigurationItem.Nodes.Where(x => x.Item.EndPointId == 0).ToArray())
             {
+                //TODO: Review use non-repeaters?
                 var result = (SessionDevice as Controller).GetRoutingInfo(node.Item, 0, 0);
                 if (result)
                 {

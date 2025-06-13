@@ -303,6 +303,8 @@ namespace ZWaveControllerUI.Models
                                 continue;
                             if (!isIncludeNonListeningNodes && !ApplicationModel.Controller.Network.IsDeviceListening(idev.Device))
                                 continue;
+                            if (ApplicationModel.Controller.Network.IsVirtual(idev.Device))
+                                continue;
 
                             if (ret == null)
                                 ret = new List<IIMAEntity>();

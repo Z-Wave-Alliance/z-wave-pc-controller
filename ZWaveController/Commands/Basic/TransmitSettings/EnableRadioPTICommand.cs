@@ -17,6 +17,7 @@ namespace ZWaveController.Commands
             UseBackgroundThread = true;
             _canExecute = param => ControllerSession is BasicControllerSession &&
                                     ApplicationModel.Controller != null &&
+                                    ChipTypeSupported.TransmitSettings(ApplicationModel.Controller.ChipType) &&
                                     SessionDevice.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdEnableRadioPTI);
         }
 
