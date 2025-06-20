@@ -12,9 +12,9 @@ using System.Windows;
 [assembly: AssemblyTitle("ZWaveControllerUI")]
 [assembly: AssemblyDescription("Z-Wave tool for communicating with Z-Wave nodes through Serial API based static controller and sample application for Windows platform.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Silicon Labs")]
+[assembly: AssemblyCompany("Silicon Labs, Trident IoT, Z-Wave Alliance")]
 [assembly: AssemblyProduct("Z-Wave PC Controller 5")]
-[assembly: AssemblyCopyright("© 2018 Silicon Labs, Inc. All rights reserved.")]
+[assembly: AssemblyCopyright("© 2018 Silicon Labs, Inc. All rights reserved. © 2025 Trident IoT All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -52,4 +52,4 @@ using System.Windows;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("25.1.0.0")]
+[assembly: AssemblyVersion("25.3.0.0")]
