@@ -16,7 +16,6 @@ namespace ZWaveController.Commands
             Text = "Get Background RSSI Levels Command";
             _canExecute = param => ControllerSession is BasicControllerSession &&
                         ApplicationModel.Controller != null &&
-                        ChipTypeSupported.TransmitSettings(ApplicationModel.Controller.ChipType) &&
                         SessionDevice.SupportedSerialApiCommands.Contains((byte)CommandType) &&
                         !ApplicationModel.NetworkStatisticsModel.IsJammingDetectionOn;
 

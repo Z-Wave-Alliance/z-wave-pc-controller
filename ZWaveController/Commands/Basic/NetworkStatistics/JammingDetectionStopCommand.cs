@@ -10,13 +10,12 @@ namespace ZWaveController.Commands
     public class JammingDetectionStopCommand : NetworkStatisticsCommandBase
     {
         public override CommandTypes CommandType => CommandTypes.CmdGetBackgroundRSSI;
-        
+
         public JammingDetectionStopCommand(IControllerSession controllerSession) : base(controllerSession)
         {
             Text = "Jamming Detection Stop Command";
             _canExecute = param => ControllerSession is BasicControllerSession &&
                         ApplicationModel.Controller != null &&
-                        ChipTypeSupported.TransmitSettings(ApplicationModel.Controller.ChipType) &&
                         SessionDevice.SupportedSerialApiCommands.Contains((byte)CommandType) &&
                         ApplicationModel.NetworkStatisticsModel.IsJammingDetectionOn;
 
