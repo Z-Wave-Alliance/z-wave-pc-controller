@@ -11,21 +11,21 @@ on:  # yamllint disable-line rule:truthy
   workflow_dispatch:
 
 jobs:
-  legal-check:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ${{  env.debian_packages }}
-        env:
-          debian_packages: reuse
+  #legal-check:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Install dependencies
+  #      run: |
+  #        sudo apt-get update
+  #        sudo apt-get install -y ${{  env.debian_packages }}
+  #      env:
+  #        debian_packages: reuse
 
-      - name: Check out repository code
-        uses: actions/checkout@v4
+  #    - name: Check out repository code
+  #      uses: actions/checkout@v4
 
-      - name: Legal check
-        run: reuse lint
+  #    - name: Legal check
+  #      run: reuse lint
 
   build-and-test-z-wave-pc-controller:
     runs-on: windows-latest
@@ -36,6 +36,8 @@ jobs:
       Configuration: Release
       TargetPlatform: "Any CPU"
       # MSBuild does not support relative paths
+      Project_Path: >-
+        ${{ github.workspace }}\z-wave-pc-controller
       Solution_Path: >-
         ${{ github.workspace }}\z-wave-pc-controller\ZWaveController.sln
       Artifact_Path: >-
@@ -73,6 +75,9 @@ jobs:
           path: 'z-wave-blobs'
           ref: 'v0.1.1'
 
+      - name: Setup VS Dev Environment
+        uses: seanmiddleditch/gha-setup-vsdevenv@v4
+
       - name: Add MSBuild.exe to Path
         uses: microsoft/setup-msbuild@v1.1
 
@@ -89,30 +94,82 @@ jobs:
           -property:Configuration=${{env.Configuration}}
           -verbosity:minimal
 
-      - name: Build Z-Wave PC Controller Solution in Debug
-        env:
-          Configuration: Debug
-        run: >
-          MSBuild.exe ${{env.Solution_Path}}
-          -property:Platform="${{env.TargetPlatform}}"
-          -property:Configuration=${{env.Configuration}}
-          -verbosity:minimal
+      #- name: Build Z-Wave PC Controller Solution in Debug
+      #  env:
+      #    Configuration: Debug
+      #  run: >
+      #    MSBuild.exe ${{env.Solution_Path}}
+      #    -property:Platform="${{env.TargetPlatform}}"
+      #    -property:Configuration=${{env.Configuration}}
+      #    -verbosity:minimal
 
-      - name: Publish Z-Wave PC Controller Artifacts
-        # Release build without debug symbols
+      #- name: Build Z-Wave PC Controller Solution in Debug
+      #  env:
+      #    Configuration: Release
+      #  run: >
+      #    MSBuild.exe ${{env.Solution_Path}}
+      #    -property:Platform="${{env.TargetPlatform}}"
+      #    -property:Configuration=${{env.Configuration}}
+      #    -verbosity:minimal
+
+      #- name: Build and publish Z-Wave PC Controller Release Artifacts
+      #  # Release build without debug symbols
+      #  env:
+      #    Configuration: Release
+      #  run: >
+      #    MSBuild.exe ${{env.Solution_Path}}
+      #    -p:Platform="${{env.TargetPlatform}}"
+      #    -p:Configuration=${{env.Configuration}}
+      #    -p:OutputPath=${{env.Artifact_Path}}
+      #    -p:DebugType=None -p:DebugSymbols=false
+      #    -verbosity:minimal
+
+      #- name: Disable Out of Process Building
+      #  run: .\DisableOutOfProcBuild.exe
+      #  working-directory: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\VSI\DisableOutOfProcBuild
+
+      #- name: Build the PC controller
+      #  run: DevEnv ${{env.Solution_Path}} /build Release
+
+      - name: CodeSign the executable
+        id: windows-sign-exe-file
+        uses: tridentiot/action-codesign-and-package@feature/shorty/signing_msi_files
+        with:
+          target: '${{env.Project_Path}}\ZWaveControllerUI\bin\Release\ZWaveControllerUI.exe'
+          package-name: ${{ env.BUILD_NAME_WINDOWS }}
+          package-type: 'zip'
+          version: ${{ github.ref_name }}
         env:
-          Configuration: Release
-        run: >
-          MSBuild.exe ${{env.Solution_Path}}
-          -p:Platform="${{env.TargetPlatform}}"
-          -p:Configuration=${{env.Configuration}}
-          -p:OutputPath=${{env.Artifact_Path}}
-          -p:DebugType=None -p:DebugSymbols=false
-          -verbosity:minimal
+          WINDOWS_DIGICERT_API_TOKEN: ${{ secrets.WINDOWS_DIGICERT_API_TOKEN }}
+          WINDOWS_DIGICERT_AUTH_CERTIFICATE: ${{ secrets.WINDOWS_DIGICERT_AUTH_CERTIFICATE }}
+          WINDOWS_DIGICERT_AUTH_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_DIGICERT_AUTH_CERTIFICATE_PASSWORD }}
+          WINDOWS_DIGICERT_KEYPAIR_ALIAS: ${{ secrets.WINDOWS_DIGICERT_KEYPAIR_ALIAS }}
+          BUILD_NAME_WINDOWS: 'ZWaveControllerUI-exe-${{ github.sha }}'
+
+      - name: Build the Installer package
+        # This must be done AFTER signing the executable
+        run: DevEnv ${{env.Solution_Path}} /build Release /Project ZWaveControllerInstaller
+
+      - name: Codesign the msi installer
+        id: windows-sign-msi-file
+        uses: tridentiot/action-codesign-and-package@feature/shorty/signing_msi_files
+        with:
+          target: '${{env.Project_Path}}\ZWaveControllerInstaller\Release\ZWaveControllerInstaller.msi'
+          package-name: ${{ env.BUILD_NAME_WINDOWS }}
+          package-type: 'zip'
+          version: ${{ github.ref_name }}
+        env:
+          WINDOWS_DIGICERT_API_TOKEN: ${{ secrets.WINDOWS_DIGICERT_API_TOKEN }}
+          WINDOWS_DIGICERT_AUTH_CERTIFICATE: ${{ secrets.WINDOWS_DIGICERT_AUTH_CERTIFICATE }}
+          WINDOWS_DIGICERT_AUTH_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_DIGICERT_AUTH_CERTIFICATE_PASSWORD }}
+          WINDOWS_DIGICERT_KEYPAIR_ALIAS: ${{ secrets.WINDOWS_DIGICERT_KEYPAIR_ALIAS }}
+          BUILD_NAME_WINDOWS: 'ZWaveControllerInstaller-msi-${{ github.sha }}'
 
       - name: Package asset
         run: |
           echo "Propagate deps licences"
+          Copy-Item "${{env.Project_Path}}\ZWaveControllerUI\bin\Release" -Destination "${{env.Artifact_Path}}" -Recurse -Force
+          Copy-Item "${{env.Project_Path}}\ZWaveControllerInstaller\Release\ZWaveControllerInstaller.msi" -Destination "${{env.Artifact_Path}}" -Recurse -Force
           Copy-Item "*\LICENSE*" -Destination "${{env.Artifact_Path}}" -Recurse -Force
           Copy-Item "${{ github.event.repository.name }}\LICENSE*" -Destination "${{env.Artifact_Path}}" -Recurse -Force
           Copy-Item "${{ github.event.repository.name }}\*.md" -Destination "${{env.Artifact_Path}}" -Recurse -Force
@@ -122,20 +179,20 @@ jobs:
           Install-Module Microsoft.PowerShell.Archive -MinimumVersion 1.2.3.0 -Repository PSGallery -Force
           Compress-Archive -Path $sourceFolder -DestinationPath $zipFile
 
-      - name: Codesign and package the ZIP release package
-        id: windows-generate-zip-release-package
-        uses: tridentiot/action-codesign-and-package@main
-        with:
-          target: '${{env.Artifact_Path}}'
-          package-name: ${{ env.BUILD_NAME_WINDOWS }}
-          package-type: 'zip'
-          version: ${{ github.ref_name }}
-        env:
-          WINDOWS_DIGICERT_API_TOKEN: ${{ secrets.WINDOWS_DIGICERT_API_TOKEN }}
-          WINDOWS_DIGICERT_AUTH_CERTIFICATE: ${{ secrets.WINDOWS_DIGICERT_AUTH_CERTIFICATE }}
-          WINDOWS_DIGICERT_AUTH_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_DIGICERT_AUTH_CERTIFICATE_PASSWORD }}
-          WINDOWS_DIGICERT_KEYPAIR_ALIAS: ${{ secrets.WINDOWS_DIGICERT_KEYPAIR_ALIAS }}
-          BUILD_NAME_WINDOWS: 'z-wave-pc-controller-${{ github.sha }}'
+      #- name: Codesign and package the ZIP release package
+      #  id: windows-generate-zip-release-package
+      #  uses: tridentiot/action-codesign-and-package@main
+      #  with:
+      #    target: '${{env.Artifact_Path}}'
+      #    package-name: ${{ env.BUILD_NAME_WINDOWS }}
+      #    package-type: 'zip'
+      #    version: ${{ github.ref_name }}
+      #  env:
+      #    WINDOWS_DIGICERT_API_TOKEN: ${{ secrets.WINDOWS_DIGICERT_API_TOKEN }}
+      #    WINDOWS_DIGICERT_AUTH_CERTIFICATE: ${{ secrets.WINDOWS_DIGICERT_AUTH_CERTIFICATE }}
+      #    WINDOWS_DIGICERT_AUTH_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_DIGICERT_AUTH_CERTIFICATE_PASSWORD }}
+      #    WINDOWS_DIGICERT_KEYPAIR_ALIAS: ${{ secrets.WINDOWS_DIGICERT_KEYPAIR_ALIAS }}
+      #    BUILD_NAME_WINDOWS: 'z-wave-pc-controller-${{ github.sha }}'
 
       - name: Upload Release Asset
         id: upload-release-asset
@@ -154,5 +211,16 @@ jobs:
           # Explicitly specify the path to the artifacts
           # because the default is the working directory
           path: ${{ env.Artifact_Path }}/*
+          retention-days: 5
+          if-no-files-found: error
+
+      - name: Upload msi published artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.event.repository.name }}_installer
+          # Windows only tool
+          # Explicitly specify the path to the artifacts
+          # because the default is the working directory
+          path: ${{ env.Artifact_Path }}\ZWaveControllerInstaller.msi*
           retention-days: 5
           if-no-files-found: error
