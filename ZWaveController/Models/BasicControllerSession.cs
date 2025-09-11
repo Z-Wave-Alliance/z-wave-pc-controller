@@ -146,35 +146,26 @@ namespace ZWaveController.Models
                     {
                         _device = appLayer.CreateBridgeController(_device, false);
                         _device.Library = versionRes.Library;
-                        if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdZWaveGetProtocolVersion))
-                        {
-                            ProtocolVersionResult protocolVersionRes = _device.GetProtocolVersion();
-                            _device.Version = protocolVersionRes.ZWaveProtocolVersion;
-                        }
-                        else
-                        {
-                            _device.Version = versionRes.Version;
-                        }
                     }
                     else if (versionRes.Library == Libraries.EndDeviceLib || versionRes.Library == Libraries.EndDeviceSysTestLib)
                     {
                         _device = appLayer.CreateEndDevice(_device, false);
                         _device.Library = versionRes.Library;
-                        if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdZWaveGetProtocolVersion))
-                        {
-                            ProtocolVersionResult protocolVersionRes = _device.GetProtocolVersion();
-                            _device.Version = protocolVersionRes.ZWaveProtocolVersion;
-                        }
-                        else
-                        {
-                            _device.Version = versionRes.Version;
-                        }
                         _device.DSK = _device.GetSecurityS2PublicDSK().DSK;
+                    }
+                    _device.SerialApiGetCapabilities();
+                    if (_device.SupportedSerialApiCommands.Contains((byte)CommandTypes.CmdZWaveGetProtocolVersion))
+                    {
+                        ProtocolVersionResult protocolVersionRes = _device.GetProtocolVersion();
+                        _device.Version = protocolVersionRes.ZWaveProtocolVersion;
+                    }
+                    else
+                    {
+                        _device.Version = versionRes.Version;
                     }
                     _device.SerialApiSetNodeIdBaseType(2);
                     _device.GetPRK();
                     _device.SerialApiGetInitData();
-                    _device.SerialApiGetCapabilities();
                     if (_device.Library == Libraries.EndDeviceSysTestLib ||
                         _device.Library == Libraries.EndDeviceLib ||
                         _device.Library == Libraries.ControllerStaticLib ||
