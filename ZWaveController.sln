@@ -21,12 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZWave", "..\z-wave-tools-co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZWaveXml", "..\z-wave-tools-core\ZWaveXml\ZWaveXml.csproj", "{FEB030F9-A44A-4C72-9C28-C8FA186995FB}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "ZWaveControllerInstaller", "ZWaveControllerInstaller\ZWaveControllerInstaller.vdproj", "{ABC6C648-989D-7E73-F656-A1EC7FCCE85C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B214D482-57EB-42BE-AEC7-D64850F56514} = {B214D482-57EB-42BE-AEC7-D64850F56514}
-		{CBCD0B30-1DA2-4B4E-977C-631FF02887CA} = {CBCD0B30-1DA2-4B4E-977C-631FF02887CA}
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,7 +45,6 @@ Global
 		{DD57A974-E2E4-4E8E-9847-C7BAC0BB94A0}.Setup_Debug|x64.ActiveCfg = Debug|Any CPU
 		{DD57A974-E2E4-4E8E-9847-C7BAC0BB94A0}.Setup_Debug|x64.Build.0 = Debug|Any CPU
 		{DD57A974-E2E4-4E8E-9847-C7BAC0BB94A0}.Setup_Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DD57A974-E2E4-4E8E-9847-C7BAC0BB94A0}.Setup_Release|Any CPU.Build.0 = Release|Any CPU
 		{DD57A974-E2E4-4E8E-9847-C7BAC0BB94A0}.Setup_Release|x64.ActiveCfg = Release|Any CPU
 		{DD57A974-E2E4-4E8E-9847-C7BAC0BB94A0}.Setup_Release|x64.Build.0 = Release|Any CPU
 		{CBCD0B30-1DA2-4B4E-977C-631FF02887CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -66,7 +59,6 @@ Global
 		{CBCD0B30-1DA2-4B4E-977C-631FF02887CA}.Setup_Debug|x64.ActiveCfg = Debug|Any CPU
 		{CBCD0B30-1DA2-4B4E-977C-631FF02887CA}.Setup_Debug|x64.Build.0 = Debug|Any CPU
 		{CBCD0B30-1DA2-4B4E-977C-631FF02887CA}.Setup_Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CBCD0B30-1DA2-4B4E-977C-631FF02887CA}.Setup_Release|Any CPU.Build.0 = Release|Any CPU
 		{CBCD0B30-1DA2-4B4E-977C-631FF02887CA}.Setup_Release|x64.ActiveCfg = Release|Any CPU
 		{CBCD0B30-1DA2-4B4E-977C-631FF02887CA}.Setup_Release|x64.Build.0 = Release|Any CPU
 		{2E351174-ED53-4E8A-A065-3E15A7E228B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -149,15 +141,6 @@ Global
 		{FEB030F9-A44A-4C72-9C28-C8FA186995FB}.Setup_Release|Any CPU.Build.0 = Release|Any CPU
 		{FEB030F9-A44A-4C72-9C28-C8FA186995FB}.Setup_Release|x64.ActiveCfg = Release|Any CPU
 		{FEB030F9-A44A-4C72-9C28-C8FA186995FB}.Setup_Release|x64.Build.0 = Release|Any CPU
-		{ABC6C648-989D-7E73-F656-A1EC7FCCE85C}.Debug|Any CPU.ActiveCfg = Debug
-		{ABC6C648-989D-7E73-F656-A1EC7FCCE85C}.Debug|x64.ActiveCfg = Debug
-		{ABC6C648-989D-7E73-F656-A1EC7FCCE85C}.Release|Any CPU.ActiveCfg = Release
-		{ABC6C648-989D-7E73-F656-A1EC7FCCE85C}.Release|Any CPU.Build.0 = Release
-		{ABC6C648-989D-7E73-F656-A1EC7FCCE85C}.Release|x64.ActiveCfg = Release
-		{ABC6C648-989D-7E73-F656-A1EC7FCCE85C}.Setup_Debug|Any CPU.ActiveCfg = Debug
-		{ABC6C648-989D-7E73-F656-A1EC7FCCE85C}.Setup_Debug|x64.ActiveCfg = Debug
-		{ABC6C648-989D-7E73-F656-A1EC7FCCE85C}.Setup_Release|Any CPU.ActiveCfg = Release
-		{ABC6C648-989D-7E73-F656-A1EC7FCCE85C}.Setup_Release|x64.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
