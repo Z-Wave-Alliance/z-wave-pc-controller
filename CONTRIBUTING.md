@@ -1,6 +1,6 @@
 # Contributing
 
-All types of contributions are encouraged and valued. 
+All types of contributions are encouraged and valued.
 
 Contributions are welcome in the form of pull requests.
 All incoming pull requests should be tested on the developer's own fork beforehand.
@@ -11,6 +11,12 @@ Reading existing documents might help to get your contribution smoothly accepted
 
 https://github.com/Z-Wave-Alliance/OSWG
 
+Currently, guidelines are available only to
+[Z-Wave-Alliance members](https://z-wavealliance.org/join-z-wave-alliance-now/),
+
+At this stage, contributions are open to the Z-Wave Alliance Working Group Members,
+while community contributions may be considered with a "best effort strategy" by @Z-Wave-Alliance/oswg-community-leaders"
+
 # Testing code
 
 Since [Z-Wave development is not (yet) public](https://github.com/Z-Wave-Alliance/OSWG/discussions/41)
@@ -18,7 +24,7 @@ Since [Z-Wave development is not (yet) public](https://github.com/Z-Wave-Allianc
 This chapter explains how to deal with permission issues between related projects.
 
 To test your code, first, create a fork of this repository.
- 
+
 Then, generate a personal access token.\
 Click [here](https://github.com/settings/tokens) or navigate to
 *Settings/Developer/Personal access tokens/Tokens (classic)*, click on
