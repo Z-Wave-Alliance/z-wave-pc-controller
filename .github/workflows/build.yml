@@ -131,7 +131,7 @@ jobs:
           WINDOWS_DIGICERT_AUTH_CERTIFICATE: ${{ secrets.WINDOWS_DIGICERT_AUTH_CERTIFICATE }}
           WINDOWS_DIGICERT_AUTH_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_DIGICERT_AUTH_CERTIFICATE_PASSWORD }}
           WINDOWS_DIGICERT_KEYPAIR_ALIAS: ${{ secrets.WINDOWS_DIGICERT_KEYPAIR_ALIAS }}
-          BUILD_NAME_WINDOWS: 'z-wave-pc-controller-${{ github.sha }}'
+          BUILD_NAME_WINDOWS: 'z-wave-pc-controller-${{ github.ref_name }}'
 
       - name: Upload Release Asset
         id: upload-release-asset
