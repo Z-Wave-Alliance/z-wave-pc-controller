@@ -80,15 +80,6 @@ jobs:
         run: >
           MSBuild.exe ${{env.Solution_Path}} -restore -verbosity:minimal
 
-      - name: Build Z-Wave PC Controller Solution in Release
-        env:
-          Configuration: Release
-        run: >
-          MSBuild.exe ${{env.Solution_Path}}
-          -property:Platform="${{env.TargetPlatform}}"
-          -property:Configuration=${{env.Configuration}}
-          -verbosity:minimal
-
       - name: Build Z-Wave PC Controller Solution in Debug
         env:
           Configuration: Debug
@@ -98,7 +89,7 @@ jobs:
           -property:Configuration=${{env.Configuration}}
           -verbosity:minimal
 
-      - name: Publish Z-Wave PC Controller Artifacts
+      - name: Build Z-Wave PC Controller Release Artifacts
         # Release build without debug symbols
         env:
           Configuration: Release
@@ -115,7 +106,11 @@ jobs:
           echo "Propagate deps licences"
           Copy-Item "*\LICENSE*" -Destination "${{env.Artifact_Path}}" -Recurse -Force
           Copy-Item "${{ github.event.repository.name }}\LICENSE*" -Destination "${{env.Artifact_Path}}" -Recurse -Force
-          Copy-Item "${{ github.event.repository.name }}\*.md" -Destination "${{env.Artifact_Path}}" -Recurse -Force
+          # Copy-Item "${{ github.event.repository.name }}\*.md" -Destination "${{env.Artifact_Path}}" -Recurse -Force
+          # Remove unused/debug files
+          Remove-Item -Path "${{env.Artifact_Path}}\*.pdb" -Force
+          Remove-Item -Path "${{env.Artifact_Path}}\Renci.SshNet.Async.dll" -Force
+          Remove-Item -Path "${{env.Artifact_Path}}\ZWaveController.dll.config" -Force
           $zipFile = "${{ github.workspace }}\${{ github.event.repository.name }}-${{ steps.describe.outputs.describe }}.zip"
           $sourceFolder = "${{env.Artifact_Path}}"
           echo "Fix for IO.Compression.ZipFile issue: https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/48"
@@ -125,6 +120,7 @@ jobs:
       - name: Codesign and package the ZIP release package
         id: windows-generate-zip-release-package
         uses: tridentiot/action-codesign-and-package@main
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           target: '${{env.Artifact_Path}}'
           package-name: ${{ env.BUILD_NAME_WINDOWS }}
