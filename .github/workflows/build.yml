@@ -1,14 +1,17 @@
 # YAML -*- mode: yaml; tab-width: 2; indent-tabs-mode: nil; coding: utf-8 -*-
 # SPDX-License-Identifier: BSD-3-Clause
-# SPDX-FileCopyrightText: 2024 Z-Wave Alliance
+# SPDX-FileCopyrightText: Z-Wave Alliance https://z-wavealliance.org
 # Demo copied from https://docs.github.com/en/actions/quickstart
 ---
 name: Build and Test Z-Wave PC Controller
 
 on:  # yamllint disable-line rule:truthy
-  pull_request:
-  push:
   workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize # Runs on each push when pull request exists.
 
 jobs:
   legal-check:
@@ -60,7 +63,8 @@ jobs:
         with:
           repository: 'Z-Wave-Alliance/z-wave-tools-core'
           path: 'z-wave-tools-core'
-          ref: 'v25.1.0'
+          submodules: "recursive"
+          ref: 'f8560f53911ddd1f280e45a30653b02a4c5e8298'
 
       # TODO: https://github.com/Z-Wave-Alliance/z-wave-pc-controller/issues/8
       - name: Checkout z-wave-blobs
@@ -68,7 +72,7 @@ jobs:
         with:
           repository: 'Z-Wave-Alliance/z-wave-blobs'
           path: 'z-wave-blobs'
-          ref: 'v0.1.1'
+          ref: '68d0958ee7f6a8653d1988be60b9c1681115122d'
 
       - name: Add MSBuild.exe to Path
         uses: microsoft/setup-msbuild@v1.1
