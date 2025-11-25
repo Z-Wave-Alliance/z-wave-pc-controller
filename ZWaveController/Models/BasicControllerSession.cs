@@ -834,7 +834,7 @@ namespace ZWaveController.Models
                     dataToSend.AddRange(fwData[firmwareDataIndex - 1]);
                     if (isAddCrc)
                     {
-                        short crc = Tools.CalculateCrc16(dataToSend);
+                        ushort crc = Tools.CalculateCrc16(dataToSend);
                         dataToSend.Add((byte)(crc >> 8));
                         dataToSend.Add((byte)crc);
                     }
