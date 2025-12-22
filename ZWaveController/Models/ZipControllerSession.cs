@@ -556,7 +556,7 @@ namespace ZWaveController.Models
                         }
                         dataToSend.Insert(3, (byte)firmwareDataIndex);
 
-                        short crc = Utils.Tools.CalculateCrc16(dataToSend);
+                        ushort crc = Utils.Tools.CalculateCrc16(dataToSend);
 
                         dataToSend.Add((byte)(crc >> 8));
                         dataToSend.Add((byte)crc);
@@ -610,7 +610,7 @@ namespace ZWaveController.Models
                         }
                         dataToSend.Insert(3, (byte)firmwareDataIndex);
 
-                        short crc = Utils.Tools.CalculateCrc16(dataToSend);
+                        ushort crc = Utils.Tools.CalculateCrc16(dataToSend);
 
                         dataToSend.Add((byte)(crc >> 8));
                         dataToSend.Add((byte)crc);
@@ -665,7 +665,7 @@ namespace ZWaveController.Models
                         }
                         dataToSend.Insert(3, (byte)firmwareDataIndex);
 
-                        short crc = Utils.Tools.CalculateCrc16(dataToSend);
+                        ushort crc = Utils.Tools.CalculateCrc16(dataToSend);
 
                         dataToSend.Add((byte)(crc >> 8));
                         dataToSend.Add((byte)crc);
@@ -721,7 +721,7 @@ namespace ZWaveController.Models
                         }
                         dataToSend.Insert(3, (byte)firmwareDataIndex);
 
-                        short crc = Utils.Tools.CalculateCrc16(dataToSend);
+                        ushort crc = Utils.Tools.CalculateCrc16(dataToSend);
 
                         dataToSend.Add((byte)(crc >> 8));
                         dataToSend.Add((byte)crc);
