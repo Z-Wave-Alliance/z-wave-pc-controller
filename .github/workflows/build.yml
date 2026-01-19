@@ -64,7 +64,7 @@ jobs:
           repository: 'Z-Wave-Alliance/z-wave-tools-core'
           path: 'z-wave-tools-core'
           submodules: "recursive"
-          ref: 'f8560f53911ddd1f280e45a30653b02a4c5e8298'
+          ref: '8fed3174539fe5359ba123465c25b655a53fbcf9'
 
       # TODO: https://github.com/Z-Wave-Alliance/z-wave-pc-controller/issues/8
       - name: Checkout z-wave-blobs
