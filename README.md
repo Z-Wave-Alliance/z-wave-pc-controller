@@ -11,16 +11,12 @@ The tool is mainly supporting Windows OS, but can also be used on other win32 ru
 
 ## Build prerequisites
 
-- [z-wave-blobs](https://github.com/Z-Wave-Alliance/z-wave-blobs/)
-- [z-wave-tools-core](https://github.com/Z-Wave-Alliance/z-wave-tools-core/)
-- [z-wave-pc-controller](https://github.com/Z-Wave-Alliance/z-wave-pc-controller)
 - [.NET Framework 4.8](https://dotnet.microsoft.com/en-us/download/visual-studio-sdks?cid=getdotnetsdk)
+- [z-wave-pc-controller](https://github.com/Z-Wave-Alliance/z-wave-pc-controller) with its submodules:
+  - [z-wave-tools-core](https://github.com/Z-Wave-Alliance/z-wave-tools-core):
+    - [z-wave-blobs](https://github.com/Z-Wave-Alliance/z-wave-blobs)
 
-[z-wave-blobs](https://github.com/Z-Wave-Alliance/z-wave-blobs/),
-[z-wave-tools-core](https://github.com/Z-Wave-Alliance/z-wave-tools-core/),
-and
-[z-wave-pc-controller](https://github.com/Z-Wave-Alliance/z-wave-pc-controller)
-must be at the same level.
+Submodules are using relative paths to ensure accessibility to GitHub actions. It means, when forked, the submodules need to be forked as well.
 
 The PC tools can be built on command line using [Build Tools for Visual Studio 2022](https://visualstudio.microsoft.com/downloads/).
 
@@ -54,3 +50,4 @@ MSBuild.exe z-wave-pc-controller\ZWaveController.sln -property:Platform="Any CPU
 SPDX-License-Identifier: BSD-3-Clause
 
 SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
+SPDX-FileCopyrightText: Z-Wave Alliance https://z-wavealliance.org

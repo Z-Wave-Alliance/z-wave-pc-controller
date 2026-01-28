@@ -12,23 +12,23 @@
         <Delete Files="@(FilesToDelete)" />
     </Target>
   <ItemGroup>
-    <Content Include="..\..\z-wave-tools-core\XmlFiles\ZWave_cmd_classes.xml">
+    <Content Include="..\z-wave-tools-core\XmlFiles\ZWave_cmd_classes.xml">
       <Link>XmlFiles\ZWave_cmd_classes.xml</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
     <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
-        <Content Include="..\lib\WebCamCapture\win\wcvcap64.dll" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="..\z-wave-tools-core\z-wave-blobs\z-wave-pc-controller\WebCamCapture\win\wcvcap64.dll" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
     <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x86'">
-        <Content Include="..\lib\WebCamCapture\win\wcvcap32.dll" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="..\z-wave-tools-core\z-wave-blobs\z-wave-pc-controller\WebCamCapture\win\wcvcap32.dll" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\z-wave-tools-core\BasicApplication\BasicApplication_netcore.csproj" />
-        <ProjectReference Include="..\..\z-wave-tools-core\Utils\Utils_netcore.csproj" />
-        <ProjectReference Include="..\..\z-wave-tools-core\ZipApplication\ZipApplication_netcore.csproj" />
-        <ProjectReference Include="..\..\z-wave-tools-core\ZWave\ZWave_netcore.csproj" />
-        <ProjectReference Include="..\..\z-wave-tools-core\ZWaveXml\ZWaveXml_netcore.csproj" />
+        <ProjectReference Include="..\z-wave-tools-core\BasicApplication\BasicApplication_netcore.csproj" />
+        <ProjectReference Include="..\z-wave-tools-core\Utils\Utils_netcore.csproj" />
+        <ProjectReference Include="..\z-wave-tools-core\ZipApplication\ZipApplication_netcore.csproj" />
+        <ProjectReference Include="..\z-wave-tools-core\ZWave\ZWave_netcore.csproj" />
+        <ProjectReference Include="..\z-wave-tools-core\ZWaveXml\ZWaveXml_netcore.csproj" />
     </ItemGroup>
     <ItemGroup>
         <Compile Include="**\*.cs" Exclude="Properties\**" />

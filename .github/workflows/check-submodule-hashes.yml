@@ -1,0 +1,92 @@
+# YAML -*- mode: yaml; tab-width: 2; indent-tabs-mode: nil; coding: utf-8 -*-
+# SPDX-License-Identifier: BSD-3-Clause
+# SPDX-FileCopyrightText: Z-Wave Alliance https://z-wavealliance.org
+
+name: Check Submodule References
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  verify-submodules:
+    name: Verify Submodule Refs on Main
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0  # required to retrieve the complete git history
+
+      - name: Check submodule references
+        shell: bash
+        run: |
+          echo "🔍 Checking submodules..."
+          failed=false
+
+          # Determine base URL (for relative submodule paths)
+          origin_url=$(git config --get remote.origin.url)
+          echo "Origin URL: $origin_url"
+
+          # Derive GitHub base (e.g. 'https://github.com/org')
+          if [[ "$origin_url" =~ ^https://github.com/([^/]+)/ ]]; then
+            base_url="https://github.com/${BASH_REMATCH[1]}"
+          elif [[ "$origin_url" =~ ^git@github.com:([^/]+)/ ]]; then
+            base_url="git@github.com:${BASH_REMATCH[1]}"
+          else
+            echo "⚠️  Could not determine base URL from $origin_url"
+            base_url=""
+          fi
+
+          # Retrieve all submodules from .gitmodules
+          while read path_key path; do
+          
+            url_key="${path_key/\.path/.url}"
+            url=$(git config --file .gitmodules --get "$url_key")
+
+            # Normalize relative submodule URLs
+            if [[ "$url" == ../* ]]; then
+              url="$base_url/${url#../}"
+              echo "🔗 Converted relative submodule URL to: $url"
+            fi
+
+            # Get the current commit hash of the submodule
+            commit=$(git rev-parse "HEAD:$path")
+
+            echo "➡️  Submodule: $path"
+            echo "    URL: $url"
+            echo "    Commit: $commit"
+
+            # Get the latest commit hash of the submodule's main branch
+            main_commit=$(git ls-remote "$url" refs/heads/main | awk '{print $1}')
+
+            if [ -z "$main_commit" ]; then
+              echo "⚠️  No main branch found for submodule!"
+              failed=true
+              continue
+            fi
+
+            # Check if the current commit exists in the submodule's main branch
+            git -C "$path" fetch origin main >/dev/null 2>&1
+            if git -C "$path" merge-base --is-ancestor "$commit" "origin/main"; then
+              echo "✅ Commit is part of the main branch."
+            else
+              echo "❌ Commit is NOT part of the main branch!"
+              failed=true
+            fi
+          done < <(git config --file .gitmodules --get-regexp path) # Use process substitution
+
+          if [ "$failed" = true ]; then
+            echo "🚫 Some submodules reference commits that are NOT part of their main branch!"
+            exit 1
+          fi
+
+          echo "🎉 All submodule references are part of their respective main branches!"

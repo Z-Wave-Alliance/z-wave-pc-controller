@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: BSD-3-Clause
+# SPDX-FileCopyrightText: Z-Wave-Alliance https://z-wavealliance.org
+
+[submodule "z-wave-tools-core"]
+	path = z-wave-tools-core
+	url = ../z-wave-tools-core.git
