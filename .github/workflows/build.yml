@@ -12,6 +12,9 @@ on:  # yamllint disable-line rule:truthy
       - opened
       - reopened
       - synchronize # Runs on each push when pull request exists.
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   legal-check:
