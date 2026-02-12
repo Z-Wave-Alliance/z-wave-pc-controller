@@ -1,6 +1,7 @@
 /// SPDX-License-Identifier: BSD-3-Clause
 /// SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
-﻿using System;
+/// SPDX-FileCopyrightText: Z-Wave Alliance https://z-wavealliance.org
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ZWave.CommandClasses;
@@ -57,8 +58,8 @@ namespace ZWaveController.Services
                 COMMAND_CLASS_WAKE_UP_V2.ID,
                 COMMAND_CLASS_TIME_PARAMETERS.ID,
             };
-            var commandClasses = _applicationModel.ZWaveDefinition.CommandClasses.Where(x => x.KeyId >= 0x20);
-            var defaultCcs = commandClasses.Where(cc => !notMandatory.Contains(cc.KeyId) && _defaultCommandClasses.Contains(cc.KeyId)).
+            var applicationLayerCCs = _applicationModel.ZWaveDefinition.CommandClasses.Where(x => x.KeyId >= 0x20);
+            var defaultCcs = applicationLayerCCs.Where(cc => !notMandatory.Contains(cc.KeyId) && _defaultCommandClasses.Contains(cc.KeyId)).
                     Select(cc => cc.KeyId).
                     ToList();
             if (_applicationModel.ConfigurationItem.SecuritySettings.IsEnabledS0)

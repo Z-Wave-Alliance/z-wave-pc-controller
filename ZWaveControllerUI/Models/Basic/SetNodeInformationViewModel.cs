@@ -1,6 +1,7 @@
 /// SPDX-License-Identifier: BSD-3-Clause
 /// SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
-﻿using System.Linq;
+/// SPDX-FileCopyrightText: Z-Wave Alliance https://z-wavealliance.org
+using System.Linq;
 using Utils.UI.Interfaces;
 using ZWave.Enums;
 using ZWave.Xml.Application;
@@ -125,7 +126,7 @@ namespace ZWaveControllerUI.Models
         public SetNodeInformationViewModel(IApplicationModel applicationModel) : base(applicationModel)
         {
             Title = "Set Node Information";
-            Description = "List of supported command classes (securelly supported will be managed by PC Controller)";
+            Description = "List of supported command classes (securely supported will be managed by PC Controller)";
 
             CommandClasses = ApplicationModel.ZWaveDefinition.CommandClasses.
                                 Where(x => x.KeyId >= 0x20).

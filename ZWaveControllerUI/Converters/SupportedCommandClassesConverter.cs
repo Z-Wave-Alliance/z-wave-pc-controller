@@ -1,6 +1,7 @@
 /// SPDX-License-Identifier: BSD-3-Clause
 /// SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
-﻿using System;
+/// SPDX-FileCopyrightText: Z-Wave Alliance https://z-wavealliance.org
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,19 +23,13 @@ namespace ZWaveControllerUI.Converters
                 if (values[1] as byte[] != null)
                 {
                     byte[] filter = values[1] as byte[];
-                    ret = new List<CommandClass>(cmdClasses.Where(x =>
-                    {
-                        return filter.Contains(x.KeyId) && x.KeyId > 0x19;
-                    }));
+                    ret = new List<CommandClass>(cmdClasses.Where(cc => filter.Contains(cc.KeyId)).ToList());
                 }
                 else
                 {
-                    ret = new List<CommandClass>(cmdClasses.Where(x =>
-                    {
-                        return x.KeyId > 0x19;
-                    }));
+                    ret = new List<CommandClass>(cmdClasses);
                 }
-                return ret;
+                return ret?.OrderBy(cc => cc.Text).ThenBy(cc => cc.Version);
             }
             else
                 return Binding.DoNothing;

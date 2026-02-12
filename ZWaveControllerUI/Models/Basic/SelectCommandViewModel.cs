@@ -1,8 +1,10 @@
 /// SPDX-License-Identifier: BSD-3-Clause
 /// SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
-﻿using System.Linq;
+/// SPDX-FileCopyrightText: Z-Wave Alliance https://z-wavealliance.org
+using System.Linq;
 using ZWave.Xml.Application;
 using System;
+using ZWave.CommandClasses;
 using ZWaveController.Commands;
 using ZWaveController.Interfaces;
 using ZWaveController;
@@ -82,19 +84,20 @@ namespace ZWaveControllerUI.Models
             {
                 if (value == null)
                 {
-                    _commandClasses = new byte[] { 0x20 };
+                    _commandClasses = new byte[] { COMMAND_CLASS_BASIC.ID };
                 }
                 else
                 {
-                    if (value.Contains((byte)0x20))
+                    if (value.Contains(COMMAND_CLASS_BASIC.ID))
                     {
                         _commandClasses = new byte[value.Length];
                         Array.Copy(value, _commandClasses, value.Length);
                     }
                     else
                     {
+                        // Adding Basic CC as it is not advertised by supporting nodes
                         _commandClasses = new byte[value.Length + 1];
-                        _commandClasses[0] = 0x20;
+                        _commandClasses[0] = COMMAND_CLASS_BASIC.ID;
                         Array.Copy(value, 0, _commandClasses, 1, value.Length);
                     }
                 }

@@ -1,12 +1,14 @@
 /// SPDX-License-Identifier: BSD-3-Clause
 /// SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
-﻿using System;
+/// SPDX-FileCopyrightText: Z-Wave Alliance https://z-wavealliance.org
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Utils.UI;
 using Utils.UI.Bind;
 using Utils.UI.Wrappers;
+using ZWave.CommandClasses;
 using ZWave.Xml.Application;
 using ZWaveController;
 using ZWaveController.Commands;
@@ -84,9 +86,9 @@ namespace ZWaveControllerUI.Models
                             CommandClassRefItemList.Add(cmdClass);
                         }
                     }
-                    CommandClassRefItemList = CommandClassRefItemList.OrderBy(x => x.Name).ToList();
-                    // Default Command Class is 20 01 - COMMAND_CLASS_BASIC.BASIC_SET
-                    SelectedCommandClassRefItem = CommandClassRefItemList.Where(x => x.KeyId == 0x20).FirstOrDefault();
+                    CommandClassRefItemList = CommandClassRefItemList.OrderBy(x => x.Text).ToList();
+                    // Default Command Class is COMMAND_CLASS_BASIC
+                    SelectedCommandClassRefItem = CommandClassRefItemList.Where(x => x.KeyId == COMMAND_CLASS_BASIC.ID).FirstOrDefault();
                 }
                 else
                 {

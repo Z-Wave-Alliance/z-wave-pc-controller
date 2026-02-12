@@ -26,7 +26,7 @@
                     </MultiBinding>
                 </CollectionViewSource.Source>
                 <CollectionViewSource.SortDescriptions>
-                    <cm:SortDescription PropertyName="Name"/>
+                    <cm:SortDescription PropertyName="Text"/>
                     <cm:SortDescription PropertyName="Version"/>
                 </CollectionViewSource.SortDescriptions>
             </CollectionViewSource>
