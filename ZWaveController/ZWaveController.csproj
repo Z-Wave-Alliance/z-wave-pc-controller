@@ -346,8 +346,8 @@
     <None Include="Configuration\PreKitting.xsd" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\z-wave-tools-core\XmlFiles\ZWave_cmd_classes.xml">
-      <Link>XmlFiles\ZWave_cmd_classes.xml</Link>
+    <Content Include="..\z-wave-tools-core\XmlFiles\zwave.xml">
+      <Link>XmlFiles\zwave.xml</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\z-wave-tools-core\z-wave-blobs\z-wave-pc-controller\WebCamCapture\win\wcvcap32.dll">

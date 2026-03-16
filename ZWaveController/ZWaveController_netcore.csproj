@@ -12,8 +12,8 @@
         <Delete Files="@(FilesToDelete)" />
     </Target>
   <ItemGroup>
-    <Content Include="..\z-wave-tools-core\XmlFiles\ZWave_cmd_classes.xml">
-      <Link>XmlFiles\ZWave_cmd_classes.xml</Link>
+    <Content Include="..\z-wave-tools-core\XmlFiles\zwave.xml">
+      <Link>XmlFiles\zwave.xml</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -1,5 +1,6 @@
 /// SPDX-License-Identifier: BSD-3-Clause
 /// SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
+/// SPDX-FileCopyrightText: Z-Wave Alliance https://z-wavealliance.org
 ﻿using System;
 using System.IO;
 using System.Linq;
@@ -67,7 +68,7 @@ namespace IntegrationTests
                 RefreshDataSources();
 
             // Load command classes definition to write to log.
-            mainViewModel.LoadZWaveDefinition(@".\XmlFiles\ZWave_cmd_classes.xml");
+            mainViewModel.LoadZWaveDefinition(@".\XmlFiles\zwave.xml");
 
             return mainViewModel;
         }
