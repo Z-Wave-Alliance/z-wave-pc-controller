@@ -37,7 +37,7 @@
           <Directory Id="INSTALLFOLDER" Name="Z-Wave PC Controller 5">
             <Directory Id="XmlFilesDir" Name="XmlFiles">
               <Component Id="XmlFiles">
-                <File Id="ZWaveCmdClasses" Name="ZWave_cmd_classes.xml" DiskId="1" Source="$(var.SourceDir)\XmlFiles\ZWave_cmd_classes.xml" />
+                <File Id="ZWaveCmdClasses" Name="zwave.xml" DiskId="1" Source="$(var.SourceDir)\XmlFiles\zwave.xml" />
               </Component>
             </Directory>
           </Directory>
