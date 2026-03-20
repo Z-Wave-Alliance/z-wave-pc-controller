@@ -74,7 +74,7 @@ namespace ZWaveController.Commands
                     {
                         ControllerSession.CancelFirmwareUpdateV4(TargetDevice, elapsed);
                     }
-                    else if (FirmwareUpdateModel.FirmwareUpdateCommandClassVersion == 5)
+                    else if (FirmwareUpdateModel.FirmwareUpdateCommandClassVersion >= 5)
                     {
                         ControllerSession.CancelFirmwareUpdateV5(TargetDevice, elapsed);
                     }
@@ -158,7 +158,7 @@ namespace ZWaveController.Commands
                         ControllerSession.ApplicationModel.FirmwareUpdateModel.Activation,
                         out responseMDReportActionToken);
                 }
-                else if (ControllerSession.ApplicationModel.FirmwareUpdateModel.FirmwareUpdateCommandClassVersion == 5)
+                else if (ControllerSession.ApplicationModel.FirmwareUpdateModel.FirmwareUpdateCommandClassVersion >= 5)
                 {
                     statusByte = ControllerSession.FirmwareUpdateV5(Device, fwData,
                         ControllerSession.ApplicationModel.FirmwareUpdateModel.FirmwareChecksum,

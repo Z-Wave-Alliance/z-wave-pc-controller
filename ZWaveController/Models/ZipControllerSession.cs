@@ -292,7 +292,7 @@ namespace ZWaveController.Models
                 fwuActivationSetData.firmwareTarget = (byte)ApplicationModel.FirmwareUpdateModel.SelectedFirmwareTarget.Index;
                 activateCmd = fwuActivationSetData;
             }
-            else if (ApplicationModel.FirmwareUpdateModel.FirmwareUpdateCommandClassVersion == 5)
+            else if (ApplicationModel.FirmwareUpdateModel.FirmwareUpdateCommandClassVersion >= 5)
             {
                 var fwuActivationSetData = new COMMAND_CLASS_FIRMWARE_UPDATE_MD_V5.FIRMWARE_UPDATE_ACTIVATION_SET();
                 fwuActivationSetData.manufacturerId = ApplicationModel.FirmwareUpdateModel.ManufacturerID;
