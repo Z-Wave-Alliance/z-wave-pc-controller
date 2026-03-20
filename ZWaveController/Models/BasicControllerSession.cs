@@ -1144,7 +1144,7 @@ namespace ZWaveController.Models
                             ret = CommandExecutionResult.OK;
                         }
                     }
-                    else if (versionCmdClassReportData.commandClassVersion == 0x05) //V5
+                    else if (versionCmdClassReportData.commandClassVersion >= 0x05) //V5
                     {
                         var fwuGetData = new COMMAND_CLASS_FIRMWARE_UPDATE_MD_V5.FIRMWARE_MD_GET();
                         var fwuReportData = new COMMAND_CLASS_FIRMWARE_UPDATE_MD_V5.FIRMWARE_MD_REPORT();
