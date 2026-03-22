@@ -1,13 +1,50 @@
-# Z-Wave-PC-Controller
+# Z-Wave PC Controller
 
 ## Description
 
 The Z-Wave PC Controller is a GUI tool used to setup a Z-Wave network and operate nodes.
 It needs a Z-Wave Serial API controller (connected via USB or IP).
 
+Application is made to control actual devices, or simulated
+applications (z-wave-stack-binaries, GNU/Linux port of z-wave-stack).
+
+Full documentation is maintained on project's wiki at:
+
+- https://github.com/Z-Wave-Alliance/z-wave-pc-controller/wiki
+
+Watch it in action with this
+[Z-Wave Summit 2024's demo](https://youtu.be/Ne9Q4NJ-Cuo?t=207#z-wave-stack-silabs-pal-20240502).
+
+
 ## Usage
 
 The tool is mainly supporting Windows OS, but can also be used on other win32 runtimes.
+
+### GNU/Linux support
+
+`ZWaveControllerUI.exe` application can be also executed on a
+GNU/Linux system thanks to
+[Wine project](https://www.winehq.org/)
+and
+[Mono opensource .NET framework](https://www.mono-project.com/)
+along
+[Wine mono](https://github.com/wine-mono/wine-mono)
+.
+
+Here is the Debian 13 procedure, feel free to adapt for your favorite distro or Unix instance.
+
+```sh
+sudo apt-get install wine libwine mono-complete
+sudo dpkg --add-architecture i386
+sudo sudo apt-get update
+sudo apt-get install wine32:i386
+wget -c https://github.com/wine-mono/wine-mono/releases/download/wine-mono-11.0.0/wine-mono-11.0.0-x86.msi
+msiexec /i wine-mono-11.0.0-x86.msi
+wine ZWaveControllerUI.exe # Rebuild or downloaded from latest package
+```
+
+Note that with this recipe, only IP connections work; a possible workaround is to expose the device as IP using `socat`, for example.
+
 
 ## Build prerequisites
 
