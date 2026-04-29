@@ -36,8 +36,9 @@ Here is the Debian 13 procedure, feel free to adapt for your favorite distro or 
 ```sh
 sudo apt-get install wine libwine mono-complete
 sudo dpkg --add-architecture i386
-sudo sudo apt-get update
+sudo apt-get update
 sudo apt-get install wine32:i386
+# TODO: https://bugs.debian.org/912058
 wget -c https://github.com/wine-mono/wine-mono/releases/download/wine-mono-11.0.0/wine-mono-11.0.0-x86.msi
 msiexec /i wine-mono-11.0.0-x86.msi
 wine ZWaveControllerUI.exe # Rebuild or downloaded from latest package
