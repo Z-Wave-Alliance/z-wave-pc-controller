@@ -4,3 +4,4 @@
 [submodule "z-wave-tools-core"]
 	path = z-wave-tools-core
 	url = ../z-wave-tools-core.git
+	branch = main
