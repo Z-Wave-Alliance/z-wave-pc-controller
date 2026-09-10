@@ -28,7 +28,7 @@ jobs:
           debian_packages: reuse
 
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Legal check
         run: reuse lint
@@ -49,7 +49,7 @@ jobs:
 
     steps:
       - name: Checkout z-wave-pc-controller
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           path: 'z-wave-pc-controller'
           submodules: 'recursive'
