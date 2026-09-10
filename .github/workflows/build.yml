@@ -62,7 +62,7 @@ jobs:
         shell: bash
 
       - name: Add MSBuild.exe to Path
-        uses: microsoft/setup-msbuild@v1.1
+        uses: microsoft/setup-msbuild@v1.3
 
       - name: Restore NuGet Packages for Z-Wave Tools Core Solution
         run: >
