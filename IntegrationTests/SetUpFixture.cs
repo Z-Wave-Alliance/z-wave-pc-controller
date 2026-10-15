@@ -1,6 +1,6 @@
-/// SPDX-License-Identifier: BSD-3-Clause
-/// SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
-/// SPDX-FileCopyrightText: Z-Wave Alliance https://z-wavealliance.org
+// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+// SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
 ﻿using System;
 using System.IO;
 using System.Linq;

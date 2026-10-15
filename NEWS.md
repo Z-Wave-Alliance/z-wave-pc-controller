@@ -18,5 +18,4 @@ All notable changes to this project will be documented in this file.
 ## Legal info
 
 SPDX-License-Identifier: BSD-3-Clause
-
-SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
