@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
-# SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
+# SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
 # *********************************  config.ps1  **********************************
 # Z-Wave, the wireless language.
 # Copyright (c) 2018 Silicon Labs, Inc. All rights reserved.
