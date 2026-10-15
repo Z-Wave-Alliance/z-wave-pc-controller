@@ -1,5 +1,5 @@
-/// SPDX-License-Identifier: BSD-3-Clause
-/// SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
+// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
 ﻿using ZWave.BasicApplication.Enums;
 using ZWaveController.Enums;
 using ZWaveController.Interfaces;

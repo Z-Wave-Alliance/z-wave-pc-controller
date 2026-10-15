@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
-# SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
+# SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
 &("C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools\xsd.exe") ConfigurationItem.xsd /c /l:CS /nologo /n:ZWaveController.Configuration 
 $file = gci "ConfigurationItem.cs"
 foreach ($str in $file) 
