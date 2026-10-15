@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
-# SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
+# SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
 &("C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.7.2 Tools\xsd.exe") PreKitting.xsd /c /l:CS /edb /nologo /n:ZWaveController.Configuration 
 $file = gci "PreKitting.cs"
 foreach ($str in $file) 

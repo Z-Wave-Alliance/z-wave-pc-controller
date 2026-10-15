@@ -1,5 +1,5 @@
-/// SPDX-License-Identifier: BSD-3-Clause
-/// SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
+// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
 ﻿using NSubstitute;
 using NUnit.Framework;
 using ZWave.BasicApplication.Enums;
