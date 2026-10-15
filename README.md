@@ -86,6 +86,5 @@ MSBuild.exe z-wave-pc-controller\ZWaveController.sln -property:Platform="Any CPU
 ## Legal info
 
 SPDX-License-Identifier: BSD-3-Clause
-
-SPDX-FileCopyrightText: Silicon Laboratories Inc. https://www.silabs.com
-SPDX-FileCopyrightText: Z-Wave Alliance https://z-wavealliance.org
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
