@@ -1,6 +1,6 @@
 # YAML -*- mode: yaml; tab-width: 2; indent-tabs-mode: nil; coding: utf-8 -*-
 # SPDX-License-Identifier: BSD-3-Clause
-# SPDX-FileCopyrightText: Z-Wave Alliance https://z-wavealliance.org
+# SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
 
 name: Check Submodule References
 
