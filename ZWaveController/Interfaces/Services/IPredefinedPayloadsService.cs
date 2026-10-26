@@ -111,13 +111,5 @@ namespace ZWaveController.Interfaces
         void RunGroup(string groupName);
         void RunCommands(string groupName, List<uint> ids);
 
-        //Review is it still needed:
-        //void AddItemsToGroup(string groupName, List<ISelectableItem<PredefinedPayload>> favoriteItem);
-        //IPredefinedCommandGroup UploadGroup(string name, List<ISelectableItem<PredefinedPayload>> favoriteItems);
-        //ISelectableItem<PredefinedPayload> CloneItem(string groupName, uint id)
-        //void UpdateItem(string groupName, ISelectableItem<PredefinedPayload> favoriteItem);
-
-        //void RunSelectedCommands(string groupName); == void RunGroup(string name);
-
     }
 }
