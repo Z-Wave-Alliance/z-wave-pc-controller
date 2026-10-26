@@ -239,7 +239,6 @@
     <Compile Include="Interfaces\Models\IULMonitorModel.cs" />
     <Compile Include="Interfaces\Services\IJammingDetectionService.cs" />
     <Compile Include="Interfaces\Services\IPredefinedPayloadsService.cs" />
-    <Compile Include="MappingProfile.cs" />
     <Compile Include="Models\Basic\PredefinedPayload.cs" />
     <Compile Include="Interfaces\Models\IConfigurationParamModel.cs" />
     <Compile Include="Interfaces\IControllerSession.cs" />
@@ -360,7 +359,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="10.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <ItemGroup>
