@@ -23,9 +23,11 @@ namespace ZWaveController.Commands
             PredefinedPayloadsService = new PredefinedPayloadsService(ApplicationModel);
         }
 
+        /// <summary>Overrides default so the overlay shows what is running during Connect (device open, init, etc.).</summary>
+        protected override string BusyMessage => "Connecting to Source";
+
         protected override void ExecuteInner(object param)
         {
-            ApplicationModel.SetBusyMessage("Connecting to Source");
             ApplicationModel.TraceCapture.TraceCaptureSettingsModel.WriteDefault();
             ApplicationModel.LastCommandExecutionResult = CommandExecutionResult.Failed;
 
@@ -42,6 +44,8 @@ namespace ZWaveController.Commands
                     return;
                 }
             }
+
+            ApplicationModel.Invoke(() => ApplicationModel.SetBusyMessage("Connecting to " + selectedDataSource.SourceName + " ..."));
 
             if (ApplicationModel.DataSource != null &&
                 ControllerSessionsContainer.ControllerSessions.ContainsKey(ApplicationModel.DataSource.SourceId))
