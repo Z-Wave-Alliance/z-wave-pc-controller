@@ -51,6 +51,8 @@ namespace ZWaveController.Models
         public int ZWAVEPLUS_WAKE_UP_INTERVAL = 5;
         private const int WAIT_AFTER_ADD_REMOVE_NODE_TIMEOUT = 300;
         private const int SMART_START_STATE_CHANGED_TIMEOUT = 500;
+        private const int OPEN_PORT_RETRY_COUNT = 5;
+        private const int OPEN_PORT_RETRY_DELAY = 500;
 
         public IApplicationModel ApplicationModel { get; set; }
 
@@ -130,7 +132,7 @@ namespace ZWaveController.Models
             appLayer.TransportLayer.DataTransmitted += ApplicationModel.TraceCapture.SaveTransmittedData;
 
             _device = appLayer?.CreateController(false);
-            if (_device != null && _device.Connect(DataSource) == CommunicationStatuses.Done)
+            if (_device != null && OpenDeviceConnection())
             {
                 ApplicationModel.ClearCommandQueueCollection();
                 VersionResult versionRes = _device.GetVersion(false, 500);
@@ -273,6 +275,30 @@ namespace ZWaveController.Models
             _device = null;
             OnDeviceInitFailed();
             return CommunicationStatuses.Failed;
+        }
+
+        /// <summary>
+        /// Opens the connection to the device. A serial port that cannot be opened is tried again for a short time, since the OS may still hold it for a
+        /// moment after a previous run of the application ended, for instance a stopped debug session. A device that does not answer is not tried again.
+        /// </summary>
+        private bool OpenDeviceConnection()
+        {
+            var isOpen = _device.Connect(DataSource) == CommunicationStatuses.Done;
+            if (isOpen || !(DataSource is SerialPortDataSource))
+            {
+                return isOpen;
+            }
+            Logger.Log($"{DataSource.SourceName} could not be opened; retrying ...");
+            ApplicationModel.Invoke(() => ApplicationModel.SetBusyMessage("Reconnecting to " + DataSource.SourceName + " ..."));
+            for (int attempt = 0; attempt < OPEN_PORT_RETRY_COUNT; attempt++)
+            {
+                Thread.Sleep(OPEN_PORT_RETRY_DELAY);
+                if (_device.Connect(DataSource) == CommunicationStatuses.Done)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public virtual void Disconnect()
