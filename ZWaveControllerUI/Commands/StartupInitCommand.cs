@@ -21,6 +21,9 @@ namespace ZWaveControllerUI.Commands
         {
         }
 
+        /// <summary>Overrides default so the overlay shows a startup message (inferior ConnectCommand will then show "Connecting to Source").</summary>
+        protected override string BusyMessage => "Starting up ...";
+
         protected override void ExecuteInner(object param)
         {
             var mainViewModel = (MainViewModel)ApplicationModel;
