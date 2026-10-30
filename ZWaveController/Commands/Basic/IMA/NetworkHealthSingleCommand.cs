@@ -62,7 +62,7 @@ namespace ZWaveController.Commands
             var ret = CommandExecutionResult.Failed;
             if (ControllerSession.IMAFullNetwork.IsSingleCommandCancelled)
             {
-                ControllerSession.Logger.LogFail("IMA Network Test Cancelled for node Id: " + ImaItem.Id);
+                ControllerSession.Logger.LogFail("IMA Network Test Canceled for node Id: " + ImaItem.Id);
                 ret = CommandExecutionResult.Canceled;
             }
             else
@@ -91,7 +91,7 @@ namespace ZWaveController.Commands
                 if (IsCancelling || ControllerSession.IMAFullNetwork.IsSingleCommandCancelled)
                 {
                     ControllerSession.IMAFullNetwork.IsSingleCommandCancelled = true;
-                    ControllerSession.Logger.LogWarning("IMA Network Test Cancelled for node Id: " + ImaItem.Id);
+                    ControllerSession.Logger.LogWarning("IMA Network Test Canceled for node Id: " + ImaItem.Id);
                     ret = CommandExecutionResult.Canceled;
                 }
                 else
