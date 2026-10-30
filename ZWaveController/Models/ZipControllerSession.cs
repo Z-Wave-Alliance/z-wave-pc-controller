@@ -898,7 +898,7 @@ namespace ZWaveController.Models
 
         public void CancelFirmwareUpdateOTADownload()
         {
-            ApplicationModel.SetBusyMessage("OTA Firmware Download cancelling.");
+            ApplicationModel.SetBusyMessage("OTA Firmware Download canceling.");
             ApplicationModel.FirmwareUpdateModel.DownloadFirmwareData = null;
             isDownloadCancelled = true;
         }
@@ -1571,7 +1571,7 @@ namespace ZWaveController.Models
             {
                 if (requestDataResult.State == ActionStates.Cancelled)
                 {
-                    Logger.LogFail("Power Level Operation Cancelled");
+                    Logger.LogFail("Power Level Operation Canceled");
                     ret = CommandExecutionResult.Canceled;
                 }
                 else

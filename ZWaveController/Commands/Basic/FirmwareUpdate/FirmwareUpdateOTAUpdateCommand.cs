@@ -46,7 +46,7 @@ namespace ZWaveController.Commands
         protected override void CancelAction(object param)
         {
             _canCancelAction = false;
-            ControllerSession.ApplicationModel.SetBusyMessage("OTA Firmware Update cancelling…");
+            ControllerSession.ApplicationModel.SetBusyMessage("OTA Firmware Update canceling ...");
             if (responseMDReportActionToken != null)
             {
                 ControllerSession.Cancel(TargetDevice, responseMDReportActionToken);
@@ -82,7 +82,7 @@ namespace ZWaveController.Commands
             }
 
             ControllerSession.ApplicationModel.LastCommandExecutionResult = CommandExecutionResult.Canceled;
-            Log("OTA Firmware Update cancelled.");
+            Log("OTA Firmware Update canceled.");
         }
 
         private void CancelTokens()
