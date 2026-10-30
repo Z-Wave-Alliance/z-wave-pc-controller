@@ -1848,15 +1848,9 @@ namespace ZWaveController.Models
                 learnMode = LearnModes.NetworkMask | learnMode;
             }
             ControllerSessionsContainer.Config.DeleteConfiguration(_device);
-            var endDevice = _device as EndDevice;
-            if (endDevice != null)
-            {
-                var commandClasses = _device.Network.GetCommandClasses(_device.Network.NodeTag);
-                endDevice.ApplicationNodeInformationCmdClasses(
-                    commandClasses,
-                    commandClasses,
-                    commandClasses.Where(x => x != COMMAND_CLASS_SECURITY.ID && x != COMMAND_CLASS_SECURITY_2.ID).ToArray());
-            }
+            // A node in Learn Mode advertises every Command Class, whatever keys it still holds from its old network.
+            _device.Network.SetNifInclusionState(InclusionStates.NotIncluded, IsAccessEndDevice);
+            WriteNodeInformation();
             token = _device.SetLearnMode(learnMode, 65000, null);
             using (var logAction = ReportAction(caption, token))
             {
@@ -1883,7 +1877,6 @@ namespace ZWaveController.Models
                     _device.Network.SetCommandClasses(cmdClasses.ToArray());
                 }
 
-                SetNodeInformation(out token);
                 if (ret != null && (ret || ret.LearnModeStatus != LearnModeStatuses.None))
                 {
                     logAction.Caption += " " + ret.LearnModeStatus;
@@ -1913,6 +1906,8 @@ namespace ZWaveController.Models
                         logAction.Caption += " (Security Failed)";
                     }
                 }
+                // The NIF depends on the keys the node holds, so it is set after a failed bootstrapping has dropped them.
+                SetNodeInformation(out token);
                 if (ret.LearnModeStatus == LearnModeStatuses.Removed)
                 {
                     SaveSecurityKeys(true);
@@ -2700,6 +2695,8 @@ namespace ZWaveController.Models
             {
                 ApplicationModel.ConfigurationItem.Node.Clear();
             }
+            // The node tree and the handling of non-secure commands follow the NIF of the current inclusion state.
+            _device.Network.SetNifInclusionStateByKeys(IsAccessEndDevice);
             if (SecurityManager != null)
             {
                 ApplicationModel.Invoke(() =>
@@ -3026,23 +3023,18 @@ namespace ZWaveController.Models
             WakeUpNodesService.Start();
         }
 
+        /// <summary>
+        /// Whether this session runs an End Device Serial API that requests the S2 Access Control Security Class.
+        /// </summary>
+        private bool IsAccessEndDevice
+        {
+            get { return _device is EndDevice && _device.Network.IsEnabledS2_ACCESS; }
+        }
+
         public void SetNodeInformation(out ActionToken token)
         {
-            var nodeInfo = _device.Network.GetNodeInfo();
-            var commandClasses = _device.Network.GetNetworkAwareCommandClasses();
-            if (commandClasses != null && commandClasses.Length > 0)
-            {
-                _device.ApplicationNodeInformation(nodeInfo.DeviceOptions, nodeInfo.Generic, nodeInfo.Specific, commandClasses);
-                var endDevice = _device as EndDevice;
-                if (endDevice != null)
-                {
-                    var commandClassesSecure = _device.Network.GetSecureCommandClasses();
-                    endDevice.ApplicationNodeInformationCmdClasses(
-                        commandClasses,
-                        commandClasses,
-                        commandClassesSecure);
-                }
-            }
+            _device.Network.SetNifInclusionStateByKeys(IsAccessEndDevice);
+            WriteNodeInformation();
             token = null;
             //Invoke
             ApplicationModel.Invoke(() =>
@@ -3050,6 +3042,28 @@ namespace ZWaveController.Models
                 ApplicationModel.ConfigurationItem.AddOrUpdateNode(new NodeTag(_device.Id));
                 ApplicationModel.NotifyControllerChanged(NotifyProperty.NodesList);
             });
+        }
+
+        /// <summary>
+        /// Writes the NIF Command Classes of the current inclusion state to the Serial API, and for an End Device Serial API,
+        /// which selects among its lists by its own keys, the NIF without keys and the non-securely and securely supported
+        /// Command Classes. Writes nothing if the NIF is empty.
+        /// </summary>
+        private void WriteNodeInformation()
+        {
+            var nodeInfo = _device.Network.GetNodeInfo();
+            var commandClasses = _device.Network.GetNifCommandClasses();
+            if (commandClasses != null && commandClasses.Length > 0)
+            {
+                _device.ApplicationNodeInformation(nodeInfo.DeviceOptions, nodeInfo.Generic, nodeInfo.Specific, commandClasses);
+                if (_device is EndDevice endDevice)
+                {
+                    endDevice.ApplicationNodeInformationCmdClasses(
+                        _device.Network.GetNifCommandClasses(InclusionStates.IncludedNonSecurely),
+                        _device.Network.GetNonSecureCommandClasses(),
+                        _device.Network.GetSecureCommandClasses());
+                }
+            }
         }
 
         public void SetNodeInformation(DeviceOptions deviceOptions, byte generic, byte specific, byte[] commandClasses, out ActionToken token)
