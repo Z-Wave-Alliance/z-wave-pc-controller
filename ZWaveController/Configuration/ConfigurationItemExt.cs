@@ -388,74 +388,78 @@ namespace ZWaveController.Configuration
             }
         }
 
+        private ObservableCollection<ProvisioningItem> _countedProvisioningList;
+
         public PreKitting()
         {
+            PropertyChanged += PreKitting_PropertyChanged;
             ProvisioningList = new ObservableCollection<ProvisioningItem>();
-            ProvisioningList.CollectionChanged += ProvisioningList_CollectionChanged;
         }
 
+        // An XML import assigns a new list (ProvisioningListImportCommand): the count follows it.
+        private void PreKitting_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "ProvisioningList")
+            {
+                AttachProvisioningList();
+            }
+        }
+
+        private void AttachProvisioningList()
+        {
+            if (_countedProvisioningList != null)
+            {
+                _countedProvisioningList.CollectionChanged -= ProvisioningList_CollectionChanged;
+                foreach (var item in _countedProvisioningList)
+                {
+                    item.PropertyChanged -= ProvisioningItem_PropertyChanged;
+                }
+            }
+            _countedProvisioningList = ProvisioningList;
+            if (_countedProvisioningList != null)
+            {
+                _countedProvisioningList.CollectionChanged += ProvisioningList_CollectionChanged;
+                foreach (var item in _countedProvisioningList)
+                {
+                    item.PropertyChanged += ProvisioningItem_PropertyChanged;
+                }
+            }
+            UpdatePendingProvisioningCount();
+        }
+
+        // The count is taken from the list whenever an item or its state changes. Adjusting it by one per update
+        // let it drift: an item set to the state it already had (Included twice during an S2 inclusion, Pending
+        // again when its node is removed) was counted again.
         private void ProvisioningList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            switch (e.Action)
+            if (e.OldItems != null)
             {
-                case NotifyCollectionChangedAction.Add:
-                    if (e.NewItems != null)
-                    {
-                        foreach (var item in e.NewItems)
-                        {
-                            var pitem = item as ProvisioningItem;
-                            if (pitem != null && pitem.State == PreKittingState.Pending)
-                            {
-                                PendingProvisioningCount++;
-                            }
-                        }
-                    }
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    if (e.OldItems != null)
-                    {
-                        foreach (var item in e.OldItems)
-                        {
-                            var pitem = item as ProvisioningItem;
-                            if (pitem != null && pitem.State == PreKittingState.Pending)
-                            {
-                                PendingProvisioningCount--;
-                            }
-                        }
-                    }
-                    break;
-                case NotifyCollectionChangedAction.Replace:
-                    if (e.NewItems != null)
-                    {
-                        foreach (var item in e.NewItems)
-                        {
-                            var pitem = item as ProvisioningItem;
-                            if (pitem != null && pitem.State == PreKittingState.Pending)
-                            {
-                                PendingProvisioningCount++;
-                            }
-                        }
-                    }
-                    if (e.OldItems != null)
-                    {
-                        foreach (var item in e.OldItems)
-                        {
-                            var pitem = item as ProvisioningItem;
-                            if (pitem != null && pitem.State == PreKittingState.Pending)
-                            {
-                                PendingProvisioningCount--;
-                            }
-                        }
-                    }
-                    break;
-                case NotifyCollectionChangedAction.Move:
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    PendingProvisioningCount = 0;
-                    break;
-                default:
-                    break;
+                foreach (var item in e.OldItems.OfType<ProvisioningItem>())
+                {
+                    item.PropertyChanged -= ProvisioningItem_PropertyChanged;
+                }
             }
+            if (e.NewItems != null)
+            {
+                foreach (var item in e.NewItems.OfType<ProvisioningItem>())
+                {
+                    item.PropertyChanged += ProvisioningItem_PropertyChanged;
+                }
+            }
+            UpdatePendingProvisioningCount();
+        }
+
+        private void ProvisioningItem_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "State")
+            {
+                UpdatePendingProvisioningCount();
+            }
+        }
+
+        private void UpdatePendingProvisioningCount()
+        {
+            PendingProvisioningCount = ProvisioningList?.Count(x => x.State == PreKittingState.Pending) ?? 0;
         }
 
         internal void UpdateProvisioningItem(byte[] dsk, NodeTag node, PreKittingState preKittingState)
@@ -465,15 +469,9 @@ namespace ZWaveController.Configuration
             {
                 item.NodeId = node.Id;
                 item.State = preKittingState;
-                if (item.State == PreKittingState.Pending)
-                {
-                    PendingProvisioningCount++;
-                }
-                else
-                {
-                    PendingProvisioningCount--;
-                }
             }
+            // The State change above recounts through the item's subscription; this covers an item that has none.
+            UpdatePendingProvisioningCount();
         }
     }
 
