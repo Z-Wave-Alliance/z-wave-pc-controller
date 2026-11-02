@@ -23,7 +23,8 @@ if [ -z "$dotnet" ] && [ -x "$HOME/.dotnet/dotnet" ]; then
     export DOTNET_ROOT="$HOME/.dotnet"
 fi
 if [ -z "$dotnet" ]; then
-    echo "The .NET 10 SDK is needed to build: https://dot.net/v1/dotnet-install.sh --channel 10.0" >&2
+    echo "The .NET 10 SDK is needed to build. Install it for your user, without root, with:" >&2
+    echo "  curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 10.0" >&2
     exit 1
 fi
 export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1
