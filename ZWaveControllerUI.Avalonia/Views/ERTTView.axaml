@@ -1,0 +1,112 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.ERTTView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:views="clr-namespace:ZWaveControllerUI.Views"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls">
+    <UserControl.Styles>
+        <Style Selector="DockPanel.field > TextBlock, StackPanel.field > TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Styles>
+    <Grid ColumnDefinitions="276,Auto,*" RowDefinitions="*,Auto,*">
+        <GridSplitter Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Height="4" ResizeDirection="Rows"/>
+        <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Center" Width="4" ResizeDirection="Columns"/>
+        <views:NodesListView Grid.Column="0" Grid.Row="0" DataContext="{Binding ApplicationModel}"/>
+        <views:NodeInfoView Grid.Column="0" Grid.Row="2" DataContext="{Binding ApplicationModel}"/>
+        <ScrollViewer Grid.Column="2" Grid.Row="0" Grid.RowSpan="3">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top">
+                    <StackPanel Margin="4" IsEnabled="{Binding IsTestReady}">
+                        <UniformGrid Columns="2">
+                            <StackPanel>
+                                <StackPanel Classes="field" Orientation="Horizontal" IsEnabled="{Binding !IsRunForever}">
+                                    <TextBlock Width="90">Test Iterations:</TextBlock>
+                                    <controls:NumericUpDown IntValue="{Binding TestIterations, Mode=TwoWay}" Width="110" MaxValue="10000" MinValue="0"/>
+                                </StackPanel>
+                                <CheckBox Name="IsRunForever" IsChecked="{Binding IsRunForever}">Run forever</CheckBox>
+                                <CheckBox IsChecked="{Binding IsStopOnError}">Stop on Error</CheckBox>
+                            </StackPanel>
+                            <StackPanel>
+                                <StackPanel Classes="field" Orientation="Horizontal">
+                                    <TextBlock Width="90">Tx Delay, ms</TextBlock>
+                                    <controls:NumericUpDown Width="110" IntValue="{Binding TxMode1Delay, Mode=TwoWay}" MaxValue="10000" MinValue="0"/>
+                                </StackPanel>
+                                <RadioButton IsChecked="{Binding IsBasicSetValue0}">Basic Set, Value 0</RadioButton>
+                                <RadioButton IsChecked="{Binding IsBasicSetValue255}">Basic Set, Value 255</RadioButton>
+                                <RadioButton IsChecked="{Binding IsBasicSetValue0_255}">Basic Set, Value 0/255</RadioButton>
+                            </StackPanel>
+                        </UniformGrid>
+                    </StackPanel>
+                    <StackPanel Margin="4" IsEnabled="{Binding IsTestReady}">
+                        <controls:GroupBox Header="Transmit Options">
+                            <UniformGrid Columns="2">
+                                <CheckBox IsChecked="{Binding IsLowPower}" IsEnabled="{Binding !IsCustomTxOptions}">Low power</CheckBox>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox Name="IsCustomTxOptions" IsChecked="{Binding IsCustomTxOptions}">Custom (hex value)</CheckBox>
+                                    <controls:TextBoxHexMask Text="{Binding CustomTxOptions, Mode=TwoWay, Converter={StaticResource ByteToHexStringConverter}}" Width="60" IsEnabled="{Binding IsCustomTxOptions}"/>
+                                </StackPanel>
+                                <CheckBox IsVisible="{Binding IsTxControlledByModuleEnabled}" IsChecked="{Binding IsRetransmission}" IsEnabled="{Binding !IsCustomTxOptions}">Retransmission</CheckBox>
+                            </UniformGrid>
+                        </controls:GroupBox>
+                    </StackPanel>
+                    <StackPanel Margin="4" IsEnabled="{Binding IsTestReady}">
+                        <controls:GroupBox>
+                            <controls:GroupBox.Header>
+                                <CheckBox IsChecked="{Binding IsTxControlledByModule}" IsEnabled="{Binding IsTxControlledByModuleEnabled}">TX Controlled by Module</CheckBox>
+                            </controls:GroupBox.Header>
+                            <StackPanel IsEnabled="{Binding IsTxControlledByModule}">
+                                <DockPanel Classes="field">
+                                    <ComboBox Width="300" SelectedIndex="{Binding TestCommandIndex}" ItemsSource="{Binding TestCommands}" DockPanel.Dock="Right"/>
+                                    <TextBlock>Mode</TextBlock>
+                                </DockPanel>
+                                <DockPanel Classes="field">
+                                    <controls:NumericUpDown Width="110" IntValue="{Binding TxMode2Delay, Mode=TwoWay}" DockPanel.Dock="Right" MaxValue="10000" MinValue="0"/>
+                                    <TextBlock>Tx Delay (1/100 sec.)</TextBlock>
+                                </DockPanel>
+                                <DockPanel Classes="field">
+                                    <controls:NumericUpDown Width="110" IntValue="{Binding PayloadLength}" DockPanel.Dock="Right" MaxValue="10000" MinValue="0"/>
+                                    <TextBlock>Payload Length</TextBlock>
+                                </DockPanel>
+                            </StackPanel>
+                        </controls:GroupBox>
+                    </StackPanel>
+                    <StackPanel Margin="4">
+                        <Button Command="{Binding StartStopCommand, Converter={StaticResource CommandReference}}" Content="Start/Stop" HorizontalAlignment="Right"/>
+                    </StackPanel>
+                    <StackPanel Margin="4" Width="300" HorizontalAlignment="Left">
+                        <DockPanel Classes="field">
+                            <TextBox Width="80" Text="{Binding PacketsSent}" DockPanel.Dock="Right" IsReadOnly="True"/>
+                            <TextBlock>Packets Sent:</TextBlock>
+                        </DockPanel>
+                        <DockPanel Classes="field">
+                            <TextBox Width="80" Text="{Binding PacketsWithRouteTriesSent}" DockPanel.Dock="Right" IsReadOnly="True"/>
+                            <TextBlock>Route Tries:</TextBlock>
+                        </DockPanel>
+                        <DockPanel Classes="field">
+                            <TextBox Width="80" Text="{Binding PacketsRecieved}" DockPanel.Dock="Right" IsReadOnly="True"/>
+                            <TextBlock>Packets Received:</TextBlock>
+                        </DockPanel>
+                        <DockPanel Classes="field">
+                            <TextBox Width="80" Text="{Binding UARTErrors}" DockPanel.Dock="Right" IsReadOnly="True"/>
+                            <TextBlock>UART Errors:</TextBlock>
+                        </DockPanel>
+                    </StackPanel>
+                </StackPanel>
+                <DataGrid Margin="4" MinHeight="120" IsReadOnly="True" ItemsSource="{Binding ResultItems}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id" Width="40" Binding="{Binding Device}"/>
+                        <DataGridTextColumn Header="Type" Width="140" Binding="{Binding Device, Converter={StaticResource NodeTypeConverter}, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Status" Width="90" Binding="{Binding TransmitStatus}"/>
+                        <DataGridTextColumn Header="Elapsed, ms" Width="90" Binding="{Binding ElapsedMs}"/>
+                        <DataGridTextColumn Header="Errors" Width="*" Binding="{Binding ErrorsCount}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

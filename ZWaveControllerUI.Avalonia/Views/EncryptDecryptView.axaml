@@ -1,0 +1,116 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.EncryptDecryptView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+             AutomationProperties.AutomationId="ID_COMMAND_ENCRYPT_DECRYPT_VIEW">
+    <UserControl.Styles>
+        <Style Selector="DockPanel > TextBlock, DockPanel > StackPanel > TextBlock">
+            <Setter Property="Width" Value="140"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="DockPanel > Button">
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+        </Style>
+    </UserControl.Styles>
+    <TabControl Margin="4">
+        <TabItem Header="S0" IsSelected="{Binding IsS0TabSelected}">
+            <StackPanel Margin="4">
+                <DockPanel>
+                    <TextBlock Text="External Nonce:"/>
+                    <controls:TextBoxHexMask Text="{Binding ExternalNonceS0, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" SymbolsCount="16"/>
+                </DockPanel>
+                <DockPanel>
+                    <TextBlock Text="Internal Nonce:"/>
+                    <controls:TextBoxHexMask Text="{Binding InternalNonceS0, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" SymbolsCount="16"/>
+                </DockPanel>
+                <DockPanel>
+                    <TextBlock Text="Security Key:"/>
+                    <Button DockPanel.Dock="Right" Command="{Binding CopyCurrentKeyS0Command, Converter={StaticResource CommandReference}}" Content="Use Current"/>
+                    <controls:TextBoxHexMask Text="{Binding SecurityKeyS0, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" SymbolsCount="32"/>
+                </DockPanel>
+                <DockPanel>
+                    <TextBlock Text="Encrypted message:"/>
+                    <Button DockPanel.Dock="Right" Command="{Binding DecryptS0Command, Converter={StaticResource CommandReference}}" Content="Decrypt" AutomationProperties.AutomationId="ID_BTN_DECRYPT"/>
+                    <controls:TextBoxHexMask Text="{Binding EncryptedMessageS0, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" TextWrapping="Wrap" Height="70" VerticalContentAlignment="Top"/>
+                </DockPanel>
+                <DockPanel>
+                    <TextBlock Text="Decrypted message:"/>
+                    <Button DockPanel.Dock="Right" Command="{Binding EncryptS0Command, Converter={StaticResource CommandReference}}" Content="Encrypt" AutomationProperties.AutomationId="ID_BTN_ENCRYPT"/>
+                    <controls:TextBoxHexMask Text="{Binding DecryptedMessageS0, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" TextWrapping="Wrap" MinHeight="70" VerticalContentAlignment="Top"/>
+                </DockPanel>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="S2" IsSelected="{Binding IsS2TabSelected}">
+            <StackPanel>
+                <UniformGrid Columns="2" Margin="4">
+                    <DockPanel>
+                        <TextBlock Text="Home Id:"/>
+                        <controls:TextBoxHexMask Text="{Binding HomeId, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" SymbolsCount="8" AutomationProperties.AutomationId="ID_TB_HOME_ID"/>
+                    </DockPanel>
+                    <DockPanel>
+                        <TextBlock Text="Sequence Number:"/>
+                        <controls:TextBoxHexMask Text="{Binding SequenceNumber, Converter={StaticResource ByteToHexStringConverter}, Mode=TwoWay}" SymbolsCount="2" AutomationProperties.AutomationId="ID_TB_SEQUENCE_NUMBER_ID"/>
+                    </DockPanel>
+                    <DockPanel>
+                        <TextBlock Text="Sender Id:"/>
+                        <controls:NumericUpDown MinValue="1" MaxValue="255" MinorDelta="1" MajorDelta="10" AutomationProperties.AutomationId="ID_TB_SENDER_ID" IntValue="{Binding SenderId, Mode=TwoWay}"/>
+                    </DockPanel>
+                    <DockPanel>
+                        <TextBlock Text="Generations, from:"/>
+                        <controls:NumericUpDown MinValue="1" MaxValue="10000" MinorDelta="1" MajorDelta="100" IntValue="{Binding CurrentGenerationNumber, Mode=TwoWay}"/>
+                    </DockPanel>
+                    <DockPanel>
+                        <TextBlock Text="Receiver Id:"/>
+                        <controls:NumericUpDown MinValue="1" MaxValue="255" MinorDelta="1" MajorDelta="10" AutomationProperties.AutomationId="ID_TB_RECEIVER_ID" IntValue="{Binding ReceiverId, Mode=TwoWay}"/>
+                    </DockPanel>
+                    <DockPanel>
+                        <TextBlock Text="Generations, to:"/>
+                        <controls:NumericUpDown MinValue="1" MaxValue="10000" MinorDelta="1" MajorDelta="100" IntValue="{Binding MaxGenerationCount, Mode=TwoWay}"/>
+                    </DockPanel>
+                </UniformGrid>
+                <StackPanel Margin="4">
+                <DockPanel>
+                    <TextBlock Text="Receiver Nonce:"/>
+                    <controls:TextBoxHexMask Text="{Binding ReceiverNonceS2, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" SymbolsCount="32" AutomationProperties.AutomationId="ID_TB_RECEIVER_NONCE"/>
+                </DockPanel>
+                <DockPanel>
+                    <TextBlock Text="Sender Nonce:"/>
+                    <controls:TextBoxHexMask Text="{Binding SenderNonceS2, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" SymbolsCount="32" AutomationProperties.AutomationId="ID_TB_SENDER_NONCE"/>
+                </DockPanel>
+                <DockPanel>
+                    <TextBlock Text="Security Key:"/>
+                    <controls:TextBoxHexMask Text="{Binding SecurityKeyS2, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" SymbolsCount="32" AutomationProperties.AutomationId="ID_TB_SECURITY_KEY"/>
+                </DockPanel>
+                    <DockPanel>
+                        <TextBlock Text="Key extract algorithm: "/>
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton GroupName="KeyExtractAlgortihms" Content="Normal" IsChecked="{Binding IsNormalEncryptionMethod}" AutomationProperties.AutomationId="ID_CHK_NORMAL"/>
+                            <RadioButton GroupName="KeyExtractAlgortihms" Content="Temp" IsChecked="{Binding IsTempEncryptionMethod}" AutomationProperties.AutomationId="ID_CHK_TEMP"/>
+                        </StackPanel>
+                    </DockPanel>
+                    <DockPanel>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="Encrypted message:"/>
+                            <TextBlock Text="(9F 03 xx ... xx)"/>
+                            <TextBlock Text="Decryption is failed" Foreground="Red" IsVisible="{Binding IsDecryptionFailed}"/>
+                        </StackPanel>
+                        <Button DockPanel.Dock="Right" Command="{Binding DecryptS2Command, Converter={StaticResource CommandReference}}" Content="Decrypt" AutomationProperties.AutomationId="ID_BTN_DECRYPT"/>
+                        <controls:TextBoxHexMask Text="{Binding EncryptedMessageS2, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"
+                                                 TextWrapping="Wrap" Height="70" VerticalContentAlignment="Top" AutomationProperties.AutomationId="ID_TB_ENCRYPT"/>
+                    </DockPanel>
+                    <DockPanel>
+                        <TextBlock Text="Decrypted message:"/>
+                        <Button DockPanel.Dock="Right" Command="{Binding EncryptS2Command, Converter={StaticResource CommandReference}}" Content="Encrypt" AutomationProperties.AutomationId="ID_BTN_ENCRYPT"/>
+                        <controls:TextBoxHexMask Text="{Binding DecryptedMessageS2, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"
+                                                 TextWrapping="Wrap" Height="70" VerticalContentAlignment="Top" AutomationProperties.AutomationId="ID_TB_DECRYPT"/>
+                    </DockPanel>
+                </StackPanel>
+            </StackPanel>
+        </TabItem>
+    </TabControl>
+</UserControl>

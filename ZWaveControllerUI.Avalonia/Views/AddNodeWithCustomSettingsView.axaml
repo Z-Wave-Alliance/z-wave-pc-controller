@@ -1,0 +1,25 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.AddNodeWithCustomSettingsView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Focusable="False">
+    <StackPanel Margin="4" MinWidth="280">
+        <CheckBox IsChecked="{Binding IsSetAsSisAutomatically}" Content="Automatically set as SIS" AutomationProperties.AutomationId="ID_CHK_AUTO_SIS"/>
+        <CheckBox IsChecked="{Binding IsBasedOnZwpRoleType}" Content="Based on ZWavePlus Role" AutomationProperties.AutomationId="ID_CHK_BASED_ONBASIC_TYPE"
+                  IsEnabled="{Binding IsSetAsSisAutomatically}" Margin="15,1,1,1"/>
+        <CheckBox IsChecked="{Binding IsDeleteReturnRoute}" Content="Delete return route" AutomationProperties.AutomationId="ID_CHK_DeleteReturnRoute"/>
+        <CheckBox IsChecked="{Binding IsAssignReturnRoute}" Content="Assign return route" AutomationProperties.AutomationId="ID_CHK_AssignReturnRoute"/>
+        <CheckBox IsChecked="{Binding IsAssociationCreate}" Content="Association create" AutomationProperties.AutomationId="ID_CHK_AssociationCreate"/>
+        <CheckBox IsChecked="{Binding IsMultichannelAssociationCreate}" Content="Multichannel association create" AutomationProperties.AutomationId="ID_CHK_MultichannelAssociationCreate"/>
+        <CheckBox IsChecked="{Binding IsWakeUpCapabilities}" Content="Wake up capabilities request" AutomationProperties.AutomationId="ID_CHK_WakeUpCapabilities"/>
+        <CheckBox IsChecked="{Binding IsWakeUpInterval}" Content="Wake up interval set" AutomationProperties.AutomationId="ID_CHK_WakeUpInterval"/>
+        <StackPanel HorizontalAlignment="Right" Margin="0,6,0,0" Orientation="Horizontal">
+            <Button Content="OK" Command="{Binding CommandOk, Converter={StaticResource CommandReference}}" IsDefault="True" AutomationProperties.AutomationId="ID_BTN_ADD_CUSTOM_CONFIRM_OK"/>
+            <Button Content="Cancel" Command="{Binding CommandCancel, Converter={StaticResource CommandReference}}" IsCancel="True" AutomationProperties.AutomationId="ID_BTN_ADD_CUSTOM_CONFIRM_CANCEL"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

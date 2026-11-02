@@ -1,0 +1,101 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.SmartStartView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:views="clr-namespace:ZWaveControllerUI.Views"
+             xmlns:cfg="clr-namespace:ZWaveController.Configuration;assembly=ZWaveController"
+             AutomationProperties.AutomationId="ID_SMART_START_VIEW">
+    <UserControl.Styles>
+        <Style Selector="TextBlock.pending">
+            <Setter Property="FontStyle" Value="Italic"/>
+        </Style>
+        <Style Selector="StackPanel.options > TextBlock, DockPanel > TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Styles>
+    <Grid ColumnDefinitions="276,Auto,*" RowDefinitions="*,Auto,*">
+        <GridSplitter Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Height="4" ResizeDirection="Rows"/>
+        <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Center" Width="4" ResizeDirection="Columns"/>
+        <views:NodesListView Grid.Column="0" Grid.Row="0" AutomationProperties.AutomationId="ID_NODES_LIST_VIEW" DataContext="{Binding ApplicationModel}"/>
+        <views:NodeInfoView Grid.Column="0" Grid.Row="2" DataContext="{Binding ApplicationModel}"/>
+        <DockPanel Grid.Row="0" Grid.RowSpan="3" Grid.Column="2">
+            <CheckBox DockPanel.Dock="Top" Margin="2,0" IsChecked="{Binding DialogSettings.IsFloating}" Content="Floating View" HorizontalAlignment="Right"/>
+            <TextBlock DockPanel.Dock="Top" Margin="4,0" Text="Provisioning List:"/>
+            <DockPanel Margin="4" DockPanel.Dock="Bottom" IsVisible="{Binding IsMetadataEnabled}">
+                <StackPanel>
+                    <DockPanel>
+                        <TextBlock Text="Metadata Type - Name:" Width="160"/>
+                        <TextBox Text="{Binding MetadaNameValue, Mode=TwoWay}"/>
+                    </DockPanel>
+                    <DockPanel>
+                        <TextBlock Text="Metadata Type - Location:" Width="160"/>
+                        <TextBox Text="{Binding MetadaLocationValue, Mode=TwoWay}"/>
+                    </DockPanel>
+                </StackPanel>
+            </DockPanel>
+            <StackPanel Margin="4" DockPanel.Dock="Bottom">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Left" Text="DSK Value:" Margin="0,0,4,0"/>
+                    <TextBox Name="tbDsk" FontFamily="Courier New, DejaVu Sans Mono, monospace" AcceptsReturn="True" TextWrapping="Wrap"
+                             Text="{Binding DSK, Converter={StaticResource ByteArrayToDSKString}, Mode=TwoWay}"
+                             AutomationProperties.AutomationId="ID_TB_DSK_VALUE"/>
+                </DockPanel>
+                <StackPanel Classes="options" Orientation="Horizontal" IsVisible="{Binding !IsMetadataEnabled}">
+                    <TextBlock Text="Grant Schemes:" Width="95"/>
+                    <CheckBox IsChecked="{Binding IsGrantS0Key}" Content="S0;"/>
+                    <CheckBox IsChecked="{Binding IsGrantS2UnauthenticatedKey}" Content="S2 Unauthenticated;"/>
+                    <CheckBox IsChecked="{Binding IsGrantS2AuthenticatedKey}" Content="S2 Authenticated;"/>
+                    <CheckBox IsChecked="{Binding IsGrantS2AccessKey}" Content="S2 Access;"/>
+                </StackPanel>
+                <StackPanel Classes="options" Orientation="Horizontal">
+                    <TextBlock Text="Node Options:" Width="95"/>
+                    <CheckBox IsChecked="{Binding IsNodeOptionLongRange}" Content="Long Range;"/>
+                    <StackPanel Orientation="Horizontal" IsVisible="{Binding !IsMetadataEnabled}">
+                        <CheckBox IsChecked="{Binding IsNodeOptionNetworkWide}" Content="Network Wide;"/>
+                        <CheckBox IsChecked="{Binding IsNodeOptionNormalPower}" Content="Normal Power;"/>
+                    </StackPanel>
+                </StackPanel>
+                <CheckBox Content="Auto remove DSK on Device Reset Locally Notification" IsChecked="{Binding IsRemoveDSK}"/>
+                <DockPanel Margin="0,8,0,0">
+                    <Button Content="Add" Command="{Binding AddProvisioningItemCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_ADD_DSK"/>
+                    <Button Content="Update" Command="{Binding UpdateProvisioningItemCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_UPDATE_DSK"/>
+                    <Button DockPanel.Dock="Right" Content="Remove All" Command="{Binding RemoveAllCommand, Converter={StaticResource CommandReference}}"/>
+                    <Button DockPanel.Dock="Right" Content="Remove" Command="{Binding RemoveSelectedCommand, Converter={StaticResource CommandReference}}"/>
+                    <Panel/>
+                </DockPanel>
+            </StackPanel>
+            <StackPanel Margin="4" DockPanel.Dock="Bottom" Orientation="Horizontal">
+                <Button Content="Refresh List" Command="{Binding WhitelistListGetCommand, Converter={StaticResource CommandReference}}"/>
+                <Button Content="Scan DSK" Command="{Binding ScanDSKCommand, Converter={StaticResource CommandReference}}"/>
+                <Button Content="Import DSKs" Command="{Binding ImportDSKCommand, Converter={StaticResource CommandReference}}"/>
+                <Button Content="Export DSKs" Command="{Binding ExportDSKCommand, Converter={StaticResource CommandReference}}"/>
+            </StackPanel>
+            <TreeView Margin="4,0" ItemsSource="{Binding ApplicationModel.ConfigurationItem.PreKitting.ProvisioningList}"
+                      SelectedItem="{Binding SelectedObject, Mode=TwoWay}" AutomationProperties.AutomationId="ID_TVW_PROVISIONING_LIST_VIEW">
+                <TreeView.DataTemplates>
+                    <TreeDataTemplate DataType="{x:Type cfg:ProvisioningItem}" ItemsSource="{Binding Metadata}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Width="40" Text="{Binding NodeId, Converter={StaticResource IsValueInRangeConverter}}"/>
+                            <TextBlock FontFamily="Courier New, DejaVu Sans Mono, monospace" Text="{Binding Text}"
+                                       Classes.pending="{Binding State, Converter={StaticResource ValueEqualsConverter}, ConverterParameter=Pending}"/>
+                        </StackPanel>
+                    </TreeDataTemplate>
+                    <TreeDataTemplate DataType="{x:Type cfg:ProvisioningItemExtension}">
+                        <TextBlock>
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0}: {1}">
+                                    <Binding Path="Type"/>
+                                    <Binding Path="Text"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </TreeDataTemplate>
+                </TreeView.DataTemplates>
+            </TreeView>
+        </DockPanel>
+    </Grid>
+</UserControl>

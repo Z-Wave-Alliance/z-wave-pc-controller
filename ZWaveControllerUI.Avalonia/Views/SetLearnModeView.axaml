@@ -1,0 +1,37 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.SetLearnModeView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             AutomationProperties.AutomationId="ID_SET_LEARN_MODE_VIEW">
+    <Grid RowDefinitions="Auto,*,Auto">
+        <StackPanel Margin="4" Orientation="Horizontal" Grid.Row="0">
+            <Button AutomationProperties.AutomationId="ID_BTN_CLASSIC_LEARN_MODE"
+                    Command="{Binding SetClassicLearnModeCommand, Converter={StaticResource CommandReference}}" Content="Classic" ToolTip.Tip="Start Classic Learn Mode"/>
+            <Button AutomationProperties.AutomationId="ID_BTN_SMART_START_LEARN_MODE"
+                    Command="{Binding SetSmartStartLearnModeCommand, Converter={StaticResource CommandReference}}" Content="Smart Start" ToolTip.Tip="Start Smart Start Learn Mode"/>
+            <Button AutomationProperties.AutomationId="ID_BTN_NWI_LEARN_MODE"
+                    Command="{Binding SetNWILearnModeCommand, Converter={StaticResource CommandReference}}" Content="NWI" ToolTip.Tip="Start Network Wide Inclusion Learn Mode"/>
+            <Button AutomationProperties.AutomationId="ID_BTN_NWE_LEARN_MODE"
+                    Command="{Binding SetNWELearnModeCommand, Converter={StaticResource CommandReference}}" Content="NWE" ToolTip.Tip="Start Network Wide Exclusion Learn Mode"/>
+        </StackPanel>
+        <StackPanel Margin="4" Orientation="Horizontal" Grid.Row="1">
+            <Button AutomationProperties.AutomationId="ID_BTN_VIRTUAL_DEVICE_LEARN_MODE"
+                    Command="{Binding StartVirtualDeviceLearnModeCommand, Converter={StaticResource CommandReference}}" CommandParameter="Include"
+                    ToolTip.Tip="Start Virtual Node Learn Mode (Include)" IsVisible="{Binding ApplicationModel.IsBridgeControllerLibrary}">
+                <TextBlock Text="Virtual Node Include" TextWrapping="Wrap" TextAlignment="Center"/>
+            </Button>
+            <Button AutomationProperties.AutomationId="ID_BTN_VIRTUAL_DEVICE_LEARN_MODE_EXCLUDE"
+                    Command="{Binding StartVirtualDeviceLearnModeCommand, Converter={StaticResource CommandReference}}" CommandParameter="Exclude"
+                    ToolTip.Tip="Start Virtual Node Learn Mode (Exclude)" IsVisible="{Binding ApplicationModel.IsBridgeControllerLibrary}">
+                <TextBlock Text="Virtual Node Exclude" TextWrapping="Wrap" TextAlignment="Center"/>
+            </Button>
+        </StackPanel>
+        <StackPanel Margin="4" Grid.Row="2" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Content="Cancel" Command="{Binding CommandCancel, Converter={StaticResource CommandReference}}" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
