@@ -1,0 +1,694 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.SecuritySettingsWindow"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             xmlns:converters="clr-namespace:ZWaveControllerUI.Converters"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+             xmlns:enums="clr-namespace:ZWave.BasicApplication.Enums;assembly=ZWaveBasicApplication"
+             xmlns:secureenums="clr-namespace:ZWave.BasicApplication.Security;assembly=ZWaveBasicApplication"
+             xmlns:secureenums2="clr-namespace:ZWave.Security;assembly=ZWave"
+             AutomationProperties.AutomationId="ID_SECURITY_SETTINGS_VIEW">
+    <UserControl.Styles>
+        <!-- Frame options do not apply to Nonce Get; hidden, keeping their space (Visibility.Hidden in WPF). -->
+        <Style Selector="UniformGrid.hidden">
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="IsHitTestVisible" Value="False"/>
+        </Style>
+        <Style Selector="UniformGrid > TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="DockPanel > TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Styles>
+    <DockPanel Margin="0"  >
+        <!--IsEnabled="{Binding IsReadOnlyView}"-->
+        <StackPanel Margin="4" DockPanel.Dock="Top">
+            <ToggleButton AutomationProperties.AutomationId="ID_BTN_ENABLE_SECURITY" IsChecked="{Binding IsPauseSecurity, Mode=TwoWay}" Width="100">
+                <StackPanel Orientation="Horizontal">
+                    <mi:MaterialIcon Kind="Pause" Width="24" Height="24" IsVisible="{Binding !IsPauseSecurity}"/>
+                    <mi:MaterialIcon Kind="Play" Width="24" Height="24" IsVisible="{Binding IsPauseSecurity}"/>
+                    <TextBlock Text="Pause" VerticalAlignment="Center" IsVisible="{Binding !IsPauseSecurity}"/>
+                    <TextBlock Text="Resume" VerticalAlignment="Center" IsVisible="{Binding IsPauseSecurity}"/>
+                </StackPanel>
+            </ToggleButton>
+        </StackPanel>
+        <StackPanel Margin="4" DockPanel.Dock="Top" Orientation="Horizontal" IsEnabled="{Binding !IsPauseSecurity}">
+            <CheckBox Content="Enable S0; " AutomationProperties.AutomationId="ID_CHK_ENABLE_S0" IsChecked="{Binding IsEnabledSecurityS0, Mode=TwoWay}" ToolTip.Tip="Enable S0 Security"/>
+            <CheckBox Content="Enable S2 Unauthenticated; " AutomationProperties.AutomationId="ID_CHK_ENABLE_UNAUTH" IsChecked="{Binding IsEnabledSecurityS2_UNAUTHENTICATED, Mode=TwoWay}"/>
+            <CheckBox Content="Enable S2 Authenticated; " AutomationProperties.AutomationId="ID_CHK_ENABLE_AUTH" IsChecked="{Binding IsEnabledSecurityS2_AUTHENTICATED, Mode=TwoWay}"/>
+            <CheckBox Content="Enable S2 Access; " AutomationProperties.AutomationId="ID_CHK_ENABLE_ACCESS" IsChecked="{Binding IsEnabledSecurityS2_ACCESS, Mode=TwoWay}"/>
+            <CheckBox Content="Join with CSA" AutomationProperties.AutomationId="ID_CHK_JOIN_CSA" IsChecked="{Binding IsClientSideAuthS2Enabled, Mode=TwoWay}"/>
+        </StackPanel>
+        <UniformGrid Margin="4" DockPanel.Dock="Top" Columns="2">
+            <DockPanel Background="AliceBlue">
+                <TextBlock Width="100" Text="Network Key S0"/>
+                <Rectangle Margin="1" Width="8" Fill="{StaticResource SnkS0}"/>
+                <Button ToolTip.Tip="Copy to Clipboard" Width="30" DockPanel.Dock="Right" Click="CopyNetKeyS0ToClipboardButton_Click" AutomationProperties.AutomationId="ID_BTN_COPY_S0_KEY" >
+                    <mi:MaterialIcon Kind="ContentCopy"/>
+                </Button>
+                <TextBox Name="tbNetKeyS0" AutomationProperties.AutomationId="ID_TB_KEY_S0" IsReadOnly="True"
+                         Text="{Binding ApplicationModel.ConfigurationItem.SecuritySettings.NetworkKeys[7].Value, Converter={StaticResource ByteArrayToStringConverter}}"/>
+            </DockPanel>
+            <Border Background="AliceBlue" IsEnabled="{Binding !IsPauseSecurity}">
+                <DockPanel IsEnabled="{Binding IsEnabledSecurityS0}">
+                    <CheckBox Content="override" AutomationProperties.AutomationId="ID_CHK_OVRRD_S0" IsChecked="{Binding TestNetworkKeys[7].IsSet, Mode=TwoWay}"/>
+                    <controls:TextBoxHexMask Text="{Binding TestNetworkKeys[7].Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"
+                                             SymbolsCount="32" AutomationProperties.AutomationId="ID_TB_OVRRD_S0"/>
+                </DockPanel>
+            </Border>
+            <DockPanel Background="AliceBlue">
+                <TextBlock Width="100" Text="Unauthenticated"/>
+                <Rectangle Margin="1" Width="8" Fill="{StaticResource SnkS2_UNAUTHENTICATED}"/>
+                <Button ToolTip.Tip="Copy to Clipboard" Width="30" DockPanel.Dock="Right" Click="CopyNetKeyC0ToClipboardButton_Click" AutomationProperties.AutomationId="ID_BTN_COPY_UNAUTH_KEY">
+                    <mi:MaterialIcon Kind="ContentCopy"/>
+                </Button>
+                <TextBox Name="tbNetKeyC0" AutomationProperties.AutomationId="ID_TB_UNAUTH" IsReadOnly="True" 
+                         Text="{Binding ApplicationModel.ConfigurationItem.SecuritySettings.NetworkKeys[0].Value, Converter={StaticResource ByteArrayToStringConverter}}"/>
+            </DockPanel>
+            <Border Background="AliceBlue" IsEnabled="{Binding !IsPauseSecurity}">
+                <DockPanel IsEnabled="{Binding IsEnabledSecurityS2_UNAUTHENTICATED}">
+                    <CheckBox Content="override" AutomationProperties.AutomationId="ID_CHK_OVRRD_UNAUTH" IsChecked="{Binding TestNetworkKeys[0].IsSet, Mode=TwoWay}"/>
+                    <controls:TextBoxHexMask Text="{Binding TestNetworkKeys[0].Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"
+                                             SymbolsCount="32" AutomationProperties.AutomationId="ID_TB_OVRRD_UNAUTH"/>
+                </DockPanel>
+            </Border>
+            <DockPanel Background="AliceBlue">
+                <TextBlock Width="100" Text="Authenticated"/>
+                <Rectangle Margin="1" Width="8" Fill="{StaticResource SnkS2_AUTHENTICATED}"/>
+                <Button ToolTip.Tip="Copy to Clipboard" Width="30" DockPanel.Dock="Right" Click="CopyNetKeyC1ToClipboardButton_Click" AutomationProperties.AutomationId="ID_BTN_COPY_AUTH_KEY">
+                    <mi:MaterialIcon Kind="ContentCopy"/>
+                </Button>
+                <TextBox Name="tbNetKeyC1" AutomationProperties.AutomationId="ID_TB_AUTH" IsReadOnly="True" 
+                         Text="{Binding ApplicationModel.ConfigurationItem.SecuritySettings.NetworkKeys[1].Value, Converter={StaticResource ByteArrayToStringConverter}}"/>
+            </DockPanel>
+            <Border Background="AliceBlue" IsEnabled="{Binding !IsPauseSecurity}">
+                <DockPanel IsEnabled="{Binding IsEnabledSecurityS2_AUTHENTICATED}">
+                    <CheckBox Content="override" AutomationProperties.AutomationId="ID_CHK_OVRRD_AUTH" IsChecked="{Binding TestNetworkKeys[1].IsSet, Mode=TwoWay}"/>
+                    <controls:TextBoxHexMask Text="{Binding TestNetworkKeys[1].Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"
+                                             SymbolsCount="32" AutomationProperties.AutomationId="ID_TB_OVRRD_AUTH"/>
+                </DockPanel>
+            </Border>
+            <DockPanel Background="AliceBlue">
+                <TextBlock  Width="100" Text="Access"/>
+                <Rectangle Margin="1" Width="8" Fill="{StaticResource SnkS2_ACCESS}"/>
+                <Button ToolTip.Tip="Copy to Clipboard" Width="30" DockPanel.Dock="Right" Click="CopyNetKeyC2ToClipboardButton_Click" AutomationProperties.AutomationId="ID_BTN_COPY_ACESS_KEY">
+                    <mi:MaterialIcon Kind="ContentCopy"/>
+                </Button>
+                <TextBox Name="tbNetKeyC2" AutomationProperties.AutomationId="ID_TB_ACCESS" IsReadOnly="True" 
+                         Text="{Binding ApplicationModel.ConfigurationItem.SecuritySettings.NetworkKeys[2].Value, Converter={StaticResource ByteArrayToStringConverter}}"/>
+            </DockPanel>
+            <Border  Background="AliceBlue" IsEnabled="{Binding !IsPauseSecurity}">
+                <DockPanel IsEnabled="{Binding IsEnabledSecurityS2_ACCESS}">
+                    <CheckBox Content="override" AutomationProperties.AutomationId="ID_CHK_OVRRD_ACCESS" IsChecked="{Binding TestNetworkKeys[2].IsSet, Mode=TwoWay}"/>
+                    <controls:TextBoxHexMask Text="{Binding TestNetworkKeys[2].Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"
+                                             SymbolsCount="32" AutomationProperties.AutomationId="ID_TB_OVRRD_ACCESS"/>
+                </DockPanel>
+            </Border>
+
+            <DockPanel Background="HoneyDew">
+                <TextBlock Width="100" Text="LR Authenticated"/>
+                <Rectangle Margin="1" Width="8" Fill="{StaticResource SnkS2_AUTHENTICATED}"/>
+                <Button ToolTip.Tip="Copy to Clipboard" Width="30" DockPanel.Dock="Right" Click="CopyNetKeyLRC1ToClipboardButton_Click" AutomationProperties.AutomationId="ID_BTN_COPY_LR_AUTH_KEY">
+                    <mi:MaterialIcon Kind="ContentCopy"/>
+                </Button>
+                <TextBox Name="tbNetKeyLRC1" AutomationProperties.AutomationId="ID_TB_LR_AUTH" IsReadOnly="True" 
+                         Text="{Binding ApplicationModel.ConfigurationItem.SecuritySettings.NetworkKeys[3].Value, Converter={StaticResource ByteArrayToStringConverter}}"/>
+            </DockPanel>
+            <Border Background="HoneyDew" IsEnabled="{Binding !IsPauseSecurity}">
+                <DockPanel IsEnabled="{Binding IsEnabledSecurityS2_AUTHENTICATED}">
+                    <CheckBox Content="override" AutomationProperties.AutomationId="ID_CHK_OVRRD_LR_AUTH" IsChecked="{Binding TestNetworkKeys[3].IsSet, Mode=TwoWay}"/>
+                    <controls:TextBoxHexMask Text="{Binding TestNetworkKeys[3].Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"
+                                             SymbolsCount="32" AutomationProperties.AutomationId="ID_TB_OVRRD_LR_AUTH"/>
+                </DockPanel>
+            </Border>
+            <DockPanel Background="HoneyDew">
+                <TextBlock  Width="100" Text="LR Access"/>
+                <Rectangle Margin="1" Width="8" Fill="{StaticResource SnkS2_ACCESS}"/>
+                <Button ToolTip.Tip="Copy to Clipboard" Width="30" DockPanel.Dock="Right" Click="CopyNetKeyLRC2ToClipboardButton_Click" AutomationProperties.AutomationId="ID_BTN_COPY_LR_ACESS_KEY">
+                    <mi:MaterialIcon Kind="ContentCopy"/>
+                </Button>
+                <TextBox Name="tbNetKeyLRC2" AutomationProperties.AutomationId="ID_TB_LR_ACCESS" IsReadOnly="True" 
+                         Text="{Binding ApplicationModel.ConfigurationItem.SecuritySettings.NetworkKeys[4].Value, Converter={StaticResource ByteArrayToStringConverter}}"/>
+            </DockPanel>
+            <Border Background="HoneyDew" IsEnabled="{Binding !IsPauseSecurity}">
+                <DockPanel IsEnabled="{Binding IsEnabledSecurityS2_ACCESS}">
+                    <CheckBox Content="override" AutomationProperties.AutomationId="ID_CHK_OVRRD_LR_ACCESS" IsChecked="{Binding TestNetworkKeys[4].IsSet, Mode=TwoWay}"/>
+                    <controls:TextBoxHexMask Text="{Binding TestNetworkKeys[4].Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"
+                                             SymbolsCount="32" AutomationProperties.AutomationId="ID_TB_OVRRD_LR_ACCESS"/>
+                </DockPanel>
+            </Border>
+
+            <DockPanel Background="White">
+                <TextBlock  Width="100" Text="Last used Temp"/>
+                <Rectangle Margin="1" Width="8" Fill="Transparent"/>
+                <Button ToolTip.Tip="Copy to Clipboard" Width="30" DockPanel.Dock="Right" Click="CopyNetKeyTempToClipboardButton_Click" AutomationProperties.AutomationId="ID_BTN_COPY_TEMP_KEY">
+                    <mi:MaterialIcon Kind="ContentCopy"/>
+                </Button>
+                <TextBox Name="tbNetKeyTemp" AutomationProperties.AutomationId="ID_TB_KEYTEMP"  IsReadOnly="True" 
+                         Text="{Binding NetworkKeyTemp, Mode=TwoWay, Converter={StaticResource ByteArrayToStringConverter}}"/>
+            </DockPanel>
+        </UniformGrid>
+        <StackPanel Margin="4" DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" >
+            <Button Content="OK" AutomationProperties.AutomationId="ID_BTN_OK" Command="{Binding CommandOk, Converter={StaticResource CommandReference}}" IsDefault="True"/>
+            <Button Content="Cancel" AutomationProperties.AutomationId="ID_BTN_CANCEL" Command="{Binding CommandCancel, Converter={StaticResource CommandReference}}" IsCancel="True"/>
+            <Button Content="Apply" Command="{Binding CommandApply, Converter={StaticResource CommandReference}}" IsDefault="False"/>
+        </StackPanel>
+        <DockPanel Margin="4" DockPanel.Dock="Bottom">
+            <CheckBox Name="cbIsSaveKeys" IsChecked="{Binding IsSaveKeys}" HorizontalAlignment="Left"
+                      AutomationProperties.AutomationId="CHK_SAVE_KEYS" >
+                <StackPanel>
+                    <TextBlock Text="Save Security Keys"/>
+                    <TextBlock Text="to Storage Folder: "/>
+                </StackPanel>
+            </CheckBox>                     
+            <Button DockPanel.Dock="Right" IsEnabled="{Binding #cbIsSaveKeys.IsChecked}" Width="40" Command="{Binding BrowseStorageFolderCommand, Converter={StaticResource CommandReference}}">
+                <mi:MaterialIcon Kind="Folder" Width="24" Height="24"/>
+            </Button>
+            <TextBox AutomationProperties.AutomationId="TB_SAVED_KEYS_STORAGE_PATH" 
+                     Text="{Binding KeysStorageFolder}" IsEnabled="{Binding #cbIsSaveKeys.IsChecked}" VerticalAlignment="Stretch" TextWrapping="Wrap"/>
+        </DockPanel>
+        <TabControl Margin="0,4" AutomationProperties.AutomationId="ID_TAB_CONTAINER_TEST_SCHEME">
+            <TabItem Header="S0 Test Scheme" IsSelected="{Binding IsS0TabSelected}" AutomationProperties.AutomationId="ID_TAB_PAGE_S0_TEST_SCHEME">
+                <ScrollViewer>
+                     <StackPanel IsEnabled="{Binding !IsPauseSecurity}">
+                        <StackPanel Margin="4">
+                            <CheckBox Content="Enable security test schema" 
+                                      IsChecked="{Binding TestS0Settings.IsActive, Mode=TwoWay}"
+                                      AutomationProperties.AutomationId="ID_CHK_ENABLE_S0_TEST_SCHEME"/>
+                        </StackPanel>
+                        <StackPanel Margin="4" IsEnabled="{Binding TestS0Settings.IsActive}" >
+                            <controls:GroupBox>
+                                <controls:GroupBox.Header>
+                                    <RadioButton Content="Including Controller" IsChecked="True" AutomationProperties.AutomationId="ID_RB_INCLUDING_CONTROLLER"/>
+                                </controls:GroupBox.Header>
+                                <UniformGrid Columns="2">
+                                    <CheckBox Content="Invalid Nonce in Network Key Set:" IsChecked="{Binding TestS0Settings.NonceInNetworkKeySetSpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_CHK_INVALID_NONCE_IN_NETWORK_SET_KEY"/>
+                                    <controls:TextBoxHexMask Text="{Binding TestS0Settings.NonceInNetworkKeySet, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" 
+                                                         SymbolsCount="16" AutomationProperties.AutomationId="ID_TB_INVALID_NONCE_IN_NETWORK_SET_VALUE"/>
+                                    <CheckBox Content="Invalid MAC in Network Key Set:" IsChecked="{Binding TestS0Settings.MACInNetworkKeySetSpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_CHK_INVALID_MAC_IN_NETWORK_SET_KEY"/>
+                                    <controls:TextBoxHexMask Text="{Binding TestS0Settings.MACInNetworkKeySet, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" 
+                                                         SymbolsCount="16" AutomationProperties.AutomationId="ID_TB_INVALID_MAC_IN_NETWORK_SET_VALUE"/>
+                                    <CheckBox Content="Invalid Network Key  (Set):" IsChecked="{Binding TestS0Settings.ValueInNetworkKeySetSpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_CHK_INVALID_NETWORK_KEY_SET_KEY"/>
+                                    <controls:TextBoxHexMask Text="{Binding TestS0Settings.ValueInNetworkKeySet, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" 
+                                                         SymbolsCount="32" AutomationProperties.AutomationId="ID_TB_INVALID_NETWORK_KEY_SET_VALUE"/>
+                                    <CheckBox Content="Send invalid Scheme Get:" IsChecked="{Binding TestS0Settings.ValueInSchemeGetSpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_CHK_SEND_INVALID_SCHEME_GET_KEY"/>
+                                    <controls:NumericUpDown IntValue="{Binding TestS0Settings.ValueInSchemeGet, Mode=TwoWay}"
+                                                        AutomationProperties.AutomationId="ID_TB_SEND_INVALID_SCHEME_GET_VALUE"/>
+                                    <CheckBox Content="Send invalid Scheme Inherit:" IsChecked="{Binding TestS0Settings.ValueInSchemeInheritSpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_CHK_SEND_INVALID_SCHEME_INHERIT_KEY"/>
+                                    <controls:NumericUpDown IntValue="{Binding TestS0Settings.ValueInSchemeInherit, Mode=TwoWay}"
+                                                        AutomationProperties.AutomationId="ID_TB_SEND_INVALID_SCHEME_INHERIT_VALUE"/>
+                                    <CheckBox Content="Delay Scheme Get (sec):" IsChecked="{Binding TestS0Settings.DelaySchemeGetSpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_CHK_DELAY_SCHEME_GET_KEY"/>
+                                    <controls:NumericUpDown IntValue="{Binding TestS0Settings.DelaySchemeGet, Mode=TwoWay}"
+                                                        AutomationProperties.AutomationId="ID_TB_DELAY_SCHEME_GET_VALUE"/>
+                                    <CheckBox Content="Delay Nonce Get (sec):" IsChecked="{Binding TestS0Settings.DelayNonceGetSpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_CHK_DELAY_NONCE_GET_KEY"/>
+                                    <controls:NumericUpDown IntValue="{Binding TestS0Settings.DelayNonceGet, Mode=TwoWay}"
+                                                        AutomationProperties.AutomationId="ID_TB_DELAY_NONCE_GET_VALUE"/>
+                                    <CheckBox Content="Delay Network Key Set (sec):" IsChecked="{Binding TestS0Settings.DelayNetworkKeySetSpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_CHK_DELAY_NETWORK_KEY_SET_KEY"/>
+                                    <controls:NumericUpDown IntValue="{Binding TestS0Settings.DelayNetworkKeySet, Mode=TwoWay}"
+                                                        AutomationProperties.AutomationId="ID_TB_DELAY_NETWORK_KEY_SET_VALUE"/>
+                                    <CheckBox Content="Delay Nonce Report (sec):" IsChecked="{Binding TestS0Settings.DelayNonceReportSpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_CHK_DELAY_NONCE_REPORT_KEY"/>
+                                    <controls:NumericUpDown IntValue="{Binding TestS0Settings.DelayNonceReport, Mode=TwoWay}"
+                                                        AutomationProperties.AutomationId="ID_TB_DELAY_NONCE_REPORT_VALUE"/>
+                                    <CheckBox Content="Delay Scheme Inherit (sec):" IsChecked="{Binding TestS0Settings.DelaySchemeInheritSpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_CHK_DELAY_SCHEME_INHERIT_KEY"/>
+                                    <controls:NumericUpDown IntValue="{Binding TestS0Settings.DelaySchemeInherit, Mode=TwoWay}"
+                                                        AutomationProperties.AutomationId="ID_TB_DELAY_SCHEME_INHERIT_VALUE"/>
+                                </UniformGrid>
+                            </controls:GroupBox>
+                            <controls:GroupBox>
+                                <controls:GroupBox.Header>
+                                    <RadioButton Content="Included Node" IsChecked="True" AutomationProperties.AutomationId="ID_RB_INCLUDING_NODE"/>
+                                </controls:GroupBox.Header>
+                                <UniformGrid Columns="2">
+                                    <CheckBox Content="Invalid Nonce in Network Key Verify:" IsChecked="{Binding TestS0Settings.NonceInNetworkKeyVerifySpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_CHK_INVALID_NONCE_IN_NETWORK_VERIFY_KEY"/>
+                                    <controls:TextBoxHexMask Text="{Binding TestS0Settings.NonceInNetworkKeyVerify, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" 
+                                                         SymbolsCount="32" AutomationProperties.AutomationId="ID_CHK_INVALID_NONCE_IN_NETWORK_VERIFY_VALUE"/>
+                                    <CheckBox Content="Invalid MAC in Network Key Verify:" IsChecked="{Binding TestS0Settings.MACInNetworkKeyVerifySpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_CHK_INVALID_MAC_IN_NETWORK_VERIFY_KEY" />
+                                    <controls:TextBoxHexMask Text="{Binding TestS0Settings.MACInNetworkKeyVerify, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" 
+                                                         SymbolsCount="16" AutomationProperties.AutomationId="ID_TB_INVALID_MAC_IN_NETWORK_VERIFY_VALUE"/>
+                                    <CheckBox Content="Invalid Network Key  (Verify):" IsChecked="{Binding TestS0Settings.ValueInNetworkKeyVerifySpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_CHK_INVALID_NETWORK_KEY_VERIFY_KEY"/>
+                                    <controls:TextBoxHexMask Text="{Binding TestS0Settings.ValueInNetworkKeyVerify, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" 
+                                                         SymbolsCount="32" AutomationProperties.AutomationId="ID_TB_INVALID_NETWORK_KEY_VERIFY_VALUE"/>
+                                    <CheckBox Content="Send invalid Scheme Report:" IsChecked="{Binding TestS0Settings.ValueInSchemeReportSpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_CHK_SEND_INVALID_SCHEME_REPORT_KEY"/>
+                                    <controls:NumericUpDown IntValue="{Binding TestS0Settings.ValueInSchemeReport, Mode=TwoWay}"
+                                                        AutomationProperties.AutomationId="ID_CHK_SEND_INVALID_SCHEME_REPORT_VALUE"/>
+                                    <CheckBox Content="Delay Scheme Report (sec):" IsChecked="{Binding TestS0Settings.DelaySchemeReportSpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_TB_DELAY_SCHEME_REPORT_KEY"/>
+                                    <controls:NumericUpDown IntValue="{Binding TestS0Settings.DelaySchemeReport, Mode=TwoWay}"
+                                                        AutomationProperties.AutomationId="ID_TB_DELAY_SCHEME_REPORT_VALUE"/>
+                                    <CheckBox Content="Delay Nonce Report (sec):" IsChecked="{Binding TestS0Settings.DelayNonceReportINSpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_TB_DELAY_NONCE_REPORT_IN_KEY"/>
+                                    <controls:NumericUpDown IntValue="{Binding TestS0Settings.DelayNonceReportIN, Mode=TwoWay}"
+                                                        AutomationProperties.AutomationId="ID_TB_DELAY_NONCE_REPORT_IN_VALUE"/>
+                                    <CheckBox Content="Delay Nonce Get (sec):" IsChecked="{Binding TestS0Settings.DelayNonceGetINSpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_TB_DELAY_NONCE_GET_IN_KEY"/>
+                                    <controls:NumericUpDown IntValue="{Binding TestS0Settings.DelayNonceGetIN, Mode=TwoWay}"
+                                                        AutomationProperties.AutomationId="ID_TB_DELAY_NONCE_GET_IN_VALUE"/>
+                                    <CheckBox Content="Delay Network Key Verify (sec):" IsChecked="{Binding TestS0Settings.DelayNetworkKeyVerifySpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_TB_DELAY_NETWORK_KEY_VERIFY_KEY"/>
+                                    <controls:NumericUpDown IntValue="{Binding TestS0Settings.DelayNetworkKeyVerify, Mode=TwoWay}"
+                                                        AutomationProperties.AutomationId="ID_TB_DELAY_NETWORK_KEY_VERIFY_VALUE"/>
+                                    <CheckBox Content="Delay Scheme Report (after Scheme Inherit) (sec):" IsChecked="{Binding TestS0Settings.DelaySchemeInheritReportSpecified, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_TB_DELAY_SCHEME_REPORT_AFTER_SCHEME_IHERIT_KEY"/>
+                                    <controls:NumericUpDown IntValue="{Binding TestS0Settings.DelaySchemeInheritReport, Mode=TwoWay}"
+                                                        AutomationProperties.AutomationId="ID_TB_DELAY_SCHEME_REPORT_AFTER_SCHEME_IHERIT_VALUE"/>
+                                </UniformGrid>
+                            </controls:GroupBox>
+                            <controls:GroupBox>
+                                <controls:GroupBox.Header>
+                                    <TextBlock Text="Send Data" />
+                                </controls:GroupBox.Header>
+                                <UniformGrid Columns="2">
+                                    <CheckBox Content="Reuse Receiver Nonce In Second Fragment:" IsChecked="{Binding TestS0Settings.ReuseReceiverNonceInSecondFragment, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ID_CHK_REUSE_NONCE_IN_SECOND_FRAGMENT"/>
+                                </UniformGrid>
+                            </controls:GroupBox>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="S2 Test Scheme" IsSelected="{Binding IsS2TabSelected}" AutomationProperties.AutomationId="ID_TAB_PAGE_S2_TEST_SCHEME">
+                <ScrollViewer>
+                    <StackPanel IsEnabled="{Binding !IsPauseSecurity}">
+                        <DockPanel Margin="4" >
+                            <CheckBox Content="Enable security test schema" VerticalAlignment="Top"     
+                                      IsChecked="{Binding TestS2Settings.IsActive, Mode=TwoWay}"
+                                      AutomationProperties.AutomationId="ID_CHK_ENABLE_S2_TEST_SCHEME"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Content="Save" Command="{Binding CommandSaveSecurityTestParametersToFile, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="BTN_SAVE_SETTINGS"/>
+                                <Button Content="Load" Command="{Binding CommandLoadSecurityTestParametersFromFile, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="BTN_LOAD_SETTINGS"/>
+                            </StackPanel>
+                        </DockPanel>
+                        <StackPanel IsEnabled="{Binding TestS2Settings.IsActive}">
+                            <controls:GroupBox Header="Security parameters overrides" >
+                                <StackPanel Margin="0,4">
+                                    <DataGrid CanUserSortColumns="False" MaxHeight="220"
+                                                  ItemsSource="{Binding TestS2Settings.Parameters}" 
+                                                  SelectedItem="{Binding SelectedTestParameterS2}">
+                                        <DataGrid.Columns>
+                                                <DataGridTemplateColumn Header="Enabled" Width="50">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Parameter Name" Width="250">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding ParameterTypeV, Converter={StaticResource ParameterS2EnumDescriptionValueConverter}}"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Value" Width="500">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}}"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                            </DataGrid.Columns>
+                                    </DataGrid>
+                                    <UniformGrid Columns="2" Margin="32,4">
+                                        <ComboBox ItemsSource="{Binding TestParametersS2Types}" 
+                                                  SelectedItem="{Binding SelectedParameterS2Type, Mode=TwoWay}"
+                                                  HorizontalAlignment="Left"
+                                                  Width="200"
+                                                  AutomationProperties.AutomationId="ID_CMB_S2_PARAMETER_TYPE">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <ContentPresenter Content="{Binding Converter={StaticResource ParameterS2EnumDescriptionValueConverter}}"/>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                        <controls:TextBoxHexMask Text="{Binding TestParameterS2Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" 
+                                                                 SymbolsCount="{Binding SelectedParameterS2Type, Converter={StaticResource ParameterS2TypeToSymbolCountConverter}}"
+                                                                 AutomationProperties.AutomationId="ID_TB_S2_PARAMETER_VALUE"/>
+                                    </UniformGrid>
+                                    <StackPanel Margin="4" Orientation="Horizontal">
+                                        <Button Content="Clear" Command="{Binding CommandClearParameters, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BТN_S2_PARAMETER_CLEAR"/>
+                                        <Button Content="Delete" Command="{Binding CommandDeleteParameter, Converter={StaticResource CommandReference}}"/>
+                                        <Button Content="Set / Add" Command="{Binding CommandSetParameter, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BТN_S2_PARAMETER_SET_ADD"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </controls:GroupBox>
+                            <controls:GroupBox Header="Message overrides">
+                                <StackPanel Margin="0,4">
+                                    <DataGrid CanUserSortColumns="False" MaxHeight="220" 
+                                                  ItemsSource="{Binding TestS2Settings.Frames}" 
+                                                  SelectedItem="{Binding SelectedTestFrameS2}">
+                                        <DataGrid.Columns>
+                                                <DataGridTemplateColumn Header="Enabled" Width="50">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Frame" Width="150">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding FrameType}"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Delay" Width="35">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock>
+                                                                <TextBlock.Text>
+                                                                    <MultiBinding Converter="{StaticResource IsValueSpecifiedConverter}">
+                                                                        <Binding Path="DelaySpecified"/>
+                                                                        <Binding Path="Delay"/>
+                                                                    </MultiBinding>
+                                                                </TextBlock.Text>
+                                                            </TextBlock>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Multicast" Width="55">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox IsEnabled="False" Theme="{StaticResource CheckBoxMark}">
+                                                                <CheckBox.IsChecked>
+                                                                    <MultiBinding Converter="{StaticResource IsValueSpecifiedConverter}">
+                                                                        <Binding Path="IsMulticastSpecified"/>
+                                                                        <Binding Path="IsMulticast"/>
+                                                                    </MultiBinding>
+                                                                </CheckBox.IsChecked>
+                                                            </CheckBox>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Broadcast" Width="55">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox IsEnabled="False" Theme="{StaticResource CheckBoxMark}">
+                                                                <CheckBox.IsChecked>
+                                                                    <MultiBinding Converter="{StaticResource IsValueSpecifiedConverter}">
+                                                                        <Binding Path="IsBroadcastSpecified"/>
+                                                                        <Binding Path="IsBroadcast"/>
+                                                                    </MultiBinding>
+                                                                </CheckBox.IsChecked>
+                                                            </CheckBox>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Encrypted" Width="55">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox IsEnabled="False" Theme="{StaticResource CheckBoxMark}">
+                                                                <CheckBox.IsChecked>
+                                                                    <MultiBinding Converter="{StaticResource IsValueSpecifiedConverter}">
+                                                                        <Binding Path="IsEncryptedSpecified"/>
+                                                                        <Binding Path="IsEncrypted"/>
+                                                                    </MultiBinding>
+                                                                </CheckBox.IsChecked>
+                                                            </CheckBox>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Temp" Width="35">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox IsEnabled="False" Theme="{StaticResource CheckBoxMark}">
+                                                                <CheckBox.IsChecked>
+                                                                    <MultiBinding Converter="{StaticResource IsValueSpecifiedConverter}">
+                                                                        <Binding Path="IsEncryptedSpecified"/>
+                                                                        <Binding Path="IsTemp"/>
+                                                                    </MultiBinding>
+                                                                </CheckBox.IsChecked>
+                                                            </CheckBox>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Network Key" Width="150">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding NetworkKey, Converter={StaticResource ByteArrayToStringConverter}}"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Command" Width="260">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Command, Converter={StaticResource ByteArrayToStringConverter}}"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                            </DataGrid.Columns>
+                                    </DataGrid>
+                                    <UniformGrid Columns="2" Margin="32,4">
+                                        <TextBlock Text="Test Frame"/>
+                                        <ComboBox ItemsSource="{bind:EnumBindingSource {x:Type secureenums:SecurityS2TestFrames}}" 
+                                          SelectedItem="{Binding ActiveTestFrameIndex}"
+                                          AutomationProperties.AutomationId="ID_CMB_S2_TESTFRAME_TYPE"/>
+                                        <CheckBox Content="Command:" IsChecked="{Binding TestFrameCommand.IsSet, Mode=TwoWay}"
+                                                  AutomationProperties.AutomationId="ID_CHK_FRAME_COMMAND"/>
+                                        <controls:TextBoxHexMask Text="{Binding TestFrameCommand.Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" 
+                                                                 SymbolsCount="1000" IsEnabled="{Binding TestFrameCommand.IsSet}"
+                                                                 AutomationProperties.AutomationId="ID_TB_FRAME_COMMAND_VALUE"/>
+                                        <CheckBox Content="Delay (sec):" IsChecked="{Binding TestFrameDelay.IsSet, Mode=TwoWay}"
+                                                  AutomationProperties.AutomationId="ID_CHK_FRAME_DELAY"/>
+                                        <controls:NumericUpDown 
+                                            IntValue="{Binding TestFrameDelay.Value, Mode=TwoWay}" 
+                                            IsEnabled="{Binding TestFrameDelay.IsSet}"
+                                            AutomationProperties.AutomationId="ID_TB_FRAME_DELAY_VALUE"/>
+                                        <CheckBox Content="Is Multicast:" IsChecked="{Binding TestFrameIsMulticast.IsSet, Mode=TwoWay}" AutomationProperties.AutomationId="ID_CHK_FRAME_MULT"/>
+                                        <CheckBox IsChecked="{Binding TestFrameIsMulticast.Value, Mode=TwoWay}"
+                                          IsEnabled="{Binding TestFrameIsMulticast.IsSet}" AutomationProperties.AutomationId="ID_CHK_FRAME_MULT_VALUE"/>
+                                        <CheckBox Content="Is Broadcast:" IsChecked="{Binding TestFrameIsBroadcast.IsSet, Mode=TwoWay}" AutomationProperties.AutomationId="ID_CHK_FRAME_BROAD"/>
+                                        <CheckBox IsChecked="{Binding TestFrameIsBroadcast.Value, Mode=TwoWay}"
+                                          IsEnabled="{Binding TestFrameIsBroadcast.IsSet}" AutomationProperties.AutomationId="ID_CHK_FRAME_BROAD_VALUE"/>
+                                    </UniformGrid>
+                                    <UniformGrid Columns="2" Margin="32,0,32,4" Classes.hidden="{Binding ActiveTestFrameIndex, Converter={StaticResource ValueEqualsConverter}, ConverterParameter=NonceGet}">
+                                        <CheckBox Content="Is Encrypted:" IsChecked="{Binding TestFrameIsEncrypted.IsSet, Mode=TwoWay}"
+                                                  AutomationProperties.AutomationId="ID_CHK_FRAME_ENCRYPTED"/>
+                                        <CheckBox IsChecked="{Binding TestFrameIsEncrypted.Value, Mode=TwoWay}"
+                                                  IsEnabled="{Binding TestFrameIsEncrypted.IsSet}"
+                                                  AutomationProperties.AutomationId="ID_CHK_FRAME_ENCRYPTED_VALUE"/>
+                                        <CheckBox Content="Network Key:" IsChecked="{Binding TestFrameNetworkKey.IsSet, Mode=TwoWay}"
+                                                  AutomationProperties.AutomationId="ID_CHK_FRAME_NETWORK_KEY"/>
+                                        <controls:TextBoxHexMask Text="{Binding TestFrameNetworkKey.Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}" 
+                                                                 SymbolsCount="32" IsEnabled="{Binding TestFrameNetworkKey.IsSet}"
+                                                                 AutomationProperties.AutomationId="ID_TB_FRAME_NETWORK_KEY_VALUE"/>
+                                        <CheckBox Content="Is Temp Network Key:" IsChecked="{Binding TestFrameIsTemp.IsSet, Mode=TwoWay}"
+                                                  AutomationProperties.AutomationId="ID_CHK_FRAME_TEMP_KEY"/>
+                                        <CheckBox IsChecked="{Binding TestFrameIsTemp.Value, Mode=TwoWay}"
+                                                  IsEnabled="{Binding TestFrameIsTemp.IsSet}"
+                                                  AutomationProperties.AutomationId="ID_CHK_FRAME_TEMP_KEY_VALUE"/>
+                                    </UniformGrid>
+                                    <StackPanel Margin="4" Orientation="Horizontal">
+                                        <Button Content="Clear" Command="{Binding CommandClearFrames, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BТN_S2_FRAMES_CLEAR"/>
+                                        <Button Content="Delete" Command="{Binding CommandDeleteFrame, Converter={StaticResource CommandReference}}"/>
+                                        <Button Content="Set / Add" Command="{Binding CommandSetFrame, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BТN_S2_FRAMES_SET_ADD"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </controls:GroupBox>
+                            <controls:GroupBox Header="Extension overrides">
+                                <StackPanel Margin="0,4">
+                                    <StackPanel Margin="32,4">
+                                        <CheckBox Content="Cleanup existing extensions first" IsChecked="{Binding TestS2Settings.IsOverrideExistingExtensions, Mode=TwoWay}"
+                                                  AutomationProperties.AutomationId="ID_CHK_CLEANUP_EXISTING_EXTENSION"/>
+                                    </StackPanel>
+                                    <DataGrid CanUserSortColumns="False" MaxHeight="220"
+                                                  ItemsSource="{Binding TestS2Settings.Extensions}" 
+                                                  SelectedItem="{Binding SelectedTestExtensionS2}">
+                                        <DataGrid.Columns>
+                                                <DataGridTemplateColumn Header="Enabled" Width="50">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Action" Width="100">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Action}"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Message" Width="130">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding MessageType}"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Counter" Width="55">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock Text="{Binding Counter.Value}"/>
+                                                                <TextBlock Text=" of " IsVisible="{Binding NumOfUsageSpecified}"/>
+                                                                <TextBlock>
+                                                                    <TextBlock.Text>
+                                                                        <MultiBinding Converter="{StaticResource IsValueSpecifiedConverter}">
+                                                                            <Binding Path="NumOfUsageSpecified"/>
+                                                                            <Binding Path="NumOfUsage" />
+                                                                        </MultiBinding>
+                                                                    </TextBlock.Text>
+                                                                </TextBlock>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Extension" Width="55">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding ExtensionType}"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Encrypted" Width="55">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox IsEnabled="False" Theme="{StaticResource CheckBoxMark}">
+                                                                <CheckBox.IsChecked>
+                                                                    <MultiBinding Converter="{StaticResource IsValueSpecifiedConverter}">
+                                                                        <Binding Path="IsEncryptedSpecified"/>
+                                                                        <Binding Path="IsEncrypted"/>
+                                                                    </MultiBinding>
+                                                                </CheckBox.IsChecked>
+                                                            </CheckBox>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Length" Width="45">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock>
+                                                                <TextBlock.Text>
+                                                                    <MultiBinding Converter="{StaticResource IsValueSpecifiedConverter}">
+                                                                        <Binding Path="ExtensionLengthSpecified"/>
+                                                                        <Binding Path="ExtensionLength"/>
+                                                                    </MultiBinding>
+                                                                </TextBlock.Text>
+                                                            </TextBlock>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="More To Follow" Width="85">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox IsEnabled="False" Theme="{StaticResource CheckBoxMark}">
+                                                                <CheckBox.IsChecked>
+                                                                    <MultiBinding Converter="{StaticResource IsValueSpecifiedConverter}">
+                                                                        <Binding Path="IsMoreToFollowSpecified"/>
+                                                                        <Binding Path="IsMoreToFollow"/>
+                                                                    </MultiBinding>
+                                                                </CheckBox.IsChecked>
+                                                            </CheckBox>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Critical" Width="45">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox IsEnabled="False" Theme="{StaticResource CheckBoxMark}">
+                                                                <CheckBox.IsChecked>
+                                                                    <MultiBinding Converter="{StaticResource IsValueSpecifiedConverter}">
+                                                                        <Binding Path="IsCriticalSpecified"/>
+                                                                        <Binding Path="IsCritical"/>
+                                                                    </MultiBinding>
+                                                                </CheckBox.IsChecked>
+                                                            </CheckBox>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn Header="Value" Width="220">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}}"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                            </DataGrid.Columns>
+                                    </DataGrid>
+                                    <UniformGrid Columns="2" Margin="32,4">
+                                        <TextBlock Text="Message type"/>
+                                        <ComboBox ItemsSource="{bind:EnumBindingSource {x:Type secureenums:MessageTypes}}" SelectedItem="{Binding TestExtensionMessageTypeS2}"
+                                                  AutomationProperties.AutomationId="ID_CMB_EXTENSION_MESSAGE_TYPE"/>
+                                        <TextBlock Text="Extension type"/>
+                                        <ComboBox ItemsSource="{bind:EnumBindingSource {x:Type secureenums2:ExtensionTypes}}" SelectedItem="{Binding TestExtensionTypeS2}"
+                                                  AutomationProperties.AutomationId="ID_CMB_EXTENSION_TYPE"/>
+                                        <TextBlock Text="Applied action"/>
+                                        <ComboBox ItemsSource="{bind:EnumBindingSource {x:Type secureenums:ExtensionAppliedActions}}" SelectedItem="{Binding TestExtensionS2AppliedAction}"
+                                                  AutomationProperties.AutomationId="ID_CMB_APPLIED_ACTION"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <CheckBox AutomationProperties.AutomationId="ID_CHK_HAS_VALUE"
+                                                  IsChecked="{Binding TestExtensionHasValue.IsSet, Mode=TwoWay}">
+                                            </CheckBox>
+                                            <TextBlock Text="Extension value"/>
+                                        </StackPanel>
+                                        <controls:TextBoxHexMask Text="{Binding TestExtensionValueS2, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"
+                                                                 IsEnabled="{Binding TestExtensionHasValue.IsSet}"
+                                                                 AutomationProperties.AutomationId="ID_TB_EXTENSION_VALUE"/>
+                                        <CheckBox AutomationProperties.AutomationId="ID_CHK_EXTENSION_ENCRYPTED_KEY"
+                                                  IsChecked="{Binding TestExtensionIsEncryptedS2.IsSet, Mode=TwoWay}">
+                                            Is Encrypted:
+                                        </CheckBox>
+                                        <CheckBox AutomationProperties.AutomationId="ID_CHK_EXTENSION_ENCRYPTED_VALUE"
+                                                  IsChecked="{Binding TestExtensionIsEncryptedS2.Value, Mode=TwoWay}" 
+                                                  IsEnabled="{Binding TestExtensionIsEncryptedS2.IsSet}"/>
+                                        <CheckBox AutomationProperties.AutomationId="ID_CHK_EXTENSION_LENGHT_KEY"
+                                                  IsChecked="{Binding TestExtensionLengthS2.IsSet, Mode=TwoWay}">
+                                            Extension length
+                                        </CheckBox>
+                                        <controls:NumericUpDown AutomationProperties.AutomationId="ID_TB_EXTENSION_LENGHT_VALUE"
+                                                                    IntValue="{Binding TestExtensionLengthS2.Value, Mode=TwoWay}"
+                                                                    IsEnabled="{Binding TestExtensionLengthS2.IsSet}"/>
+                                        <CheckBox AutomationProperties.AutomationId="ID_CHK_EXTENSION_MORE_TO_FOLLOW_KEY"
+                                            IsChecked="{Binding TestExtensionIsMoreToFollowS2.IsSet, Mode=TwoWay}">More to follow:</CheckBox>
+                                        <CheckBox AutomationProperties.AutomationId="ID_CHK_EXTENSION_MORE_TO_FOLLOW_VALUE"
+                                            IsChecked="{Binding TestExtensionIsMoreToFollowS2.Value, Mode=TwoWay}" 
+                                                          IsEnabled="{Binding TestExtensionIsMoreToFollowS2.IsSet}"/>
+                                        <CheckBox AutomationProperties.AutomationId="ID_CHK_EXTENSION_CRITICAL_KEY"
+                                            IsChecked="{Binding TestExtensionIsCriticalS2.IsSet, Mode=TwoWay}">Is Critical:</CheckBox>
+                                        <CheckBox AutomationProperties.AutomationId="ID_CHK_EXTENSION_CRITICAL_VALUE"
+                                            IsChecked="{Binding TestExtensionIsCriticalS2.Value, Mode=TwoWay}" 
+                                                          IsEnabled="{Binding TestExtensionIsCriticalS2.IsSet}"/>
+                                        <CheckBox AutomationProperties.AutomationId="ID_CHK_EXTENSION_NUMBER_OF_USAGE_KEY"
+                                            IsChecked="{Binding TestExtensionNumOfUsageS2.IsSet, Mode=TwoWay}">Number of usage (counter reset on click button 'OK' or 'Apply')</CheckBox>
+                                        <controls:NumericUpDown AutomationProperties.AutomationId="ID_TB_EXTENSION_NUMBER_OF_USAGE_VALUE"
+                                            IntValue="{Binding TestExtensionNumOfUsageS2.Value, Mode=TwoWay}"
+                                                                        MinValue="1"
+                                                                        MaxValue="100"
+                                                                        IsEnabled="{Binding TestExtensionNumOfUsageS2.IsSet}"/>
+                                    </UniformGrid>
+                                    <StackPanel Margin="4" Orientation="Horizontal">
+                                        <Button Content="Clear" Command="{Binding CommandClearExtensions, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_S2_EXTENSION_CLEAR"/>
+                                        <Button Content="Delete" Command="{Binding CommandDeleteExtension, Converter={StaticResource CommandReference}}"/>
+                                        <Button Content="Set" Command="{Binding CommandSetExtension, Converter={StaticResource CommandReference}}"/>
+                                        <Button Content="Add" Command="{Binding CommandAddExtension, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_S2_EXTENSION_ADD"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </controls:GroupBox>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</UserControl>

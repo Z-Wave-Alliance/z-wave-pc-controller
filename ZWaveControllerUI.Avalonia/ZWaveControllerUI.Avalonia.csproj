@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<!-- Native (non-Wine) GNU/Linux front end of the Z-Wave PC Controller, built on Avalonia.
+     The view models are compiled straight from ..\ZWaveControllerUI so both front ends share them. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>ZWaveControllerUI</AssemblyName>
+    <RootNamespace>ZWaveControllerUI</RootNamespace>
+    <ApplicationIcon>..\App.ico</ApplicationIcon>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <!-- The views are ported from WPF and bind by name, like the WPF ones. -->
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+    <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
+    <!-- Same identity as the WPF build: the About dialog and the saved configuration read these. -->
+    <AssemblyVersion>25.1.0.0</AssemblyVersion>
+    <FileVersion>25.1.0.0</FileVersion>
+    <Company>Silicon Labs</Company>
+    <Product>Z-Wave PC Controller 5</Product>
+    <AssemblyTitle>ZWaveControllerUI</AssemblyTitle>
+    <Description>Z-Wave tool for communicating with Z-Wave nodes through Serial API based static controller.</Description>
+    <Copyright>© 2018 Silicon Labs, Inc. All rights reserved.</Copyright>
+    <!-- Upstream code carries many of these; they are not ours to fix here. -->
+    <NoWarn>$(NoWarn);CS0067;CS0108;CS0162;CS0168;CS0169;CS0219;CS0414;CS0618;CS0649;CS8073;CS8981</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="12.1.2" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="3.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ZWaveController\ZWaveController_netcore.csproj" />
+  </ItemGroup>
+
+  <!-- Shared with the WPF front end. RepeatListManagerViewModel is not part of the WPF build either. -->
+  <ItemGroup>
+    <Compile Include="..\ZWaveControllerUI\Models\**\*.cs" Exclude="..\ZWaveControllerUI\Models\Basic\RepeatListManagerViewModel.cs" LinkBase="Shared\Models" />
+    <Compile Include="..\ZWaveControllerUI\Commands\*.cs" LinkBase="Shared\Commands" />
+    <Compile Include="..\ZWaveControllerUI\Services\*.cs" LinkBase="Shared\Services" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="..\ZWaveControllerUI\Images\*.png" Link="Images\%(Filename)%(Extension)" />
+    <AvaloniaResource Include="..\App.ico" Link="Images\App.ico" />
+  </ItemGroup>
+
+  <!-- Native S2 crypto and Z/IP transport. The referenced libraries only pick these up for an explicit
+       RuntimeIdentifier, which project references do not receive, so the app carries them itself. -->
+  <ItemGroup>
+    <None Include="..\z-wave-tools-core\z-wave-blobs\z-wave-tools-core\CryptoLibraryS2\linux\libs2crypto64.so" Link="libs2crypto64.so" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="..\z-wave-tools-core\z-wave-blobs\z-wave-tools-core\ZipTransport\linux\libziptrans64.so" Link="libziptrans64.so" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

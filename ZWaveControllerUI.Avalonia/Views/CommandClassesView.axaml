@@ -1,0 +1,469 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.CommandClassesView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+             xmlns:views="clr-namespace:ZWaveControllerUI.Views"
+             xmlns:enums="clr-namespace:ZWaveController.Enums;assembly=ZWaveController"
+             xmlns:selectors="clr-namespace:ZWaveControllerUI.DataTemplateSelectors"
+             AutomationProperties.AutomationId="ID_COMMAND_CLASSES_VIEW">
+    <UserControl.Styles>
+        <!-- Parameter rows: name (with description) on the left, editor on the right. -->
+        <Style Selector="TreeView#ParametersTree TreeViewItem">
+            <Setter Property="IsExpanded" Value="True"/>
+        </Style>
+        <Style Selector="Grid.param > TextBlock.name">
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,4,0"/>
+        </Style>
+        <Style Selector="StackPanel.editor > TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="2,0,8,0"/>
+        </Style>
+        <Style Selector="WrapPanel.options > TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="2,0"/>
+        </Style>
+    </UserControl.Styles>
+    <UserControl.Resources>
+        <!-- Name column of a parameter row (CommandParamName). -->
+        <DataTemplate x:Key="ParamNameTemplate">
+            <TextBlock>
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0}{1}">
+                        <Binding Path="Text"/>
+                        <Binding Path="Description" TargetNullValue=""/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ParameterDefaultDataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="1" Width="150"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="ParamDataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <StackPanel Classes="editor" Grid.Column="1" Orientation="Horizontal">
+                    <controls:TextBoxHexMask Width="150" MinHeight="34" TextWrapping="Wrap" SymbolsCount="{Binding Length}"
+                                             Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"/>
+                    <TextBlock Text="hex"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="ParamBytesDataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <StackPanel Classes="editor" Grid.Column="1" Orientation="Horizontal">
+                    <controls:TextBoxDecimalMask Width="150" MinHeight="34" TextWrapping="Wrap"
+                                                 Text="{Binding Value, Converter={StaticResource ByteArrayToStringOfDecimalsConverter}, Mode=TwoWay}"/>
+                    <TextBlock Text="byte array, dec"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="ParamCharDataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <StackPanel Classes="editor" Grid.Column="1" Orientation="Horizontal">
+                    <controls:TextBoxHexMask TextWrapping="Wrap" Width="100" MinHeight="34" SymbolsCount="{Binding Length}"
+                                             Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"/>
+                    <TextBlock Text="hex"/>
+                    <TextBox TextWrapping="Wrap" Width="100" MinHeight="34" IsVisible="{Binding IsUTF8Encode}"
+                             Text="{Binding Value, Converter={StaticResource AsciiToByteArrayConverter}, ConverterParameter='utf-8', Mode=TwoWay}"/>
+                    <TextBox TextWrapping="Wrap" Width="100" MinHeight="34" IsVisible="{Binding !IsUTF8Encode}"
+                             Text="{Binding Value, Converter={StaticResource AsciiToByteArrayConverter}, ConverterParameter='ascii', Mode=TwoWay}"/>
+                    <StackPanel Margin="4,0,0,0">
+                        <RadioButton IsChecked="{Binding IsUTF8Encode}">UTF8</RadioButton>
+                        <RadioButton IsChecked="{Binding IsASCIIEncode}">ASCII</RadioButton>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="ParamNumber1DataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <StackPanel Classes="editor" Grid.Column="1" Orientation="Horizontal">
+                    <controls:TextBoxHexMask Width="34" SymbolsCount="{Binding Length}"
+                                             Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"/>
+                    <TextBlock Text="hex"/>
+                    <controls:NumericUpDown Width="96" MinValue="0" MaxValue="{Binding Bits, Converter={StaticResource SizeToMaxDecimalConverter}}"
+                                            IntValue="{Binding Value, Converter={StaticResource ByteArrayToDecimalConverter}, ConverterParameter=1, Mode=TwoWay}"/>
+                    <TextBlock Text="dec"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="ParamNumber2DataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <StackPanel Classes="editor" Grid.Column="1" Orientation="Horizontal">
+                    <controls:TextBoxHexMask Width="54" SymbolsCount="{Binding Length}"
+                                             Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"/>
+                    <TextBlock Text="hex"/>
+                    <controls:NumericUpDown Width="106" MinValue="0" MaxValue="65535"
+                                            IntValue="{Binding Value, Converter={StaticResource ByteArrayToDecimalConverter}, ConverterParameter=2, Mode=TwoWay}"/>
+                    <TextBlock Text="dec"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="ParamNumber3DataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <StackPanel Classes="editor" Grid.Column="1" Orientation="Horizontal">
+                    <controls:TextBoxHexMask Width="74" SymbolsCount="{Binding Length}"
+                                             Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"/>
+                    <TextBlock Text="hex"/>
+                    <controls:NumericUpDown Width="120" MinValue="0" MaxValue="16777215"
+                                            IntValue="{Binding Value, Converter={StaticResource ByteArrayToDecimalConverter}, ConverterParameter=3, Mode=TwoWay}"/>
+                    <TextBlock Text="dec"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="ParamNumber4DataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <StackPanel Classes="editor" Grid.Column="1" Orientation="Horizontal">
+                    <controls:TextBoxHexMask Width="94" SymbolsCount="{Binding Length}"
+                                             Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"/>
+                    <TextBlock Text="hex"/>
+                    <controls:NumericUpDown Width="130" MinValue="0" MaxValue="268435455"
+                                            IntValue="{Binding Value, Converter={StaticResource ByteArrayToDecimalConverter}, ConverterParameter=4, Mode=TwoWay}"/>
+                    <TextBlock Text="dec"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="ParamMarkerDataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <StackPanel Classes="editor" Grid.Column="1" Orientation="Horizontal">
+                    <controls:TextBoxHexMask Width="54" SymbolsCount="{Binding Length}"
+                                             Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"/>
+                    <TextBlock Text="hex"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="PropertyDataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <StackPanel Classes="editor" Grid.Column="1" Orientation="Horizontal">
+                    <TextBox Width="150" IsReadOnly="True" Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneWay}"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="ParamBooleanDataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <StackPanel Classes="editor" Grid.Column="1" Orientation="Horizontal">
+                    <CheckBox IsChecked="{Binding Value, Converter={StaticResource ByteArrayToBoolConverter}, Mode=TwoWay}"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="ParamDefineDataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <StackPanel Classes="editor" Grid.Column="1" Orientation="Horizontal">
+                    <controls:TextBoxHexMask Width="34" SymbolsCount="{Binding Length}"
+                                             Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"/>
+                    <TextBlock Text="hex"/>
+                    <controls:NumericUpDown Width="96" MinValue="0" MaxValue="{Binding Bits, Converter={StaticResource SizeToMaxDecimalConverter}}"
+                                            IntValue="{Binding Value, Converter={StaticResource ByteArrayToDecimalConverter}, ConverterParameter=1, Mode=TwoWay}"/>
+                    <TextBlock Text="dec"/>
+                    <ComboBox Width="200" ItemsSource="{Binding Defines}" SelectedItem="{Binding SelectedDefine, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0}-{1}">
+                                            <Binding Path="Item.KeyId" Converter="{StaticResource ByteToHexStringConverter}"/>
+                                            <Binding Path="Item.Name"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="ParamBitmaskDataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Top"/>
+                <Border Grid.Column="1" Width="240" MaxHeight="200" BorderThickness="1" BorderBrush="{DynamicResource EditBorderBrush}" Background="{DynamicResource EditBackground}">
+                    <ScrollViewer>
+                        <ItemsControl ItemsSource="{Binding Defines}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Click="OnBitmaskDefineClick" Margin="2,0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Item.KeyId, Converter={StaticResource ByteToHexStringConverter}}"/>
+                                            <TextBlock Text="-"/>
+                                            <TextBlock Text="{Binding Item.Text}"/>
+                                        </StackPanel>
+                                    </CheckBox>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="VariantGroupDataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <StackPanel Classes="editor" Grid.Column="1" Orientation="Horizontal">
+                    <Button Content="+" Command="{Binding AddVariantGroupItem, Converter={StaticResource CommandReference}}" Width="30" Height="30"/>
+                    <Button Content="-" Command="{Binding RemoveVariantGroupItem, Converter={StaticResource CommandReference}}" Width="30" Height="30"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="CommandClassRefDataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <StackPanel Classes="editor" Grid.Column="1" Orientation="Horizontal">
+                    <controls:TextBoxHexMask Width="34" SymbolsCount="{Binding Length}"
+                                             Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"/>
+                    <TextBlock Text="hex"/>
+                    <ComboBox Width="220" SelectedItem="{Binding SelectedCommandClassRefItem}" ItemsSource="{Binding CommandClassRefItemList}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <Run Text="{Binding KeyId, Converter={StaticResource ByteToHexStringConverter}}"/>
+                                    <Run Text="-"/>
+                                    <Run Text="{Binding Text, Converter={StaticResource CommandClassTextConverter}}"/>
+                                    <Run Text=" v."/>
+                                    <Run Text="{Binding Version}"/>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="CommandRefDataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <StackPanel Classes="editor" Grid.Column="1" Orientation="Horizontal">
+                    <controls:TextBoxHexMask Width="34" SymbolsCount="{Binding Length}"
+                                             Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"/>
+                    <TextBlock Text="hex"/>
+                    <ComboBox Width="220" SelectedItem="{Binding SelectedCommandRefItem}" ItemsSource="{Binding CommandRefItemList}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <Run Text="{Binding KeyId, Converter={StaticResource ByteToHexStringConverter}}"/>
+                                    <Run Text="-"/>
+                                    <Run Text="{Binding Text, Converter={StaticResource CommandClassTextConverter}}"/>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="DeviceClassRefItemTemplate">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding KeyId, Converter={StaticResource ByteToHexStringConverter}}"/>
+                <TextBlock Text="-"/>
+                <TextBlock Text="{Binding Name}"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="BasicDeviceClassRefDataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <StackPanel Classes="editor" Grid.Column="1" Orientation="Horizontal">
+                    <controls:TextBoxHexMask Width="34" SymbolsCount="{Binding Length}"
+                                             Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"/>
+                    <TextBlock Text="hex"/>
+                    <ComboBox Width="220" SelectedItem="{Binding SelectedBasicDeviceClassRefItem}" ItemsSource="{Binding BasicDeviceClassRefItemList}"
+                              ItemTemplate="{StaticResource DeviceClassRefItemTemplate}"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="GenericDeviceClassRefDataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <StackPanel Classes="editor" Grid.Column="1" Orientation="Horizontal">
+                    <controls:TextBoxHexMask Width="34" SymbolsCount="{Binding Length}"
+                                             Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"/>
+                    <TextBlock Text="hex"/>
+                    <ComboBox Width="220" SelectedItem="{Binding SelectedGenericDeviceClassRefItem}" ItemsSource="{Binding GenericDeviceClassRefItemList}"
+                              ItemTemplate="{StaticResource DeviceClassRefItemTemplate}"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="SpecificDeviceClassRefDataTemplate">
+            <Grid Classes="param" ColumnDefinitions="210,Auto">
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ParamNameTemplate}" VerticalAlignment="Center"/>
+                <StackPanel Classes="editor" Grid.Column="1" Orientation="Horizontal">
+                    <controls:TextBoxHexMask Width="34" SymbolsCount="{Binding Length}"
+                                             Text="{Binding Value, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"/>
+                    <TextBlock Text="hex"/>
+                    <ComboBox Width="220" SelectedItem="{Binding SelectedSpecificDeviceClassRefItem}" ItemsSource="{Binding SpecificDeviceClassRefItemList}"
+                              ItemTemplate="{StaticResource DeviceClassRefItemTemplate}"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+        <selectors:ZWaveDefinitionItemTemplateSelector x:Key="ZWaveDefinitionItemTemplateSelector"
+               ParameterDefaultDataTemplate="{StaticResource ParameterDefaultDataTemplate}"
+               ParamDataTemplate="{StaticResource ParamDataTemplate}"
+               PropertyDataTemplate="{StaticResource PropertyDataTemplate}"
+               ParamBooleanDataTemplate="{StaticResource ParamBooleanDataTemplate}"
+               ParamDefineDataTemplate="{StaticResource ParamDefineDataTemplate}"
+               ParamBitmaskDataTemplate="{StaticResource ParamBitmaskDataTemplate}"
+               VariantGroupDataTemplate="{StaticResource VariantGroupDataTemplate}"
+               CommandClassRefDataTemplate="{StaticResource CommandClassRefDataTemplate}"
+               CommandRefDataTemplate="{StaticResource CommandRefDataTemplate}"
+               BasicDeviceClassRefDataTemplate="{StaticResource BasicDeviceClassRefDataTemplate}"
+               GenericDeviceClassRefDataTemplate="{StaticResource GenericDeviceClassRefDataTemplate}"
+               SpecificDeviceClassRefDataTemplate="{StaticResource SpecificDeviceClassRefDataTemplate}"
+               ParamMarkerDataTemplate="{StaticResource ParamMarkerDataTemplate}"
+               ParamCharDataTemplate="{StaticResource ParamCharDataTemplate}"
+               ParamNumber1DataTemplate="{StaticResource ParamNumber1DataTemplate}"
+               ParamNumber2DataTemplate="{StaticResource ParamNumber2DataTemplate}"
+               ParamNumber3DataTemplate="{StaticResource ParamNumber3DataTemplate}"
+               ParamNumber4DataTemplate="{StaticResource ParamNumber4DataTemplate}"
+               ParamBytesDataTemplate="{StaticResource ParamBytesDataTemplate}"/>
+
+        <DataTemplate x:Key="CommandItemTemplate">
+            <TextBlock>
+                <TextBlock.Text>
+                    <MultiBinding Converter="{StaticResource FormatOrEmptyConverter}" ConverterParameter="{}{0} - {1}">
+                        <Binding Path="Key"/>
+                        <Binding Path="Name"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid ColumnDefinitions="276,Auto,*" RowDefinitions="*,Auto,*">
+        <GridSplitter Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Height="4" ResizeDirection="Rows"/>
+        <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Center" Width="4" ResizeDirection="Columns"/>
+        <views:NodesListView Grid.Column="0" Grid.Row="0" DataContext="{Binding ApplicationModel}"/>
+        <views:NodeInfoView Grid.Column="0" Grid.Row="2" DataContext="{Binding ApplicationModel}"/>
+        <DockPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="3">
+            <CheckBox Margin="2,0" DockPanel.Dock="Top" Content="Floating View" IsChecked="{Binding DialogSettings.IsFloating}" HorizontalAlignment="Right"/>
+            <WrapPanel Margin="2" DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Command="{Binding ApplicationModel.NetworkManagementModel.RequestNodeInfoCommand, Converter={StaticResource CommandReference}}"
+                        Content="Node Info" AutomationProperties.AutomationId="ID_BTN_NODE_INFO"/>
+                <Button Command="{Binding ApplicationModel.NetworkManagementModel.SetS2Command, Converter={StaticResource CommandReference}}">
+                    <TextBlock Text="Security Scheme" TextWrapping="Wrap" TextAlignment="Center" LineHeight="14"/>
+                </Button>
+                <Button Command="{Binding ApplicationModel.NetworkManagementModel.ResetSPANCommand, Converter={StaticResource CommandReference}}" Content="Reset SPAN"/>
+                <Button Command="{Binding ApplicationModel.NetworkManagementModel.NextSPANCommand, Converter={StaticResource CommandReference}}" Content="Next SPAN"/>
+                <Button Command="{Binding ApplicationModel.NetworkManagementModel.ShowMpanTableConfigurationCommand, Converter={StaticResource CommandReference}}" Content="MPAN Table"/>
+            </WrapPanel>
+            <DockPanel Margin="2" DockPanel.Dock="Bottom">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <Button Content="Reload XML" Command="{Binding ReloadXmlCommand, Converter={StaticResource CommandReference}}"/>
+                    <Button Name="SendListCommand" Content="Send List"
+                            Command="{Binding ApplicationModel.PredefinedCommandsModel.SendPredefinedGroupCommand, Converter={StaticResource CommandReference}}"
+                            AutomationProperties.AutomationId="ID_BTN_SEND_LIST"/>
+                </StackPanel>
+                <UniformGrid Columns="3">
+                    <RadioButton IsChecked="{Binding SecureType, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static enums:SecureType.DefaultSecurity}}" AutomationProperties.AutomationId="ID_RB_DEFAULT">Default</RadioButton>
+                    <RadioButton IsChecked="{Binding SecureType, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static enums:SecureType.Secure}}" AutomationProperties.AutomationId="ID_RB_SECURE">Secure</RadioButton>
+                    <RadioButton IsChecked="{Binding SecureType, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static enums:SecureType.NonSecure}}" AutomationProperties.AutomationId="ID_RB_NONSECURE">Non-Secure</RadioButton>
+                    <RadioButton IsChecked="{Binding SecureType, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static enums:SecureType.Broadcast}}" AutomationProperties.AutomationId="ID_RB_BROADCAST">Broadcast</RadioButton>
+                    <RadioButton IsChecked="{Binding SecureType, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static enums:SecureType.SerialApi}}" AutomationProperties.AutomationId="ID_RB_SERIAL_API">Serial API</RadioButton>
+                </UniformGrid>
+            </DockPanel>
+            <DockPanel Margin="2" DockPanel.Dock="Bottom">
+                <CheckBox DockPanel.Dock="Left" Content="Expect command" IsChecked="{Binding IsExpectCommand}" AutomationProperties.AutomationId="ID_CHK_EXPECTCOMM"
+                          IsEnabled="{Binding SelectedCommand, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                <Button Name="SendCommand" DockPanel.Dock="Right" HorizontalAlignment="Right" IsDefault="True"
+                        Command="{Binding SendCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_SEND">
+                    <Panel>
+                        <TextBlock Text="Send" IsVisible="{Binding !IsExpectCommand}"/>
+                        <TextBlock Text="Request" IsVisible="{Binding IsExpectCommand}"/>
+                    </Panel>
+                </Button>
+                <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding SelectedCommand.Parent.Command}" SelectedItem="{Binding SelectedExpectCommand, Mode=TwoWay}"
+                          IsEnabled="{Binding IsExpectCommand}" ItemTemplate="{StaticResource CommandItemTemplate}"/>
+            </DockPanel>
+            <DockPanel>
+                <StackPanel Margin="2" DockPanel.Dock="Top">
+                    <WrapPanel Classes="options">
+                        <CheckBox Content="CRC16, " IsChecked="{Binding IsCrc16Enabled}" AutomationProperties.AutomationId="ID_CHK_CRC16"/>
+                        <CheckBox Content="Suppress Multicast Follow up, " IsChecked="{Binding IsSuppressMulticastFollowUp}" AutomationProperties.AutomationId="ID_CHK_SUPPRESS_MULTICAST_FOLLOW_UP"/>
+                        <CheckBox Content="Force Multicast, " IsChecked="{Binding IsForceMulticastEnabled}" AutomationProperties.AutomationId="ID_CHK_FORCE_MULTICAST"/>
+                        <CheckBox Content="Supervision Get (" IsChecked="{Binding IsSupervisionGetEnabled}" AutomationProperties.AutomationId="ID_CHK_SUPERVISION_GET"/>
+                        <CheckBox Content="Status Updates; " IsChecked="{Binding IsSupervisionGetStatusUpdatesEnabled}" IsEnabled="{Binding IsSupervisionGetEnabled}" AutomationProperties.AutomationId="ID_CHK_STATUS_UPDATES"/>
+                        <TextBlock>Session ID</TextBlock>
+                        <controls:TextBoxHexMask Text="{Binding SupervisionSessionId, Converter={StaticResource ByteToHexStringConverter}, Mode=TwoWay}"
+                                                 SymbolsCount="2" Width="34" AutomationProperties.AutomationId="ID_TB_SESSION_ID">
+                            <controls:TextBoxHexMask.IsEnabled>
+                                <MultiBinding Converter="{StaticResource AndConverter}">
+                                    <Binding Path="IsSupervisionGetEnabled"/>
+                                    <Binding Path="!IsAutoIncSupervisionSessionId"/>
+                                </MultiBinding>
+                            </controls:TextBoxHexMask.IsEnabled>
+                        </controls:TextBoxHexMask>
+                        <CheckBox Content="Auto Increment" IsChecked="{Binding IsAutoIncSupervisionSessionId}" IsEnabled="{Binding IsSupervisionGetEnabled}" AutomationProperties.AutomationId="ID_CHK_AUTO_INCREMENT"/>
+                        <TextBlock>)</TextBlock>
+                    </WrapPanel>
+                    <WrapPanel Classes="options">
+                        <CheckBox Content="Multi Channel (" IsChecked="{Binding IsMultiChannelEnabled}" AutomationProperties.AutomationId="ID_CHK_MULTI_CHANNEL"/>
+                        <TextBlock>Src. End Point</TextBlock>
+                        <controls:TextBoxHexMask Text="{Binding SourceEndPoint, Converter={StaticResource ByteToHexStringConverter}, Mode=TwoWay}"
+                                                 SymbolsCount="2" Width="34" IsEnabled="{Binding IsMultiChannelEnabled}" AutomationProperties.AutomationId="ID_TB_SRC_END_POINT"/>
+                        <TextBlock>Dest. End Point</TextBlock>
+                        <controls:TextBoxHexMask Text="{Binding DestinationEndPoint, Converter={StaticResource ByteToHexStringConverter}, Mode=TwoWay}"
+                                                 SymbolsCount="2" Width="34" IsEnabled="{Binding IsMultiChannelEnabled}" AutomationProperties.AutomationId="ID_TB_DEST_END_POINT"/>
+                        <CheckBox Content="Bit Address" IsChecked="{Binding IsBitAddress}" IsEnabled="{Binding IsMultiChannelEnabled}" AutomationProperties.AutomationId="ID_CHK_BIT_ADDRESS"/>
+                        <TextBlock>)</TextBlock>
+                    </WrapPanel>
+                </StackPanel>
+                <DockPanel Margin="2" DockPanel.Dock="Top">
+                    <Button DockPanel.Dock="Right" Width="40" Command="{Binding ShowRecentCommandsViewCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Open Recents">
+                        <mi:MaterialIcon Kind="Recent" Width="24" Height="24"/>
+                    </Button>
+                    <Button DockPanel.Dock="Right" Width="40" Command="{Binding ShowPredefinedCommandsViewCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Open Predefined Commands">
+                        <mi:MaterialIcon Kind="PlaylistStar" Width="24" Height="24"/>
+                    </Button>
+                    <Button DockPanel.Dock="Right" Command="{Binding ShowSelectCommandCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_TBN_SHOW_SELECT_COMMAND">
+                        <StackPanel Orientation="Horizontal">
+                            <mi:MaterialIcon Kind="Dictionary" Width="24" Height="24" Margin="2"/>
+                            <TextBlock Text="Select" Margin="2" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                        <TextBlock Text="Command class" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                        <TextBox Grid.Column="1" IsReadOnly="True">
+                            <TextBox.Text>
+                                <MultiBinding Converter="{StaticResource FormatOrEmptyConverter}" ConverterParameter="{}{0} - {1} ver.{2}">
+                                    <Binding Path="SelectedCommand.Parent.Key"/>
+                                    <Binding Path="SelectedCommand.Parent.Name"/>
+                                    <Binding Path="SelectedCommand.Parent.Version"/>
+                                </MultiBinding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <TextBlock Text="Command" Grid.Row="1" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch"
+                                  ItemsSource="{Binding SelectedCommand.Parent.Command}" SelectedItem="{Binding SelectedCommand, Mode=TwoWay}"
+                                  IsEnabled="{Binding SelectedCommand, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                  ItemTemplate="{StaticResource CommandItemTemplate}"/>
+                    </Grid>
+                </DockPanel>
+                <DockPanel Margin="2" DockPanel.Dock="Bottom">
+                    <TextBlock DockPanel.Dock="Top" Text="Send Data:"/>
+                    <controls:TextBoxHexMask Text="{Binding Payload, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"
+                                             TextWrapping="Wrap" Height="50" AcceptsReturn="False"
+                                             AutomationProperties.AutomationId="ID_TB_COMMAND_TO_SEND"/>
+                </DockPanel>
+                <TreeView Name="ParametersTree" ItemsSource="{Binding Parameters}" MinHeight="100"
+                          ItemTemplate="{StaticResource ZWaveDefinitionItemTemplateSelector}"
+                          AutomationProperties.AutomationId="ID_TVW_COMMAND_CLASSES_INFO"/>
+            </DockPanel>
+        </DockPanel>
+    </Grid>
+</UserControl>

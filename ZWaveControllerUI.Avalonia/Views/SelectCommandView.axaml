@@ -1,0 +1,60 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.SelectCommandView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:zx="clr-namespace:ZWave.Xml.Application;assembly=ZWaveXml"
+             AutomationProperties.AutomationId="ID_SELECT_COMMAND_VIEW">
+    <Grid Focusable="False" ColumnDefinitions="35*,Auto,65*" RowDefinitions="Auto,*,Auto">
+        <StackPanel Margin="4" Orientation="Horizontal">
+            <CheckBox Content="All Command Classes" IsChecked="{Binding IsShowAllCommandClasses}" AutomationProperties.AutomationId="ID_CHK_ALL_COMMAND_CLASSES"/>
+            <TextBox Text="{Binding FilterCC, Mode=TwoWay}" Width="130" PlaceholderText="Filter: name or hex id" IsVisible="{Binding IsShowAllCommandClasses}"/>
+        </StackPanel>
+        <TreeView Grid.Row="1" Name="tvCC" MinWidth="100" SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                  AutomationProperties.AutomationId="ID_TVW_ALL_COMMAND_CLASSES_INFO">
+            <TreeView.DataTemplates>
+                <TreeDataTemplate DataType="{x:Type zx:CommandClass}" ItemsSource="{Binding Command}">
+                    <StackPanel Orientation="Horizontal" ToolTip.Tip="{Binding Text}">
+                        <mi:MaterialIcon Kind="FileCode" Foreground="{DynamicResource ButtonBackground}" Width="16" Height="16"/>
+                        <TextBlock VerticalAlignment="Center">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat=" ver.{0} - {1}">
+                                    <Binding Path="Version"/>
+                                    <Binding Path="Text" Converter="{StaticResource CommandClassTextConverter}"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </StackPanel>
+                </TreeDataTemplate>
+                <TreeDataTemplate DataType="{x:Type zx:Command}">
+                    <StackPanel Orientation="Horizontal" ToolTip.Tip="{Binding Text}">
+                        <mi:MaterialIcon Kind="CodeJson" Foreground="{DynamicResource ButtonBackground}" Width="16" Height="16"/>
+                        <TextBlock VerticalAlignment="Center" Text="{Binding Text, StringFormat=' {0}'}"/>
+                    </StackPanel>
+                </TreeDataTemplate>
+                <TreeDataTemplate DataType="{x:Type zx:Param}" ItemsSource="{Binding Param1}">
+                    <StackPanel Orientation="Horizontal">
+                        <mi:MaterialIcon Kind="CodeJson" Foreground="{DynamicResource ButtonBackground}" Width="16" Height="16"/>
+                        <TextBlock VerticalAlignment="Center" Text="{Binding Text, StringFormat=' {0}'}"/>
+                    </StackPanel>
+                </TreeDataTemplate>
+            </TreeView.DataTemplates>
+        </TreeView>
+        <GridSplitter Focusable="False" Grid.Column="1" Grid.RowSpan="2" VerticalAlignment="Stretch" Width="4" ResizeBehavior="PreviousAndNext" ResizeDirection="Columns"/>
+        <Border MinWidth="200" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Background="{DynamicResource EditBackground}"
+                BorderBrush="{DynamicResource EditBorderBrush}" BorderThickness="1">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                <ContentControl Margin="12,8" MaxWidth="600" HorizontalAlignment="Left" FontSize="13"
+                                Content="{Binding SelectedItem, Converter={StaticResource selectedConverter}}"/>
+            </ScrollViewer>
+        </Border>
+        <StackPanel Margin="4" Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Content="OK" Command="{Binding CommandOk, Converter={StaticResource CommandReference}}" IsDefault="True" AutomationProperties.AutomationId="ID_BTN_OK"/>
+            <Button Content="Cancel" Command="{Binding CommandCancel, Converter={StaticResource CommandReference}}" IsCancel="True" AutomationProperties.AutomationId="ID_BTN_CANCEL"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

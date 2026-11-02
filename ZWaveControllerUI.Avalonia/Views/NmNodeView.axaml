@@ -1,0 +1,16 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.NmNodeView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid ColumnDefinitions="Auto,*,40,40,40">
+        <TextBlock Text="Node Symbol" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <TextBlock Text="Generic type" Grid.Column="1"/>
+        <TextBlock Text="{Binding Item.Id}" Grid.Column="2"/>
+        <CheckBox IsChecked="True" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <CheckBox IsChecked="False" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+    </Grid>
+</UserControl>

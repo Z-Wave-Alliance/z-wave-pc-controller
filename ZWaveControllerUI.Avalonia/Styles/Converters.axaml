@@ -1,0 +1,87 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<!-- Converters shared by all views, under the keys the WPF views declare locally.
+     The *ToVisibility converters return bool here and are bound to IsVisible. -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:ZWaveControllerUI.Converters"
+                    xmlns:bind="clr-namespace:ZWaveControllerUI.Bind">
+    <bind:CommandReferenceConverter x:Key="CommandReference"/>
+    <bind:GroupedViewConverter x:Key="GroupedViewConverter"/>
+    <bind:SortedViewConverter x:Key="SortedViewConverter"/>
+    <converters:AndConverter x:Key="AndConverter"/>
+    <converters:AreEqualConvertor x:Key="AreEqualConvertor"/>
+    <converters:AsciiToByteArrayConverter x:Key="AsciiToByteArrayConverter"/>
+    <converters:AssociativeDeviceNameConverter x:Key="AssociativeDeviceNameConverter"/>
+    <converters:AssociativeGroupInfoConverter x:Key="AssociativeGroupInfoConverter"/>
+    <converters:BoolToBoldConverter x:Key="BoolToBoldConverter"/>
+    <converters:BoolToVisibilityCollapsedConverter x:Key="BoolToVisibilityConverter"/>
+    <converters:ByteArrayToBoolConverter x:Key="ByteArrayToBoolConverter"/>
+    <converters:ByteArrayToDecimalConverter x:Key="ByteArrayToDecimalConverter"/>
+    <converters:ByteArrayToDSKString x:Key="ByteArrayToDSKString"/>
+    <converters:ByteArrayToInt32Converter x:Key="ByteArrayToInt32Converter"/>
+    <converters:ByteArrayToStringConverter x:Key="ByteArrayToStringConverter"/>
+    <converters:ByteArrayToStringOfDecimalsConverter x:Key="ByteArrayToStringOfDecimalsConverter"/>
+    <converters:ByteToHexStringConverter x:Key="ByteToHexStringConverter"/>
+    <converters:CommandClassConverter x:Key="CommandClassConverter"/>
+    <converters:CommandClassTextConverter x:Key="CommandClassTextConverter"/>
+    <converters:ComparisonConverter x:Key="ComparisonConverter"/>
+    <converters:ConnectorColorConverter x:Key="ConnectorColorConverter"/>
+    <converters:ControllerInfoConverter x:Key="ControllerInfoConverter"/>
+    <converters:DeviceInfoToNodeViewModelConverter x:Key="DeviceInfoToNodeViewModelConverter"/>
+    <converters:GroupEndPointsCountConverter x:Key="GroupEndPointsCountConverter"/>
+    <converters:GroupNodesCountConverter x:Key="GroupNodesCountConverter"/>
+    <converters:HasBitConverter x:Key="HasBitConverter"/>
+    <converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
+    <converters:InvertBoolToVisibilityConverter x:Key="InvertBoolToVisibilityConverter"/>
+    <converters:IsFailedNodeColorConverter x:Key="IsFailedNodeColorConverter"/>
+    <converters:IsNotNullToBooleanConverter x:Key="IsNotNullToBooleanConverter"/>
+    <converters:IsNotNullToVisibilityConverter x:Key="IsNotNullToVisibilityConverter"/>
+    <converters:IsNotZero x:Key="IsNotZero"/>
+    <converters:IsNonZeroConverter x:Key="IsNonZeroConverter"/>
+    <converters:IconKindConverter x:Key="IconKindConverter"/>
+    <converters:FormatOrEmptyConverter x:Key="FormatOrEmptyConverter"/>
+    <converters:NandConverter x:Key="NandConverter"/>
+    <converters:ValueEqualsConverter x:Key="ValueEqualsConverter"/>
+    <converters:SecureTypeFlagConverter x:Key="SecureTypeFlagConverter"/>
+    <converters:ColorPropertyBrushConverter x:Key="ColorPropertyBrushConverter"/>
+    <converters:NodeSubjectFontWeightConverter x:Key="NodeSubjectFontWeightConverter"/>
+    <converters:NodeFailedForegroundConverter x:Key="NodeFailedForegroundConverter"/>
+    <converters:IsNotEndPointConverter x:Key="IsNotEndPointConverter"/>
+    <converters:NodeSecuritySchemeOpacityConverter x:Key="NodeSecuritySchemeOpacityConverter"/>
+    <converters:CanForceListeningConverter x:Key="CanForceListeningConverter"/>
+    <converters:IsPropertyChangedConverter x:Key="IsPropertyChangedConverter"/>
+    <converters:IsValueInRangeConverter x:Key="IsValueInRangeConverter"/>
+    <converters:IsValueSpecifiedConverter x:Key="IsValueSpecifiedConverter"/>
+    <converters:LogPacketDyeToBrushConverter x:Key="DyeToBrushConverter"/>
+    <converters:MainVmToControllerTreeViewConverter x:Key="MainVmToControllerTreeViewConverter"/>
+    <converters:NetworkGridLayoutConverter x:Key="GridLayoutConverter"/>
+    <converters:NodeEndDeviceApiConverter x:Key="NodeEndDeviceApiConverter"/>
+    <converters:NodeEndPointConverter x:Key="NodeEndPointConverter"/>
+    <converters:NodeFailedConverter x:Key="NodeFailedConverter"/>
+    <converters:NodeFlirsConverter x:Key="NodeFlirsConverter"/>
+    <converters:NodeForcedListeningConverter x:Key="NodeForcedListeningConverter"/>
+    <converters:NodeListeningConverter x:Key="NodeListeningConverter"/>
+    <converters:NodeLongRangeConverter x:Key="NodeLongRangeConverter"/>
+    <converters:NodesCountConverter x:Key="NodesCountConverter"/>
+    <converters:NodeSecuritySchemesConverter x:Key="NodeSecuritySchemesConverter"/>
+    <converters:NodesToStringConverter x:Key="NodesToStringConverter"/>
+    <converters:NodeSubjectConverter x:Key="NodeSubjectConverter"/>
+    <converters:NodeToStringConverter x:Key="NodeToStringConverter"/>
+    <converters:NodeTypeConverter x:Key="NodeTypeConverter"/>
+    <converters:NodeVirtualConverter x:Key="NodeVirtualConverter"/>
+    <converters:ObjectToIntConverter x:Key="ObjectToIntConverter"/>
+    <converters:ParameterS2EnumDescriptionValueConverter x:Key="ParameterS2EnumDescriptionValueConverter"/>
+    <converters:ParameterS2TypeToSymbolCountConverter x:Key="ParameterS2TypeToSymbolCountConverter"/>
+    <converters:PointConverter x:Key="PointConverter"/>
+    <converters:SelectedSectionConverter x:Key="selectedConverter"/>
+    <converters:SizeConverter x:Key="SizeConverter"/>
+    <converters:SizeToMaxDecimalConverter x:Key="SizeToMaxDecimalConverter"/>
+    <converters:StringToIntConverter x:Key="StringToIntConverter"/>
+    <converters:SupportedCommandClassesConverter x:Key="SupportedCommandClassesConverter"/>
+    <converters:TreeViewItemIconByDepthConverter x:Key="TreeViewItemIconByDepthConverter"/>
+    <converters:UInt32ToColorPropertyInfoConverter x:Key="UInt32ToColorPropertyInfoConverter"/>
+</ResourceDictionary>

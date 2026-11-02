@@ -1,0 +1,51 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.KEXSetConfirmView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Focusable="False"
+             AutomationProperties.AutomationId="ID_KEX_SET_CONFIRM_VIEW">
+    <StackPanel Margin="4" MinWidth="300">
+        <CheckBox IsChecked="{Binding State.IsCheckedS0}" IsEnabled="{Binding State.IsEnabledS0}"
+                  IsVisible="{Binding State.IsVisibleS0}" AutomationProperties.AutomationId="ID_CHK_S0">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="S0"/>
+                <TextBlock Text=" (disabled)" IsVisible="{Binding !State.IsEnabledS0}"/>
+            </StackPanel>
+        </CheckBox>
+        <CheckBox IsChecked="{Binding State.IsCheckedS2_UNAUTHENTICATED}" IsEnabled="{Binding State.IsEnabledS2_UNAUTHENTICATED}"
+                  IsVisible="{Binding State.IsVisibleS2_UNAUTHENTICATED}" AutomationProperties.AutomationId="ID_CHK_S2_UNAUTHENTICATED">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="S2_UNAUTHENTICATED"/>
+                <TextBlock Text=" (disabled)" IsVisible="{Binding !State.IsEnabledS2_UNAUTHENTICATED}"/>
+            </StackPanel>
+        </CheckBox>
+        <CheckBox IsChecked="{Binding State.IsCheckedS2_AUTHENTICATED}" IsEnabled="{Binding State.IsEnabledS2_AUTHENTICATED}"
+                  IsVisible="{Binding State.IsVisibleS2_AUTHENTICATED}" AutomationProperties.AutomationId="ID_CHK_S2_AUTHENTICATED">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="S2_AUTHENTICATED"/>
+                <TextBlock Text=" (disabled)" IsVisible="{Binding !State.IsEnabledS2_AUTHENTICATED}"/>
+            </StackPanel>
+        </CheckBox>
+        <CheckBox IsChecked="{Binding State.IsCheckedS2_ACCESS}" IsEnabled="{Binding State.IsEnabledS2_ACCESS}"
+                  IsVisible="{Binding State.IsVisibleS2_ACCESS}" AutomationProperties.AutomationId="ID_CHK_S2_ACCESS">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="S2_ACCESS"/>
+                <TextBlock Text=" (disabled)" IsVisible="{Binding !State.IsEnabledS2_ACCESS}"/>
+            </StackPanel>
+        </CheckBox>
+        <Separator Margin="4" IsVisible="{Binding State.IsVisibleCSA}"/>
+        <CheckBox IsChecked="{Binding State.IsCheckedCSA}" IsVisible="{Binding State.IsVisibleCSA}">
+            <TextBlock Text="Allow Client-side authentication"/>
+        </CheckBox>
+        <StackPanel HorizontalAlignment="Right" Margin="0,6,0,0" Orientation="Horizontal">
+            <Button Content="OK" Command="{Binding CommandOk, Converter={StaticResource CommandReference}}" IsDefault="True"
+                    AutomationProperties.AutomationId="ID_BTN_KEX_SET_CONFIRM_OK"/>
+            <Button Content="Cancel" Command="{Binding CommandCancel, Converter={StaticResource CommandReference}}" IsCancel="True"
+                    AutomationProperties.AutomationId="ID_BTN_KEX_SET_CONFIRM_CANCEL"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

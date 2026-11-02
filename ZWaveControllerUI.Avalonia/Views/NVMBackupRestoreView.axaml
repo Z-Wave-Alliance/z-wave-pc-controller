@@ -1,0 +1,48 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.NVMBackupRestoreView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls">
+    <StackPanel>
+        <UniformGrid Margin="4" Columns="2">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Request packet length: " VerticalAlignment="Center"/>
+                <controls:NumericUpDown Width="110" IntValue="{Binding PacketLength, Mode=TwoWay}" MinValue="8" MaxValue="255"/>
+            </StackPanel>
+            <TextBlock VerticalAlignment="Center" Text="{Binding ActualPacketLength, StringFormat='Actual packet length: {0}'}"/>
+        </UniformGrid>
+        <controls:GroupBox Header="Backup">
+            <StackPanel>
+                <DockPanel Margin="4">
+                    <TextBlock DockPanel.Dock="Top" Text="Backup file path:"/>
+                    <Button DockPanel.Dock="Right" Width="40" Command="{Binding NVMBackupGetFileCommand, Converter={StaticResource CommandReference}}">
+                        <mi:MaterialIcon Kind="Folder" Width="24" Height="24"/>
+                    </Button>
+                    <TextBox IsReadOnly="True" Text="{Binding BackupFileName}" VerticalAlignment="Stretch" TextWrapping="Wrap"/>
+                </DockPanel>
+                <DockPanel Margin="4" LastChildFill="False">
+                    <Button DockPanel.Dock="Right" Content="Backup" Command="{Binding NVMBackupCommand, Converter={StaticResource CommandReference}}"/>
+                </DockPanel>
+            </StackPanel>
+        </controls:GroupBox>
+        <controls:GroupBox Header="Restore">
+            <StackPanel>
+                <DockPanel Margin="4">
+                    <TextBlock DockPanel.Dock="Top" Text="Restore file path:"/>
+                    <Button DockPanel.Dock="Right" Width="40" Command="{Binding NVMRestoreGetFileCommand, Converter={StaticResource CommandReference}}">
+                        <mi:MaterialIcon Kind="Folder" Width="24" Height="24"/>
+                    </Button>
+                    <TextBox IsReadOnly="True" Text="{Binding RestoreFileName}" VerticalAlignment="Stretch" TextWrapping="Wrap"/>
+                </DockPanel>
+                <DockPanel Margin="4" LastChildFill="False">
+                    <Button DockPanel.Dock="Right" Content="Restore" Command="{Binding NVMRestoreCommand, Converter={StaticResource CommandReference}}"/>
+                </DockPanel>
+            </StackPanel>
+        </controls:GroupBox>
+    </StackPanel>
+</UserControl>

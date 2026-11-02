@@ -1,0 +1,59 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.SetupRouteView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+             AutomationProperties.AutomationId="ID_SETUP_ROUTE_VIEW">
+    <Grid RowDefinitions="Auto,*,Auto">
+        <StackPanel Orientation="Horizontal">
+            <UniformGrid Margin="4" Columns="3" Rows="2">
+                <RadioButton IsChecked="{Binding UseAssignReturnRoute}">Return Route</RadioButton>
+                <RadioButton IsChecked="{Binding UseAssignPriorityReturnRoute}">Priority Return Route</RadioButton>
+                <RadioButton AutomationProperties.AutomationId="ID_RB_GET_SET_PRIORITY_ROUTE" IsChecked="{Binding UsePriorityRoute}">Get/Set Priority Route</RadioButton>
+                <RadioButton IsChecked="{Binding UseAssignSUCRetrunRoute}">SUC Return Route</RadioButton>
+                <RadioButton IsChecked="{Binding UseAssignPrioritySUCReturnRoute}">Priority SUC Return Route</RadioButton>
+            </UniformGrid>
+            <Grid Margin="4" IsEnabled="{Binding IsPriorityEnabled}" ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
+                <TextBlock Text="Priority Route:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                <controls:TextBoxHexMask Grid.Column="1" SymbolsCount="8" Width="100"
+                                         Text="{Binding PriorityRoute, Mode=TwoWay, Converter={StaticResource NodesToStringConverter}}"
+                                         AutomationProperties.AutomationId="ID_TB_PRIORITY_ROUTE"/>
+                <TextBlock Grid.Row="1" Text="Route Speed:" VerticalAlignment="Center"/>
+                <ComboBox Grid.Row="1" Grid.Column="1" AutomationProperties.AutomationId="ID_CMB_ROUTE_SPEED" SelectedIndex="{Binding RouteSpeed}" Width="100">
+                    <ComboBoxItem/>
+                    <ComboBoxItem>9.6 KBit/s</ComboBoxItem>
+                    <ComboBoxItem>40 KBit/s</ComboBoxItem>
+                    <ComboBoxItem>100 KBit/s</ComboBoxItem>
+                </ComboBox>
+            </Grid>
+        </StackPanel>
+        <Grid Grid.Row="1" ColumnDefinitions="*,8,*" Margin="4,0">
+            <DataGrid IsEnabled="{Binding IsSourceListEnabled}" IsReadOnly="True" SelectionMode="Single"
+                      ItemsSource="{Binding SourceRouteCollection.Nodes}" SelectedItem="{Binding SourceRouteCollection.SelectedNode}"
+                      AutomationProperties.AutomationId="ID_NODES_LIST_VIEW_SOURCES">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Id" Width="50" Binding="{Binding Item}"/>
+                    <DataGridTextColumn Header="Type" Width="*" Binding="{Binding Item, Converter={StaticResource NodeTypeConverter}, Mode=OneWay}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <DataGrid Grid.Column="2" IsEnabled="{Binding IsDestListEnabled}" IsReadOnly="True" SelectionMode="Single"
+                      ItemsSource="{Binding DestinationRouteCollection.Nodes}" SelectedItem="{Binding DestinationRouteCollection.SelectedNode}"
+                      AutomationProperties.AutomationId="ID_NODES_LIST_VIEW_DESTINATIONS">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Id" Width="50" Binding="{Binding Item}"/>
+                    <DataGridTextColumn Header="Type" Width="*" Binding="{Binding Item, Converter={StaticResource NodeTypeConverter}, Mode=OneWay}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+        <StackPanel Margin="4" Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="2">
+            <Button Content="Get Priority Route" Command="{Binding GetPriorityRouteCommand, Converter={StaticResource CommandReference}}" Width="120"/>
+            <Button AutomationProperties.AutomationId="ID_BTN_SET_PRIORITY_ROUTE" Content="Set Priority Route" Command="{Binding SetPriorityRouteCommand, Converter={StaticResource CommandReference}}" Width="120"/>
+            <Button Content="Assign" Command="{Binding AssignReturnRouteCommand, Converter={StaticResource CommandReference}}"/>
+            <Button Content="Delete" Command="{Binding RemoveReturnRouteCommand, Converter={StaticResource CommandReference}}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

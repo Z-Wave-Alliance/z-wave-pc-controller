@@ -1,0 +1,38 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.UserInputView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             Focusable="False"
+             AutomationProperties.AutomationId="ID_USER_INPUT_VIEW">
+    <UserControl.Resources>
+        <bind:NumbersValidationConverter x:Key="NumbersValidationConverter"/>
+    </UserControl.Resources>
+    <StackPanel MinWidth="300">
+        <StackPanel Margin="4">
+            <TextBox Name="InputTextBox" IsVisible="{Binding State.IsInputDataVisible}"
+                     Text="{Binding State.InputData, Mode=TwoWay, Converter={StaticResource NumbersValidationConverter}}"
+                     AutomationProperties.AutomationId="ID_TB_USER_INPUT_IN">
+                <TextBox.KeyBindings>
+                    <KeyBinding Gesture="Enter" Command="{Binding CommandOk, Converter={StaticResource CommandReference}}"/>
+                </TextBox.KeyBindings>
+            </TextBox>
+            <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding State.InputOptions}" SelectedIndex="{Binding State.SelectedInputOptionIndex}"
+                      SelectedItem="{Binding State.SelectedInputOption}" IsVisible="{Binding State.IsInputOptionsVisible}"
+                      AutomationProperties.AutomationId="ID_CMB_USER_INPUT"/>
+            <TextBox IsReadOnly="True" TextWrapping="Wrap" Text="{Binding State.AdditionalText}"
+                     IsVisible="{Binding State.IsAdditionalTextVisible}"
+                     AutomationProperties.AutomationId="ID_TB_USER_INPUT_OUT"/>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Right" Margin="4" Orientation="Horizontal">
+            <Button Content="OK" Command="{Binding CommandOk, Converter={StaticResource CommandReference}}" IsDefault="True"
+                    AutomationProperties.AutomationId="ID_BTN_USER_INPUT_OK"/>
+            <Button Content="Cancel" Command="{Binding CommandCancel, Converter={StaticResource CommandReference}}" IsCancel="True"
+                    IsVisible="{Binding State.IsCancelButtonVisible}" AutomationProperties.AutomationId="ID_BTN_USER_INPUT_CANCEL"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

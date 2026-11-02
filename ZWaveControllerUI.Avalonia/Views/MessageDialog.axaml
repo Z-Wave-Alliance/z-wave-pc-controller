@@ -1,0 +1,30 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<Window x:Class="ZWaveControllerUI.Views.MessageDialog"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        CanResize="False"
+        Width="500"
+        SizeToContent="Height"
+        Title="Z-Wave PC Controller"
+        AutomationProperties.AutomationId="ID_MESSAGE_DIALOG">
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Background="{DynamicResource BarBackground}">
+            <TextBlock Margin="4" Text="{Binding Title}" Foreground="{DynamicResource BarForeground}"/>
+        </Border>
+        <StackPanel Margin="4" DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+            <CheckBox Content="Do not show for this version" IsChecked="{Binding IsDoNotShowThis, Mode=TwoWay}"
+                      IsVisible="{Binding IsDoNotShowThisVersionUpdateVisible}"/>
+            <Button IsDefault="True" Content="OK" Command="{Binding CommandOk, Converter={StaticResource CommandReference}}"
+                    AutomationProperties.AutomationId="ID_BTN_MESSAGE_DIALOG_CLOSE"/>
+        </StackPanel>
+        <ScrollViewer Margin="4" MaxHeight="500">
+            <SelectableTextBlock Text="{Binding Message}" TextWrapping="Wrap"/>
+        </ScrollViewer>
+    </DockPanel>
+</Window>
