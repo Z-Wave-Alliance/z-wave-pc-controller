@@ -1,0 +1,54 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.MpanTableConfigurationView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+             AutomationProperties.AutomationId="ID_MPAN_TABLE_CONFIGURATION_VIEW">
+    <StackPanel MinWidth="600">
+        <StackPanel Margin="4" Orientation="Horizontal">
+            <Button Content="Load MPANs" Command="{Binding LoadMpanTableCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_LOAD_MPANS"/>
+            <Button Content="Clear" Command="{Binding ClearMpanTableCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_CLEAR"/>
+        </StackPanel>
+        <DataGrid Margin="4,0" Height="200" IsReadOnly="True" SelectionMode="Single" ItemsSource="{Binding FullMpanTableBind}" SelectedItem="{Binding SelectedMpanItem}"
+                  AutomationProperties.AutomationId="ID_LV_MPANS">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Group id" Width="70" Binding="{Binding GroupId}"/>
+                <DataGridTextColumn Header="Owner id" Width="70" Binding="{Binding Owner}"/>
+                <DataGridCheckBoxColumn Header="MOS" Width="50" Binding="{Binding IsMos}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="MPAN State" Width="*" Binding="{Binding MpanState, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneWay}"/>
+                <DataGridTextColumn Header="SeqNo" Width="55" Binding="{Binding SequenceNumber}"/>
+                <DataGridTextColumn Header="Node ids" Width="150" Binding="{Binding Nodes, Converter={StaticResource NodesToStringConverter}, Mode=OneWay}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Grid Margin="32,4" ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+            <Grid.Styles>
+                <Style Selector="Grid > TextBlock">
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                </Style>
+            </Grid.Styles>
+            <TextBlock Text="Group Id"/>
+            <controls:NumericUpDown Grid.Column="1" Width="120" HorizontalAlignment="Left" IntValue="{Binding TestMpanGroupId, Mode=TwoWay}" MinValue="1" AutomationProperties.AutomationId="ID_TB_GROUP_ID"/>
+            <TextBlock Grid.Row="1" Text="Owner Id"/>
+            <controls:NumericUpDown Grid.Row="1" Grid.Column="1" Width="120" HorizontalAlignment="Left" IntValue="{Binding TestMpanOwner, Converter={StaticResource NodeToStringConverter}, Mode=TwoWay}" MinValue="1" AutomationProperties.AutomationId="ID_TB_OWNER_ID"/>
+            <TextBlock Grid.Row="2" Text="MOS flag"/>
+            <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding TestMpanIsMos, Mode=TwoWay}" AutomationProperties.AutomationId="ID_CHK_MOS"/>
+            <TextBlock Grid.Row="3" Text="Sequence number"/>
+            <controls:NumericUpDown Grid.Row="3" Grid.Column="1" Width="120" HorizontalAlignment="Left" IntValue="{Binding TestMpanSequenceNumber, Mode=TwoWay}" AutomationProperties.AutomationId="ID_TB_SEQUENCE_NUMBER"/>
+            <TextBlock Grid.Row="4" Text="MPAN State"/>
+            <controls:TextBoxHexMask Grid.Row="4" Grid.Column="1" Text="{Binding TestMpanState, Converter={StaticResource ByteArrayToStringConverter}, Mode=TwoWay}"
+                                     AutomationProperties.AutomationId="ID_TB_MPAN_STATE"/>
+            <TextBlock Grid.Row="5" Text="Node Ids"/>
+            <controls:TextBoxHexMask Grid.Row="5" Grid.Column="1" Text="{Binding TestMpanNodes, Converter={StaticResource NodesToStringConverter}, Mode=TwoWay}"
+                                     AutomationProperties.AutomationId="ID_TB_NODE_IDS"/>
+        </Grid>
+        <StackPanel Margin="4" Orientation="Horizontal">
+            <Button Content="Add/Update" Command="{Binding AddOrUpdateSelectedMpanItemCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_ADD_UPDATE"/>
+            <Button Content="Remove" Command="{Binding RemoveSelectedMpanItemCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_REMOVE"/>
+            <Button Content="Next MPAN" Command="{Binding NextSelectedMpanItemCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_NEXT_MPAN"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

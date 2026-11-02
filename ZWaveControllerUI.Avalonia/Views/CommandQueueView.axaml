@@ -1,0 +1,34 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.CommandQueueView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             MinHeight="300" MinWidth="500"
+             AutomationProperties.AutomationId="ID_COMMAND_QUEUE_VIEW">
+    <UserControl.Styles>
+        <Style Selector="DataGridRowGroupHeader">
+            <Setter Property="IsPropertyNameVisible" Value="False"/>
+            <Setter Property="IsItemCountVisible" Value="True"/>
+            <Setter Property="ItemCountFormat" Value="({0})"/>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonBackground}"/>
+        </Style>
+    </UserControl.Styles>
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Margin="4" Orientation="Horizontal">
+            <Button Content="Delete" Command="{Binding DeleteCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_DELETE"/>
+            <Button Content="Clear" Command="{Binding ClearCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_CLEAR"/>
+        </StackPanel>
+        <DataGrid Margin="4,0,4,4" SelectionMode="Extended" IsReadOnly="True" bind:SelectionBehavior.SyncIsSelected="True"
+                  ItemsSource="{Binding ApplicationModel.CommandQueueCollection, Converter={StaticResource GroupedViewConverter}, ConverterParameter='Item.Node|Node {0} queue'}"
+                  AutomationProperties.AutomationId="ID_LV_ITEMS">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Timestamp" Width="100" Binding="{Binding Item.Timestamp, StringFormat='{}{0:HH:mm:ss.fff}'}"/>
+                <DataGridTextColumn Header="Command" Width="*" Binding="{Binding Item.Command.Text}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</UserControl>

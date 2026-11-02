@@ -1,0 +1,178 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<Window x:Class="ZWaveControllerUI.MainWindow"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:views="clr-namespace:ZWaveControllerUI.Views"
+        Height="700" Width="773" MinWidth="500" MinHeight="400"
+        Icon="avares://ZWaveControllerUI/Images/App.ico"
+        AutomationProperties.AutomationId="ID_MAIN_WINDOW">
+    <Window.Title>
+        <MultiBinding StringFormat="{}{0} - {1}">
+            <Binding Path="DataSource.SourceName" FallbackValue="" TargetNullValue=""/>
+            <Binding Path="Title"/>
+        </MultiBinding>
+    </Window.Title>
+    <Window.Styles>
+        <Style Selector="mi|MaterialIcon">
+            <Setter Property="Width" Value="24"/>
+            <Setter Property="Height" Value="24"/>
+        </Style>
+        <Style Selector="Button.bar">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        </Style>
+        <Style Selector="Border.badge">
+            <Setter Property="Margin" Value="-4"/>
+            <Setter Property="MinWidth" Value="18"/>
+            <Setter Property="MinHeight" Value="18"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonForeground}"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+        </Style>
+        <Style Selector="TextBlock.nosource">
+            <Setter Property="Foreground" Value="Red"/>
+        </Style>
+    </Window.Styles>
+    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,*,Auto">
+        <DockPanel Grid.Column="1" Background="{DynamicResource ViewBackground}">
+            <StackPanel Margin="2" DockPanel.Dock="Right" Orientation="Horizontal">
+                <Button Classes="bar" ToolTip.Tip="Settings" Command="{Binding ShowSettingsCommand, Converter={StaticResource CommandReference}}"
+                        AutomationProperties.AutomationId="ID_BTN_SETTINGS">
+                    <mi:MaterialIcon Kind="Settings"/>
+                </Button>
+                <Button Classes="bar" ToolTip.Tip="Commands Queue" Command="{Binding ShowCommandQueueCommand, Converter={StaticResource CommandReference}}"
+                        AutomationProperties.AutomationId="ID_BTN_COMMAND_QUEUE">
+                    <Panel>
+                        <mi:MaterialIcon Kind="Email" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Border Classes="badge" Background="{DynamicResource SnkS2_AUTHENTICATED}">
+                            <Border.IsVisible>
+                                <MultiBinding Converter="{StaticResource AndConverter}">
+                                    <Binding Path="CommandQueueCollection.Count" Converter="{StaticResource IsNonZeroConverter}" FallbackValue="False"/>
+                                    <Binding Path="IsEffectivelyEnabled" RelativeSource="{RelativeSource AncestorType=Button}"/>
+                                </MultiBinding>
+                            </Border.IsVisible>
+                            <TextBlock Text="{Binding CommandQueueCollection.Count, FallbackValue=0}" Foreground="White"
+                                       HorizontalAlignment="Center" Margin="3,0"/>
+                        </Border>
+                    </Panel>
+                </Button>
+                <Button Classes="bar" ToolTip.Tip="Send Data Settings" Command="{Binding ShowSendDataSettingsCommand, Converter={StaticResource CommandReference}}"
+                        AutomationProperties.AutomationId="ID_BTN_SEND_DATA_SETTINGS">
+                    <mi:MaterialIcon Kind="Send"/>
+                </Button>
+                <Button Classes="bar" Command="{Binding ShowSecuritySettingsCommand, Converter={StaticResource CommandReference}}"
+                        AutomationProperties.AutomationId="ID_BTN_SECURITY_SETTINGS">
+                    <ToolTip.Tip>
+                        <TextBlock Text="Security Test Schema"/>
+                    </ToolTip.Tip>
+                    <Panel>
+                        <mi:MaterialIcon Kind="Security" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Border Classes="badge" Background="{DynamicResource SnkS2_UNAUTHENTICATED}">
+                            <Border.IsVisible>
+                                <MultiBinding Converter="{StaticResource AndConverter}">
+                                    <Binding Path="HasActiveSecurityTestSettings"/>
+                                    <Binding Path="IsEffectivelyEnabled" RelativeSource="{RelativeSource AncestorType=Button}"/>
+                                </MultiBinding>
+                            </Border.IsVisible>
+                            <ToolTip.Tip>Security Test Schema (Has Active Test Settings!)</ToolTip.Tip>
+                            <mi:MaterialIcon Kind="Exclamation" Foreground="White" Width="16" Height="16"
+                                             HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </Panel>
+                </Button>
+            </StackPanel>
+            <StackPanel Margin="2" Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock FontSize="20"
+                           Classes.nosource="{Binding DataSource, Converter={x:Static ObjectConverters.IsNull}}"
+                           Text="{Binding DataSource.SourceName, FallbackValue='Select Source', TargetNullValue=''}"/>
+                <TextBlock FontSize="20" Text="{Binding CurrentViewModel.Title, StringFormat=' - {0}', FallbackValue='', TargetNullValue=''}"/>
+            </StackPanel>
+        </DockPanel>
+
+        <ScrollViewer Grid.Column="0" Grid.Row="0" Grid.RowSpan="3"
+                      IsVisible="{Binding IsWorkspaceVisible}"
+                      Background="{DynamicResource ButtonBackground}">
+            <StackPanel>
+                <Button Classes="bar" Command="{Binding ShowMainMenuCommand, Converter={StaticResource CommandReference}}"
+                        AutomationProperties.AutomationId="ID_BTN_MAIN_MENU" ToolTip.Tip="Main Menu">
+                    <mi:MaterialIcon Kind="Home"/>
+                </Button>
+                <Button Classes="bar" Command="{Binding MainMenuViewModel.ShowNetworkManagementCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Network Management">
+                    <mi:MaterialIcon Kind="RouterWireless"/>
+                </Button>
+                <Button Classes="bar" Command="{Binding MainMenuViewModel.ShowSmartStartCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Smart Start">
+                    <Panel>
+                        <mi:MaterialIcon Kind="PlaylistCheck" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Border Classes="badge" Background="{DynamicResource SnkS2_ACCESS}">
+                            <Border.IsVisible>
+                                <MultiBinding Converter="{StaticResource AndConverter}">
+                                    <Binding Path="ConfigurationItem.PreKitting.PendingProvisioningCount" Converter="{StaticResource IsNonZeroConverter}" FallbackValue="False"/>
+                                    <Binding Path="IsEffectivelyEnabled" RelativeSource="{RelativeSource AncestorType=Button}"/>
+                                </MultiBinding>
+                            </Border.IsVisible>
+                            <TextBlock Text="{Binding ConfigurationItem.PreKitting.PendingProvisioningCount}"
+                                       Foreground="White" HorizontalAlignment="Center" Margin="3,0"/>
+                        </Border>
+                    </Panel>
+                </Button>
+                <Button Classes="bar" Command="{Binding MainMenuViewModel.ShowCommandClassesCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Command Classes">
+                    <mi:MaterialIcon Kind="CodeJson"/>
+                </Button>
+                <Button Classes="bar" Command="{Binding MainMenuViewModel.ShowAssociationsCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Associations">
+                    <mi:MaterialIcon Kind="FileTree"/>
+                </Button>
+                <Button Classes="bar" Command="{Binding MainMenuViewModel.ShowSetupRouteCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Setup Route">
+                    <mi:MaterialIcon Kind="DirectionsFork"/>
+                </Button>
+                <Button Classes="bar" Command="{Binding MainMenuViewModel.ShowERTTCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="ERTT">
+                    <mi:MaterialIcon Kind="PlaylistPlay"/>
+                </Button>
+                <Button Classes="bar" Command="{Binding MainMenuViewModel.ShowPollingCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Polling">
+                    <mi:MaterialIcon Kind="Poll"/>
+                </Button>
+                <Button Classes="bar" Command="{Binding MainMenuViewModel.ShowFirmwareUpdateCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="OTA Firmware Update">
+                    <mi:MaterialIcon Kind="Upload"/>
+                </Button>
+                <Button Classes="bar" Command="{Binding MainMenuViewModel.ShowNVMBackupRestoreCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="NVM Backup/Restore">
+                    <mi:MaterialIcon Kind="BackupRestore"/>
+                </Button>
+            </StackPanel>
+        </ScrollViewer>
+
+        <ContentControl Name="CurrentView" Grid.Column="1" Grid.Row="1" Content="{Binding CurrentViewModel}">
+            <ContentControl.IsEnabled>
+                <MultiBinding Converter="{StaticResource AndConverter}">
+                    <Binding Path="!IsBusy"/>
+                    <Binding Path="!IsErrorMessageVisible"/>
+                </MultiBinding>
+            </ContentControl.IsEnabled>
+        </ContentControl>
+
+        <DockPanel Margin="2" Grid.Column="1" Grid.Row="2" Background="{DynamicResource ViewBackground}">
+            <Button Classes="bar" DockPanel.Dock="Right" Command="{Binding ShowLogWindowCommand, Converter={StaticResource CommandReference}}"
+                    ToolTip.Tip="Show Log" AutomationProperties.AutomationId="ID_BTN_SHOWLOG">
+                <mi:MaterialIcon Kind="Receipt"/>
+            </Button>
+            <SelectableTextBlock VerticalAlignment="Bottom" TextWrapping="Wrap" Margin="2"
+                                 Foreground="{Binding LogDialog.LastLogActionPacket.Dye, Converter={StaticResource DyeToBrushConverter}}">
+                <SelectableTextBlock.Text>
+                    <MultiBinding StringFormat="{}{0:HH:mm:ss.fff} {1}" FallbackValue="">
+                        <Binding Path="LogDialog.LastLogActionPacket.Timestamp" FallbackValue=""/>
+                        <Binding Path="LogDialog.LastLogActionPacket.Text" FallbackValue=""/>
+                    </MultiBinding>
+                </SelectableTextBlock.Text>
+            </SelectableTextBlock>
+        </DockPanel>
+
+        <views:SpinnerView Margin="8,8,60,8" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Bottom"
+                           IsVisible="{Binding IsBusy}" AutomationProperties.AutomationId="ID_BUSY_VIEW"/>
+    </Grid>
+</Window>

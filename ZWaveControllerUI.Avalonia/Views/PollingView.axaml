@@ -1,0 +1,62 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.PollingView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <DockPanel Margin="4" DockPanel.Dock="Top">
+            <StackPanel Margin="4" Orientation="Horizontal">
+                <Button Command="{Binding StartPollingCommand, Converter={StaticResource CommandReference}}" Content="Start"/>
+                <Button Command="{Binding StopPollingCommand, Converter={StaticResource CommandReference}}" Content="Stop"/>
+            </StackPanel>
+            <TextBlock Text="Duration: " VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding Duration}" VerticalAlignment="Center"/>
+            <StackPanel Margin="4" HorizontalAlignment="Right">
+                <CheckBox Content="Use command class 'BASIC'" IsChecked="{Binding UseBasicCC}"/>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox Content="modify SPAN on poll" IsChecked="{Binding UseResetSpan}"/>
+                    <ComboBox Width="170" SelectedIndex="{Binding ResetSpanMode}">
+                        <ComboBoxItem>Remove Before Send</ComboBoxItem>
+                        <ComboBoxItem>Randomize Before Send</ComboBoxItem>
+                        <ComboBoxItem>Remove After Send</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
+            </StackPanel>
+        </DockPanel>
+        <DataGrid Margin="4,0,4,4" ItemsSource="{Binding Nodes}" RowHeight="26">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Poll" Width="50">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox HorizontalAlignment="Center" IsChecked="{Binding IsPollEnabled, Mode=TwoWay}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Node" Width="60" IsReadOnly="True" Binding="{Binding Device}"/>
+                <DataGridTextColumn Header="Type" Width="150" IsReadOnly="True" Binding="{Binding Device, Converter={StaticResource NodeTypeConverter}, Mode=OneWay}"/>
+                <DataGridTemplateColumn Header="Interval, sec." Width="90">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Width="60" Text="{Binding PollTime, Mode=TwoWay, Converter={StaticResource StringToIntConverter}}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Timeout, sec." Width="90">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Width="60" Text="{Binding ReportTime, Mode=TwoWay, Converter={StaticResource StringToIntConverter}}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Requests" IsReadOnly="True" Binding="{Binding Requests}"/>
+                <DataGridTextColumn Header="Failures" IsReadOnly="True" Binding="{Binding Failures}"/>
+                <DataGridTextColumn Header="Missing" IsReadOnly="True" Binding="{Binding MissingReports}"/>
+                <DataGridTextColumn Header="Avg Poll, ms" IsReadOnly="True" Binding="{Binding AvgCommandTime}"/>
+                <DataGridTextColumn Header="Max Poll, ms" IsReadOnly="True" Binding="{Binding MaxCommandTime}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</UserControl>

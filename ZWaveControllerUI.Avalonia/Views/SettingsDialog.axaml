@@ -1,0 +1,107 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<Window x:Class="ZWaveControllerUI.Views.SettingsDialog"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+        Title="Settings"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        CanResize="True"
+        Height="520"
+        Width="800"
+        AutomationProperties.AutomationId="ID_DLG_SETTINGS">
+    <Grid RowDefinitions="*,Auto" IsEnabled="{Binding !ApplicationModel.IsBusy}">
+        <Grid Grid.Row="0" ColumnDefinitions="*,*">
+            <DockPanel Grid.Column="0">
+                <TextBlock DockPanel.Dock="Top" Margin="4">Serial Port Data Sources:</TextBlock>
+                <StackPanel Margin="4" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Orientation="Horizontal">
+                    <Button Content="Detect" Command="{Binding DetectCommand, Converter={StaticResource CommandReference}}"/>
+                    <Button Content="Refresh" Command="{Binding RefreshCommand, Converter={StaticResource CommandReference}}"/>
+                </StackPanel>
+                <DataGrid Name="ComportsList" Margin="4,0" SelectionMode="Single" IsReadOnly="True"
+                          AutomationProperties.AutomationId="ID_LB_SERIAL_DATA_SOURCES">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Width="110" Binding="{Binding SourceName}"/>
+                        <DataGridTemplateColumn Header="Version" Width="150">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Version}" Foreground="{DynamicResource ButtonBackground}" VerticalAlignment="Center" Margin="4,0"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Description}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+            <DockPanel Grid.Column="1">
+                <TextBlock DockPanel.Dock="Top" Margin="4">Socket Data Sources:</TextBlock>
+                <StackPanel Margin="4" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Orientation="Horizontal">
+                    <Button Content="Add" Command="{Binding OpenAddSocketSourceCommand, Converter={StaticResource CommandReference}}"/>
+                    <Button Content="Clear All" Command="{Binding ClearAllCommand, Converter={StaticResource CommandReference}}"/>
+                    <Button Content="Discover" Command="{Binding DiscoverCommand, Converter={StaticResource CommandReference}}"
+                            AutomationProperties.AutomationId="ID_DISCOVER_BTN"/>
+                </StackPanel>
+                <DataGrid Name="SocketSourcesListView" Margin="4,0" SelectionMode="Single" IsReadOnly="True"
+                          AutomationProperties.AutomationId="ID_LB_SOCKET_DATA_SOURCES">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Type" Width="50" Binding="{Binding Type}"/>
+                        <DataGridTextColumn Header="IP Address" Width="110" Binding="{Binding SourceName}"/>
+                        <DataGridTextColumn Header="Port" Width="55" Binding="{Binding Port}"/>
+                        <DataGridTextColumn Header="Description" Width="100" Binding="{Binding Description}"/>
+                        <DataGridTextColumn Header="Args" Width="*" Binding="{Binding Args}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Grid>
+        <StackPanel Grid.Row="1">
+            <StackPanel Margin="9,4">
+                <CheckBox Content="Enable Watchdog" IsChecked="{Binding IsWatchdogEnabled}"/>
+            </StackPanel>
+            <controls:GroupBox Margin="4,0">
+                <controls:GroupBox.Header>
+                    <CheckBox Name="cbIsDumping" Content="Capture communication trace to" IsChecked="{Binding IsTraceCapturing}"/>
+                </controls:GroupBox.Header>
+                <Grid IsEnabled="{Binding #cbIsDumping.IsChecked}" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                    <TextBlock Margin="4" Text="Capture Folder:" VerticalAlignment="Center"/>
+                    <DockPanel Margin="4" Grid.Column="1">
+                        <Button Width="40" DockPanel.Dock="Right" Command="{Binding BrowseFolderCommand, Converter={StaticResource CommandReference}}">
+                            <mi:MaterialIcon Kind="Folder" Width="24" Height="24"/>
+                        </Button>
+                        <TextBox IsReadOnly="True" Text="{Binding TraceCaptureFolder}" VerticalAlignment="Stretch" TextWrapping="Wrap"/>
+                    </DockPanel>
+                    <StackPanel Margin="4" Grid.Column="1" Grid.Row="1">
+                        <UniformGrid Columns="3">
+                            <CheckBox Name="cbIsKeepFiles" Content="Keep last files" IsChecked="{Binding !IsTraceCaptureOverwriteFile}"/>
+                            <StackPanel IsEnabled="{Binding #cbIsKeepFiles.IsChecked}" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <TextBlock Text="Count:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                <controls:NumericUpDown Width="110" IntValue="{Binding TraceCaptureSplitCount, Mode=TwoWay}" MaxValue="100000" MinValue="1"/>
+                            </StackPanel>
+                            <Panel/>
+                        </UniformGrid>
+                        <UniformGrid Columns="3">
+                            <CheckBox Name="cbIsLimited" Content="Auto split by:" IsChecked="{Binding IsTraceCaptureAutoSplit}"/>
+                            <StackPanel IsEnabled="{Binding #cbIsLimited.IsChecked}" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <TextBlock Text="Size, Mb:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                <controls:NumericUpDown Width="110" IntValue="{Binding TraceCaptureSplitSize, Mode=TwoWay}" MaxValue="100000" MinValue="0"/>
+                            </StackPanel>
+                            <StackPanel IsEnabled="{Binding #cbIsLimited.IsChecked}" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <TextBlock Text="Duration, min" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                <controls:NumericUpDown Width="110" MajorDelta="10" MinorDelta="10" IntValue="{Binding TraceCaptureSplitDuration, Mode=TwoWay}" MaxValue="1440" MinValue="0"/>
+                            </StackPanel>
+                        </UniformGrid>
+                    </StackPanel>
+                </Grid>
+            </controls:GroupBox>
+            <StackPanel Margin="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="OK" AutomationProperties.AutomationId="ID_BTN_OK"
+                        Command="{Binding CommandOk, Converter={StaticResource CommandReference}}" IsDefault="True"/>
+                <Button Content="Cancel" Command="{Binding CommandCancel, Converter={StaticResource CommandReference}}" IsCancel="True"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

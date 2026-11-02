@@ -1,0 +1,49 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.SelectLocalIpAddressView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls">
+    <StackPanel>
+        <controls:GroupBox Header="Unsolicited Destination">
+            <StackPanel Margin="4">
+                <StackPanel Orientation="Horizontal">
+                    <mi:MaterialIcon Kind="CheckboxMarkedCircleOutline" Foreground="{DynamicResource ButtonBackground}" Width="24" Height="20"
+                                     IsVisible="{Binding IsListening}"/>
+                    <mi:MaterialIcon Kind="WarningOutline" Foreground="Red" Width="24" Height="20" IsVisible="{Binding !IsListening}"/>
+                    <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Address:" VerticalAlignment="Center"/>
+                    <TextBox Name="ipPrim" Text="{Binding PrimaryAddress}" IsReadOnly="True" Width="180"/>
+                    <TextBlock Text="Port:" VerticalAlignment="Center"/>
+                    <TextBox Name="portPrim" Text="{Binding PrimaryPort}" IsReadOnly="True" Width="80"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Secondary Port:" VerticalAlignment="Center"/>
+                    <controls:NumericUpDown Width="110" MinValue="1024" MaxValue="65535" IntValue="{Binding SecondaryPort, Mode=TwoWay}"/>
+                    <ToggleButton HorizontalAlignment="Left" Theme="{StaticResource SwitchTypeToggleButton}" Margin="2"
+                                  IsChecked="{Binding IsSecondaryOn, Mode=OneWay}"
+                                  Command="{Binding UnsolicitedDestSecondaryStartStopCommand, Converter={StaticResource CommandReference}}"/>
+                </StackPanel>
+                <Button Content="{Binding ActionButtonName}" Command="{Binding UnsolicitedDestStartStopCommand, Converter={StaticResource CommandReference}}" HorizontalAlignment="Right"/>
+            </StackPanel>
+        </controls:GroupBox>
+        <controls:GroupBox Header="Custom Destination">
+            <StackPanel Orientation="Horizontal" Margin="4">
+                <TextBlock Text="Address:" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding CustomPrimaryAddress, Mode=TwoWay}" Width="180"/>
+                <TextBlock Text="Port:" VerticalAlignment="Center"/>
+                <controls:NumericUpDown Width="110" MinValue="1024" MaxValue="65535" IntValue="{Binding CustomPrimaryPort, Mode=TwoWay}"/>
+            </StackPanel>
+        </controls:GroupBox>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="4">
+            <Button Content="Apply" Command="{Binding UnsolicitedDestApplyCommand, Converter={StaticResource CommandReference}}"/>
+            <Button Content="Close" Command="{Binding CommandCancel, Converter={StaticResource CommandReference}}" IsCancel="True"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

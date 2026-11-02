@@ -1,0 +1,43 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.LogView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             AutomationProperties.AutomationId="ID_LOG_VIEW">
+    <DockPanel>
+        <DockPanel Margin="4" DockPanel.Dock="Top">
+            <Button Content="Clear" HorizontalAlignment="Left" Command="{Binding ClearLogCommand, Converter={StaticResource CommandReference}}"
+                    AutomationProperties.AutomationId="ID_BTN_CLEAR"/>
+            <CheckBox Name="cbAutoScroll" Content="Auto Scroll" IsChecked="{Binding IsAutoScrollLogMessages}" HorizontalAlignment="Right"/>
+        </DockPanel>
+        <Border DockPanel.Dock="Top" Background="{DynamicResource BarBackground}" Margin="4,0">
+            <Grid ColumnDefinitions="96,*" Margin="4,3">
+                <TextBlock Text="Timestamp"/>
+                <TextBlock Grid.Column="1" Text="Message" Margin="8,0"/>
+            </Grid>
+        </Border>
+        <ListBox Name="LogList" Margin="4,0,4,4" ItemsSource="{Binding LogPackets}" SelectionMode="Multiple"
+                 AutomationProperties.AutomationId="ID_LV_LOG">
+            <ListBox.Styles>
+                <Style Selector="ListBoxItem">
+                    <Setter Property="Padding" Value="4,0"/>
+                    <Setter Property="MinHeight" Value="18"/>
+                </Style>
+            </ListBox.Styles>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="96,*">
+                        <TextBlock Text="{Binding Timestamp, StringFormat='{}{0:HH:mm:ss.fff}'}"
+                                   FontWeight="{Binding IsBold, Converter={StaticResource BoolToBoldConverter}}"/>
+                        <TextBlock Grid.Column="1" Margin="8,0" Text="{Binding Text}"
+                                   Foreground="{Binding Dye, Converter={StaticResource DyeToBrushConverter}}"
+                                   FontWeight="{Binding IsBold, Converter={StaticResource BoolToBoldConverter}}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</UserControl>

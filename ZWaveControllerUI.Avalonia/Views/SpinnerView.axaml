@@ -1,0 +1,30 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.SpinnerView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <Border Background="{DynamicResource ViewBackground}" BoxShadow="0 1 4 0 #80000000">
+        <Grid Margin="4" RowDefinitions="*,Auto,Auto" ColumnDefinitions="*,Auto">
+            <TextBlock Text="{Binding BusyMessage}" HorizontalAlignment="Stretch" TextWrapping="Wrap" Grid.ColumnSpan="2"/>
+            <SelectableTextBlock Grid.Row="1" Grid.ColumnSpan="2" MinHeight="20" TextWrapping="Wrap" VerticalAlignment="Center"
+                                 Foreground="{Binding LogDialog.LastLogPacket.Dye, Converter={StaticResource DyeToBrushConverter}}">
+                <SelectableTextBlock.Text>
+                    <MultiBinding StringFormat="{}{0:HH:mm:ss.fff} {1}" FallbackValue="">
+                        <Binding Path="LogDialog.LastLogPacket.Timestamp" FallbackValue=""/>
+                        <Binding Path="LogDialog.LastLogPacket.Text" FallbackValue=""/>
+                    </MultiBinding>
+                </SelectableTextBlock.Text>
+            </SelectableTextBlock>
+            <ProgressBar Grid.Row="2" Height="20" MinWidth="100" IsIndeterminate="True" Margin="4"/>
+            <Button Name="AbortOperationButton" Grid.Column="1" Grid.Row="2" MinWidth="74" HorizontalAlignment="Right"
+                    Content="Abort" Background="Maroon"
+                    Command="{Binding CancelActiveCommand, Converter={StaticResource CommandReference}}"
+                    IsVisible="{Binding $self.IsEffectivelyEnabled}"
+                    AutomationProperties.AutomationId="ID_BTN_ABORT"/>
+        </Grid>
+    </Border>
+</UserControl>

@@ -1,0 +1,42 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.ScanDSKView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             MinWidth="300">
+    <UserControl.Resources>
+        <bind:NumbersValidationConverter x:Key="DskValidation"/>
+    </UserControl.Resources>
+    <StackPanel>
+        <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Margin="4">
+                <CheckBox Name="IsHexInputCheckBox" Content="Hex input" IsChecked="{Binding State.IsHexInputChecked}"/>
+                <TextBox Name="InputTextBox" AutomationProperties.AutomationId="ID_TB_USER_INPUT_IN"
+                         Text="{Binding State.InputData, Mode=TwoWay, Converter={StaticResource DskValidation}}">
+                    <TextBox.KeyBindings>
+                        <KeyBinding Gesture="Enter" Command="{Binding CommandOk, Converter={StaticResource CommandReference}}"/>
+                    </TextBox.KeyBindings>
+                </TextBox>
+                <TextBox IsReadOnly="True" TextWrapping="Wrap" Text="{Binding State.AdditionalText}"
+                         IsVisible="{Binding State.IsAdditionalTextVisible}" AutomationProperties.AutomationId="ID_TB_USER_INPUT_OUT"/>
+            </StackPanel>
+            <!-- QR code text from a scanner (keyboard wedge) or pasted; the PIN is taken from its DSK.
+                 The WPF build can also read a webcam through a Windows-only capture library. -->
+            <StackPanel Grid.Column="1" Margin="4" IsVisible="{Binding #ShowImageToggle.IsChecked}">
+                <TextBlock Text="Scan or paste the QR code:" Margin="0,0,0,2"/>
+                <TextBox Name="QrCodeInput" Width="160" Height="150" TextWrapping="Wrap" VerticalContentAlignment="Top"/>
+            </StackPanel>
+        </Grid>
+        <DockPanel Margin="4">
+            <Button Content="Cancel" DockPanel.Dock="Right" Command="{Binding CommandCancel, Converter={StaticResource CommandReference}}" IsCancel="True"
+                    IsVisible="{Binding State.IsCancelButtonVisible}" AutomationProperties.AutomationId="ID_BTN_USER_INPUT_CANCEL"/>
+            <Button Content="OK" DockPanel.Dock="Right" Command="{Binding CommandOk, Converter={StaticResource CommandReference}}" IsDefault="True"
+                    AutomationProperties.AutomationId="ID_BTN_USER_INPUT_OK"/>
+            <ToggleButton Name="ShowImageToggle" Content="QR Code"/>
+        </DockPanel>
+    </StackPanel>
+</UserControl>
