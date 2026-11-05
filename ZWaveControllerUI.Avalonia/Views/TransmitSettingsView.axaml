@@ -1,0 +1,73 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.TransmitSettingsView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+             xmlns:enm="clr-namespace:ZWave.BasicApplication.Enums;assembly=ZWaveBasicApplication">
+    <UserControl.Styles>
+        <Style Selector="Grid > TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="NumericUpDown.invalid">
+            <Setter Property="Foreground" Value="Red"/>
+        </Style>
+        <Style Selector="Grid > ComboBox">
+            <Setter Property="Width" Value="150"/>
+        </Style>
+    </UserControl.Styles>
+    <Grid Margin="4" ColumnDefinitions="215,Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+        <TextBlock Grid.Row="0" Text="Tx Power Level Normal (0.1 dBm):"/>
+        <controls:NumericUpDown Grid.Row="0" Grid.Column="1" Width="150" Classes.invalid="{Binding !IsNormalTxPower}"
+                                IntValue="{Binding NormalTxPower, Mode=TwoWay}" MaxValue="200" MinValue="-100"
+                                AutomationProperties.AutomationId="ID_TB_NORMAL_POWER_LEVEL"/>
+        <StackPanel Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Orientation="Horizontal">
+            <Button Margin="4" Content="Set" Command="{Binding SetPowerLevelCommand, Converter={StaticResource CommandReference}}"
+                    AutomationProperties.AutomationId="ID_BTN_SET_POWER_LEVEL"/>
+            <TextBlock Text="Tx Power Level value is greater than the max allowed" Foreground="Red" VerticalAlignment="Center" TextWrapping="Wrap">
+                <TextBlock.IsVisible>
+                    <MultiBinding Converter="{StaticResource NandConverter}">
+                        <Binding Path="IsNormalTxPower"/>
+                        <Binding Path="IsMeasured0dBmPower"/>
+                    </MultiBinding>
+                </TextBlock.IsVisible>
+            </TextBlock>
+        </StackPanel>
+        <TextBlock Grid.Row="1" Text="Tx Power Level Measured (0.1 dBm):"/>
+        <controls:NumericUpDown Grid.Row="1" Grid.Column="1" Width="150" Classes.invalid="{Binding !IsMeasured0dBmPower}"
+                                IntValue="{Binding Measured0dBmPower, Mode=TwoWay}" MaxValue="200" MinValue="-100"
+                                AutomationProperties.AutomationId="ID_TB_MEASURED_POWER_LEVEL"/>
+        <Separator Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Margin="0,4"/>
+        <TextBlock Grid.Row="3" Text="Max LR Tx Power:"/>
+        <ComboBox Grid.Row="3" Grid.Column="1" Name="cbMaxLrTxPowerModes"
+                  ItemsSource="{bind:EnumBindingSource {x:Type enm:MaxLrTxPowerModes}}" SelectedItem="{Binding MaxLrTxPowerMode}"/>
+        <Button Grid.Row="3" Grid.Column="2" Command="{Binding SetMaxLrTxPowerModeCommand, Converter={StaticResource CommandReference}}" Margin="4" Content="Set"
+                AutomationProperties.AutomationId="ID_BTN_SET_MAX_LR_TX_POWER_CONFIG"/>
+        <Separator Grid.Row="4" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Margin="0,4"/>
+        <TextBlock Grid.Row="5" Text="RF Region:"/>
+        <ComboBox Grid.Row="5" Grid.Column="1" Name="cbRfRegions"
+                  ItemsSource="{bind:EnumBindingSource {x:Type enm:RfRegions}}" SelectedItem="{Binding RfRegion}"/>
+        <Button Grid.Row="5" Grid.Column="2" Command="{Binding SetRfRegionCommand, Converter={StaticResource CommandReference}}" Margin="4" Content="Set"
+                AutomationProperties.AutomationId="ID_BTN_SET_RF_REGION_LEVEL"/>
+        <TextBlock Grid.Row="6" Text="LR Channel:"/>
+        <ComboBox Grid.Row="6" Grid.Column="1" Name="cbLRChannels"
+                  ItemsSource="{bind:EnumBindingSource {x:Type enm:LongRangeChannels}}" SelectedItem="{Binding LRChannel}"/>
+        <Button Grid.Row="6" Grid.Column="2" Command="{Binding SetLRChannelCommand, Converter={StaticResource CommandReference}}" Margin="4" Content="Set"
+                AutomationProperties.AutomationId="ID_BTN_SET_LR_CHANNEL"/>
+        <Separator Grid.Row="7" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Margin="0,4"/>
+        <TextBlock Grid.Row="8" Text="DCDC Config Mode:"/>
+        <ComboBox Grid.Row="8" Grid.Column="1" Name="cbDcdcModes"
+                  ItemsSource="{bind:EnumBindingSource {x:Type enm:DcdcModes}}" SelectedItem="{Binding DcdcMode}"/>
+        <Button Grid.Row="8" Grid.Column="2" Command="{Binding SetDcdcModeCommand, Converter={StaticResource CommandReference}}" Margin="4" Content="Set"
+                AutomationProperties.AutomationId="ID_BTN_SET_DCDC_CONFIG"/>
+        <Separator Grid.Row="9" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Margin="0,4"/>
+        <TextBlock Grid.Row="10" Text="Radio PTI:"/>
+        <CheckBox Grid.Row="10" Grid.Column="1" Name="cbIsRadioPTIEnabled" Content="Enabled" IsChecked="{Binding IsRadioPTIEnabled}" AutomationProperties.AutomationId="CHK_IS_RADIO_PTI"/>
+        <Button Grid.Row="10" Grid.Column="2" Content="Set" Command="{Binding EnableRadioPTICommand, Converter={StaticResource CommandReference}}" Margin="4"
+                AutomationProperties.AutomationId="ID_BTN_SET_RADIO_PTI"/>
+    </Grid>
+</UserControl>

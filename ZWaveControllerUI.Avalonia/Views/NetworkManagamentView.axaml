@@ -1,0 +1,352 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.NetworkManagamentView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:views="clr-namespace:ZWaveControllerUI.Views"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+             xmlns:converters="clr-namespace:ZWaveControllerUI.Converters"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             AutomationProperties.AutomationId="ID_NETWORK_MANAGEMENT_VIEW">
+    <UserControl.Resources>
+        <sys:Byte x:Key="sisValue">1</sys:Byte>
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="WrapPanel.actions > Button">
+            <Setter Property="Width" Value="112"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        </Style>
+        <Style Selector="WrapPanel.actions > Button TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+        <Style Selector="WrapPanel.actions > Button mi|MaterialIcon">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Width" Value="24"/>
+            <Setter Property="Height" Value="24"/>
+        </Style>
+        <!-- Small id boxes inside the action buttons. -->
+        <Style Selector="WrapPanel.actions > Button NumericUpDown">
+            <Setter Property="ShowButtonSpinner" Value="False"/>
+            <Setter Property="Width" Value="28"/>
+            <Setter Property="MinHeight" Value="20"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Padding" Value="1,0"/>
+            <Setter Property="FontSize" Value="11"/>
+        </Style>
+        <!-- Progress dots of the basic toggle test, fading in turn while the test runs. -->
+        <Style Selector="Rectangle.progress">
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="Width" Value="4"/>
+            <Setter Property="Height" Value="6"/>
+            <Setter Property="Fill" Value="White"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+        </Style>
+        <Style Selector="Panel.started Rectangle.progress">
+            <Style.Animations>
+                <Animation Duration="0:0:1" IterationCount="Infinite" PlaybackDirection="Alternate">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Panel.started Rectangle.progress.second">
+            <Style.Animations>
+                <Animation Duration="0:0:1" Delay="0:0:0.33" IterationCount="Infinite" PlaybackDirection="Alternate">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Panel.started Rectangle.progress.third">
+            <Style.Animations>
+                <Animation Duration="0:0:1" Delay="0:0:0.66" IterationCount="Infinite" PlaybackDirection="Alternate">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </UserControl.Styles>
+    <Grid ColumnDefinitions="260,Auto,*" RowDefinitions="*,Auto,*">
+        <GridSplitter Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Height="4" ResizeDirection="Rows"/>
+        <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Center" Width="4" ResizeDirection="Columns"/>
+        <views:NodesListView Grid.Column="0" Grid.Row="0" AutomationProperties.AutomationId="ID_NODES_LIST_VIEW" DataContext="{Binding ApplicationModel}"/>
+        <views:NodeInfoView Grid.Column="0" Grid.Row="2" DataContext="{Binding ApplicationModel}"/>
+        <ScrollViewer Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" HorizontalScrollBarVisibility="Disabled">
+            <DockPanel>
+                <CheckBox Margin="2,0" DockPanel.Dock="Top" IsChecked="{Binding DialogSettings.IsFloating}" Content="Floating View" HorizontalAlignment="Right"/>
+                <StackPanel DockPanel.Dock="Top">
+                    <WrapPanel Classes="actions" Margin="2">
+                        <Button AutomationProperties.AutomationId="ID_BTN_ADD" Command="{Binding AddNodeCommand, Converter={StaticResource CommandReference}}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="PlaylistPlus"/>
+                                <TextBlock Text="Add"/>
+                            </DockPanel>
+                        </Button>
+                        <Button AutomationProperties.AutomationId="ID_BTN_REMOVE" Command="{Binding RemoveNodeCommand, Converter={StaticResource CommandReference}}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="PlaylistMinus"/>
+                                <controls:NumericUpDown IntValue="{Binding RemoveNodeId, Mode=TwoWay}" DockPanel.Dock="Right"/>
+                                <TextBlock Text="Remove"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding AddNodeToNetworkNwiCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Network Wide Inclusion" AutomationProperties.AutomationId="ID_BTN_NWI">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="PlaylistPlus"/>
+                                <TextBlock Text="NWI"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding RemoveNodeFromNetworkWideCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Network Wide Exclusion" AutomationProperties.AutomationId="ID_BTN_NWE">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="PlaylistMinus"/>
+                                <TextBlock Text="NWE"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding AddVirtualNodeCommand, Converter={StaticResource CommandReference}}" IsVisible="{Binding ApplicationModel.IsBridgeControllerLibrary}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="PlaylistPlus"/>
+                                <TextBlock Text="Add Virtual"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding RemoveVirtualNodeCommand, Converter={StaticResource CommandReference}}" IsVisible="{Binding ApplicationModel.IsBridgeControllerLibrary}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="PlaylistMinus"/>
+                                <TextBlock Text="Remove Virtual"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding SendNopCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_NOP">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="MessageAlert"/>
+                                <controls:NumericUpDown IntValue="{Binding SendNopNodeId, Mode=TwoWay}" DockPanel.Dock="Right"/>
+                                <TextBlock Text="NOP"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding IsFailedNodeCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_IS_FAILED">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="PlaylistCheck"/>
+                                <TextBlock Text="Is Failed"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding ReplaceFailedCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_REPLACE_FAILED">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="PlaylistPlus"/>
+                                <TextBlock Text="Replace Failed"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding RemoveFailedCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_REMOVE_FAILED">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="PlaylistMinus"/>
+                                <TextBlock Text="Remove Failed"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding SetSucCommand, Converter={StaticResource CommandReference}}" CommandParameter="{StaticResource sisValue}" AutomationProperties.AutomationId="ID_BTN_SET_SIS">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="Flag"/>
+                                <TextBlock Text="Set as SIS"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding RequestNodeNeighborUpdateCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Request Node Neighbors Update"
+                                AutomationProperties.AutomationId="ID_BTN_NEIGHBORS_UPDATE">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="Sync"/>
+                                <TextBlock Text="Neighbors Update"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding AddNodeWithCustomSettingsCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Add Node with custom settings"
+                                AutomationProperties.AutomationId="ID_BTN_ADD_NODE_CUSTOM"
+                                IsVisible="{Binding !ApplicationModel.IsActiveSessionZip}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="LowPriority"/>
+                                <TextBlock Text="Add Custom"/>
+                            </DockPanel>
+                        </Button>
+                    </WrapPanel>
+                    <WrapPanel Classes="actions" Margin="2">
+                        <Button AutomationProperties.AutomationId="ID_BTN_NODE_INFO" Command="{Binding RequestNodeInfoCommand, Converter={StaticResource CommandReference}}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="TagTextOutline"/>
+                                <TextBlock Text="Node Info"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding VersionGetCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_GET_VERSION">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="InformationVariant"/>
+                                <TextBlock Text="Get Version"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding BasicSetOnCommand, Converter={StaticResource CommandReference}}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="ToggleSwitch"/>
+                                <TextBlock Text="Basic Set ON"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding BasicSetOffCommand, Converter={StaticResource CommandReference}}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="ToggleSwitchOff"/>
+                                <TextBlock Text="Basic Set OFF"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding SetWakeupIntervalCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Set Wakeup Interval">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="Alarm"/>
+                                <controls:NumericUpDown IntValue="{Binding WakeupIntervalValue, Mode=TwoWay}" DockPanel.Dock="Right"/>
+                                <TextBlock Text="Wakeup Interval"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding SendWakeUpNotificationCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Send Wake Up Notification"
+                                IsVisible="{Binding ApplicationModel.IsWUP}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="Bell"/>
+                                <TextBlock Text="Wake Up"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding SwitchAllOnCommand, Converter={StaticResource CommandReference}}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="ToggleSwitch"/>
+                                <TextBlock Text="Switch All ON"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding SwitchAllOffCommand, Converter={StaticResource CommandReference}}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="ToggleSwitchOff"/>
+                                <TextBlock Text="Switch All OFF"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding IndicatorSetCommand, Converter={StaticResource CommandReference}}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="AlarmLight"/>
+                                <TextBlock Text="Indicator Set"/>
+                            </DockPanel>
+                        </Button>
+                        <Button AutomationProperties.AutomationId="ID_BTN_TOGGLE_BASIC" Command="{Binding ToggleBasicGetCommand, Converter={StaticResource CommandReference}}">
+                            <DockPanel>
+                                <Panel Classes.started="{Binding IsBasicTestStarted}">
+                                    <mi:MaterialIcon Kind="SwapHorizontal"/>
+                                    <Panel HorizontalAlignment="Center" Margin="2">
+                                        <Rectangle Classes="progress" Margin="0,0,0,0"/>
+                                        <Rectangle Classes="progress second" Margin="8,0,0,0"/>
+                                        <Rectangle Classes="progress third" Margin="16,0,0,0"/>
+                                    </Panel>
+                                </Panel>
+                                <TextBlock Text="{Binding BasicTestCaption}"/>
+                            </DockPanel>
+                        </Button>
+                        <Button AutomationProperties.AutomationId="ID_BTN_RESET_SPAN" Command="{Binding ResetSPANCommand, Converter={StaticResource CommandReference}}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="RepeatOff"/>
+                                <TextBlock Text="Reset SPAN"/>
+                            </DockPanel>
+                        </Button>
+                        <Button AutomationProperties.AutomationId="ID_BTN_NEXT_SPAN" Command="{Binding NextSPANCommand, Converter={StaticResource CommandReference}}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="RepeatOnce"/>
+                                <TextBlock Text="Next SPAN"/>
+                            </DockPanel>
+                        </Button>
+                        <Button AutomationProperties.AutomationId="ID_BTN_SECURITY_SCHEME" Command="{Binding SetS2Command, Converter={StaticResource CommandReference}}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="SortVariant"/>
+                                <TextBlock Text="Security Scheme"/>
+                            </DockPanel>
+                        </Button>
+                    </WrapPanel>
+                    <Separator/>
+                    <WrapPanel Classes="actions" Margin="2">
+                        <Button AutomationProperties.AutomationId="ID_BTN_LEARN_MODE" Command="{Binding SetLearnModeViewModel.SetClassicLearnModeCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Start Classic Learn Mode">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="Flash"/>
+                                <TextBlock Text="Classic Learn Mode"/>
+                            </DockPanel>
+                        </Button>
+                        <Button AutomationProperties.AutomationId="ID_BTN_SET_LEARN_MODE" Command="{Binding ShowSetLearnModeCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Select Learn Mode">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="Flash"/>
+                                <TextBlock Text="Select Learn Mode"/>
+                            </DockPanel>
+                        </Button>
+                        <Button AutomationProperties.AutomationId="ID_BTN_RESET" Command="{Binding SetDefaultCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Reset Controller">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="PlaylistRemove"/>
+                                <TextBlock Text="Reset"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding SendNodeInformationCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_SEND_NODE_INFO">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="MessageText"/>
+                                <TextBlock Text="Send Node Info"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding SetRFReceiveModeCommand, Converter={StaticResource CommandReference}}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="Sleep"/>
+                                <TextBlock Text="RF Receiver Set OFF"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding ShiftControllerCommand, Converter={StaticResource CommandReference}}" AutomationProperties.AutomationId="ID_BTN_SHIFT">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="TransferRight"/>
+                                <TextBlock Text="Shift"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding RequestNetworkUpdateCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Request Update" AutomationProperties.AutomationId="ID_BTN_UPDATE">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="Sync"/>
+                                <TextBlock Text="Update"/>
+                            </DockPanel>
+                        </Button>
+                        <Button Command="{Binding ShowZipUnsolicitedDestinationCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Set Z/IP Gateway Unsolicited Destination"
+                                IsVisible="{Binding ApplicationModel.IsActiveSessionZip}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="Pin"/>
+                                <TextBlock Text="Unsolicited Destination"/>
+                            </DockPanel>
+                        </Button>
+                        <Button AutomationProperties.AutomationId="ID_BTN_MPAN_TABLE" Command="{Binding ShowMpanTableConfigurationCommand, Converter={StaticResource CommandReference}}">
+                            <DockPanel>
+                                <mi:MaterialIcon Kind="Table"/>
+                                <TextBlock Text="Mpan Table"/>
+                            </DockPanel>
+                        </Button>
+                    </WrapPanel>
+                </StackPanel>
+                <TreeView ItemsSource="{Binding ApplicationModel, Converter={StaticResource MainVmToControllerTreeViewConverter}}"
+                          AutomationProperties.AutomationId="ID_TVW_CONTROLLER_INFO">
+                    <TreeView.Styles>
+                        <Style Selector="TreeViewItem">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                        </Style>
+                    </TreeView.Styles>
+                    <TreeView.ItemTemplate>
+                        <TreeDataTemplate DataType="{x:Type converters:TreeViewItemModel}" ItemsSource="{Binding Children}">
+                            <StackPanel Orientation="Horizontal">
+                                <mi:MaterialIcon Kind="{Binding IconText, Converter={StaticResource IconKindConverter}}" Foreground="{DynamicResource ButtonBackground}"
+                                                 Width="16" Height="16" Margin="0,0,4,0"/>
+                                <SelectableTextBlock Text="{Binding Text}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </TreeDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </DockPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

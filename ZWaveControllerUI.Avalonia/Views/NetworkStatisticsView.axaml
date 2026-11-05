@@ -1,0 +1,83 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.NetworkStatisticsView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls">
+    <UserControl.Styles>
+        <Style Selector="UniformGrid > TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="UniformGrid > TextBox">
+            <Setter Property="IsReadOnly" Value="True"/>
+        </Style>
+    </UserControl.Styles>
+    <ScrollViewer>
+    <StackPanel Margin="4">
+        <controls:GroupBox Header="Network Stats:">
+            <StackPanel>
+                <UniformGrid Columns="2" Margin="2,0">
+                    <TextBlock>Tx Frames:</TextBlock>
+                    <TextBox Text="{Binding RFTxFrames}"/>
+                    <TextBlock>Rx Frames:</TextBlock>
+                    <TextBox Text="{Binding RFRxFrames}"/>
+                    <TextBlock>Tx LBT Back Offs:</TextBlock>
+                    <TextBox Text="{Binding RFTxLBTBackOffs}"/>
+                    <TextBlock>Rx LRC Errors:</TextBlock>
+                    <TextBox Text="{Binding RFRxLRCErrors}"/>
+                    <TextBlock>Rx CRC16 Errors:</TextBlock>
+                    <TextBox Text="{Binding RFRxCRC16Errors}"/>
+                    <TextBlock>Rx Foreign HomeID:</TextBlock>
+                    <TextBox Text="{Binding RFRxForeignHomeID}"/>
+                </UniformGrid>
+                <StackPanel Margin="0,4" Orientation="Horizontal">
+                    <Button Content="Clear" Command="{Binding ClearNetworkStatsCommand, Converter={StaticResource CommandReference}}"/>
+                    <Button Content="Get" Command="{Binding GetNetworkStatsCommand, Converter={StaticResource CommandReference}}"/>
+                </StackPanel>
+            </StackPanel>
+        </controls:GroupBox>
+        <controls:GroupBox Header="Tx Timers:">
+            <StackPanel>
+                <UniformGrid Columns="2" Margin="2,0">
+                    <TextBlock>Channel 0:</TextBlock>
+                    <TextBox Text="{Binding TxTimeChannel0}"/>
+                    <TextBlock>Channel 1:</TextBlock>
+                    <TextBox Text="{Binding TxTimeChannel1}"/>
+                    <TextBlock>Channel 2:</TextBlock>
+                    <TextBox Text="{Binding TxTimeChannel2}"/>
+                    <TextBlock>Channel 3:</TextBlock>
+                    <TextBox Text="{Binding TxTimeChannel3}"/>
+                    <TextBlock>Channel 4:</TextBlock>
+                    <TextBox Text="{Binding TxTimeChannel4}"/>
+                </UniformGrid>
+                <StackPanel Margin="0,4" Orientation="Horizontal">
+                    <Button Content="Clear" Command="{Binding ClearTxTimerCommand, Converter={StaticResource CommandReference}}"/>
+                    <Button Content="Get" Command="{Binding GetTxTimerCommand, Converter={StaticResource CommandReference}}"/>
+                </StackPanel>
+            </StackPanel>
+        </controls:GroupBox>
+        <controls:GroupBox Header="Background RSSI Levels and Jamming Detection:">
+            <StackPanel>
+                <UniformGrid Columns="2" Margin="2,0">
+                    <TextBlock>Channel 0:</TextBlock>
+                    <TextBox Text="{Binding RSSI_Ch0}"/>
+                    <TextBlock>Channel 1:</TextBlock>
+                    <TextBox Text="{Binding RSSI_Ch1}"/>
+                    <TextBlock>Channel 2:</TextBlock>
+                    <TextBox Text="{Binding RSSI_Ch2}"/>
+                    <TextBlock>Channel 3:</TextBlock>
+                    <TextBox Text="{Binding RSSI_Ch3}"/>
+                </UniformGrid>
+                <StackPanel Margin="0,4" Orientation="Horizontal">
+                    <Button Content="Get" Command="{Binding GetBackgroundRSSICommand, Converter={StaticResource CommandReference}}"/>
+                    <Button Content="Start" Command="{Binding JammingDetectionStartCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Jamming Detection Start"/>
+                    <Button Content="Stop" Command="{Binding JammingDetectionStopCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Jamming Detection Stop"/>
+                </StackPanel>
+            </StackPanel>
+        </controls:GroupBox>
+    </StackPanel>
+    </ScrollViewer>
+</UserControl>

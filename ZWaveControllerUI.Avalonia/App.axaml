@@ -1,0 +1,133 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:views="clr-namespace:ZWaveControllerUI.Views"
+             xmlns:viewModels="clr-namespace:ZWaveControllerUI.Models"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="ZWaveControllerUI.App"
+             Name="Z-Wave PC Controller"
+             RequestedThemeVariant="Light">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/Colors.axaml"/>
+                <ResourceInclude Source="/Styles/Theme.axaml"/>
+                <ResourceInclude Source="/Styles/Converters.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <!-- Fluent sizes its controls from these; the WPF layouts are built for 12px text. -->
+            <x:Double x:Key="ControlContentThemeFontSize">12</x:Double>
+            <x:Double x:Key="ToolTipContentThemeFontSize">12</x:Double>
+        </ResourceDictionary>
+    </Application.Resources>
+    <Application.DataTemplates>
+        <DataTemplate DataType="{x:Type viewModels:CommandQueueViewModel}">
+            <views:CommandQueueView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:SecuritySettingsViewModel}">
+            <views:SecuritySettingsWindow/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:MainMenuViewModel}">
+            <views:MainMenuView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:NetworkManagementViewModel}">
+            <views:NetworkManagamentView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:CommandClassesViewModel}">
+            <views:CommandClassesView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:SelectCommandViewModel}">
+            <views:SelectCommandView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:ERTTViewModel}">
+            <views:ERTTView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:PollingViewModel}">
+            <views:PollingView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:TransmitSettingsViewModel}">
+            <views:TransmitSettingsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:SetupRouteViewModel}">
+            <views:SetupRouteView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:TopologyMapViewModel}">
+            <views:TopologyMapView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:IMAFullNetworkViewModel}">
+            <views:IMAFullNetworkView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:NVMBackupRestoreViewModel}">
+            <views:NVMBackupRestoreView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:AssociationViewModel}">
+            <views:AssociationsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:FirmwareUpdateViewModel}">
+            <views:FirmwareUpdateView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:EncryptDecryptViewModel}">
+            <views:EncryptDecryptView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:ConfigurationViewModel}">
+            <views:ConfigurationView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:ULMonitorViewModel}">
+            <views:ULMonitorView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:SmartStartViewModel}">
+            <views:SmartStartView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:UserInputDialogViewModel}">
+            <views:UserInputView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:LogViewModel}">
+            <views:LogView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:SetNodeInformationViewModel}">
+            <views:SetNodeInformationView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:SelectLocalIpAddressViewModel}">
+            <views:SelectLocalIpAddressView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:MpanTableConfigurationViewModel}">
+            <views:MpanTableConfigurationView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:KEXSetConfirmViewModel}">
+            <views:KEXSetConfirmView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:SetLearnModeViewModel}">
+            <views:SetLearnModeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:ScanDSKViewModel}">
+            <views:ScanDSKView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:SmartStartScanDSKViewModel}">
+            <views:SmartStartScanDSKView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:AddNodeWithCustomSettingsViewModel}">
+            <views:AddNodeWithCustomSettingsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:SendDataSettingsViewModel}">
+            <views:SendDataSettingsWindow/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:NetworkStatisticsViewModel}">
+            <views:NetworkStatisticsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:SenderHistoryViewModel}">
+            <views:SenderHistoryView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:PredefinedCommandsViewModel}">
+            <views:PredefinedCommandsView/>
+        </DataTemplate>
+    </Application.DataTemplates>
+    <Application.Styles>
+        <FluentTheme DensityStyle="Compact"/>
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+        <mi:MaterialIconStyles/>
+        <StyleInclude Source="/Styles/Styles.axaml"/>
+    </Application.Styles>
+</Application>

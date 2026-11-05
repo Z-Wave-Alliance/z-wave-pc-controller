@@ -1,0 +1,117 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.NodesListView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             AutomationProperties.AutomationId="ID_NODES_LIST_VIEW">
+    <UserControl.Styles>
+        <Style Selector="DataGridRow">
+            <Setter Property="FontWeight" Value="{Binding Item, Converter={StaticResource NodeSubjectFontWeightConverter}}"/>
+            <Setter Property="Foreground" Value="{Binding Item, Converter={StaticResource NodeFailedForegroundConverter}}"/>
+        </Style>
+        <Style Selector="DataGridRowGroupHeader">
+            <Setter Property="IsPropertyNameVisible" Value="False"/>
+            <Setter Property="IsItemCountVisible" Value="True"/>
+            <Setter Property="ItemCountFormat" Value="({0})"/>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonBackground}"/>
+            <Setter Property="MinHeight" Value="22"/>
+        </Style>
+        <Style Selector="Rectangle.scheme">
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="Height" Value="3"/>
+            <Setter Property="Margin" Value="1,0,1,1"/>
+        </Style>
+    </UserControl.Styles>
+    <DataGrid Name="NodesGrid" SelectionMode="Extended" IsReadOnly="True" CanUserSortColumns="False" CanUserReorderColumns="False"
+              RowHeight="20" AutomationProperties.AutomationId="ID_LV_NODES">
+        <DataGrid.Columns>
+            <DataGridTemplateColumn Header="Id" Width="36">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Margin="2,0" VerticalAlignment="Center" AutomationProperties.AutomationId="ID_TB_NODEID" Text="{Binding Item}"/>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="Type" Width="103">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="2,0" Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="---" Foreground="{DynamicResource ButtonBackground}"
+                                       IsVisible="{Binding Item, Converter={StaticResource NodeEndPointConverter}}"/>
+                            <TextBlock AutomationProperties.AutomationId="ID_TB_NODETYPE" Text="{Binding Item, Converter={StaticResource NodeTypeConverter}}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Width="28">
+                <DataGridTemplateColumn.Header>
+                    <TextBlock Text="Sch" ToolTip.Tip="Security Schemes"/>
+                </DataGridTemplateColumn.Header>
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <Border HorizontalAlignment="Center" BorderBrush="{DynamicResource EditBorderBrush}" Background="White" BorderThickness="1,0"
+                                IsVisible="{Binding Item, Converter={StaticResource IsNotEndPointConverter}}">
+                            <StackPanel VerticalAlignment="Center">
+                                <Rectangle Classes="scheme" Fill="{DynamicResource SnkS0}"
+                                           Opacity="{Binding Item, Converter={StaticResource NodeSecuritySchemeOpacityConverter}, ConverterParameter='S0'}"/>
+                                <Rectangle Classes="scheme" Fill="{DynamicResource SnkS2_UNAUTHENTICATED}"
+                                           Opacity="{Binding Item, Converter={StaticResource NodeSecuritySchemeOpacityConverter}, ConverterParameter='S2_UNAUTHENTICATED'}"/>
+                                <Rectangle Classes="scheme" Fill="{DynamicResource SnkS2_AUTHENTICATED}"
+                                           Opacity="{Binding Item, Converter={StaticResource NodeSecuritySchemeOpacityConverter}, ConverterParameter='S2_AUTHENTICATED'}"/>
+                                <Rectangle Classes="scheme" Margin="1,0" Fill="{DynamicResource SnkS2_ACCESS}"
+                                           Opacity="{Binding Item, Converter={StaticResource NodeSecuritySchemeOpacityConverter}, ConverterParameter='S2_ACCESS'}"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Width="24">
+                <DataGridTemplateColumn.Header>
+                    <TextBlock Text="LR" ToolTip.Tip="Long Range Node"/>
+                </DataGridTemplateColumn.Header>
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <CheckBox HorizontalAlignment="Center" IsEnabled="False" AutomationProperties.AutomationId="ID_CHK_ILR"
+                                  Theme="{StaticResource CheckBoxNullableFlag}" Foreground="Sienna"
+                                  IsVisible="{Binding Item, Converter={StaticResource IsNotEndPointConverter}}"
+                                  IsChecked="{Binding Item, Converter={StaticResource NodeLongRangeConverter}, Mode=OneWay}"/>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Width="25">
+                <DataGridTemplateColumn.Header>
+                    <TextBlock Text="Lsn" ToolTip.Tip="Listening Node (or forced listening)"/>
+                </DataGridTemplateColumn.Header>
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <Panel HorizontalAlignment="Center">
+                            <CheckBox IsEnabled="False" AutomationProperties.AutomationId="ID_CHK_IL" Theme="{StaticResource CompactCheckBox}"
+                                      IsVisible="{Binding Item, Converter={StaticResource IsNotEndPointConverter}}"
+                                      IsChecked="{Binding Item, Converter={StaticResource NodeListeningConverter}, Mode=OneWay}"/>
+                            <CheckBox AutomationProperties.AutomationId="ID_CHK_QO" Theme="{StaticResource CompactCheckBox}"
+                                      IsVisible="{Binding Item, Converter={StaticResource CanForceListeningConverter}}"
+                                      IsChecked="{Binding Item, Converter={StaticResource NodeForcedListeningConverter}, Mode=OneWay}"
+                                      Click="OnForcedListeningClick"/>
+                        </Panel>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Width="24">
+                <DataGridTemplateColumn.Header>
+                    <TextBlock Text="V" ToolTip.Tip="Virtual Node"/>
+                </DataGridTemplateColumn.Header>
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <CheckBox HorizontalAlignment="Center" IsEnabled="False" AutomationProperties.AutomationId="ID_CHK_IV"
+                                  Theme="{StaticResource CheckBoxFlag}" Foreground="Sienna"
+                                  IsVisible="{Binding Item, Converter={StaticResource IsNotEndPointConverter}}"
+                                  IsChecked="{Binding Item, Converter={StaticResource NodeVirtualConverter}, Mode=OneWay}"/>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+        </DataGrid.Columns>
+    </DataGrid>
+</UserControl>

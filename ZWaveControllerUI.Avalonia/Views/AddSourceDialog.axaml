@@ -1,0 +1,41 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<Window x:Class="ZWaveControllerUI.Views.AddSourceDialog"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+        xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+        xmlns:zl="clr-namespace:ZWave.Layers;assembly=ZWave"
+        Title="Add Source"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        CanResize="False"
+        SizeToContent="Height"
+        Width="400">
+    <Window.Resources>
+        <bind:IPAddressValidationConverter x:Key="IPAddressValidationConverter"/>
+    </Window.Resources>
+    <StackPanel>
+        <Grid Margin="4" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+            <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Margin="0,0,4,0">Select Source Type:</TextBlock>
+            <ComboBox Grid.Column="1" Grid.Row="0" Width="100" HorizontalAlignment="Left"
+                      ItemsSource="{bind:EnumBindingSource {x:Type zl:SoketSourceTypes}}"
+                      SelectedItem="{Binding SelectedSourceType}"/>
+            <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center">IP Address:</TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="1"
+                     Text="{Binding IPAddress, Mode=OneWayToSource, Converter={StaticResource IPAddressValidationConverter}}"/>
+            <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center">Port Number:</TextBlock>
+            <controls:NumericUpDown Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" Width="120" MinValue="1024" MaxValue="65535"
+                                    IntValue="{Binding PortNo, Mode=TwoWay}"/>
+            <TextBlock Grid.Column="0" Grid.Row="3" VerticalAlignment="Center">Args:</TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding Args}"/>
+        </Grid>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="4">
+            <Button Content="OK" Command="{Binding CommandOk, Converter={StaticResource CommandReference}}" IsDefault="True"/>
+            <Button Content="Cancel" Command="{Binding CommandCancel, Converter={StaticResource CommandReference}}" IsCancel="True"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

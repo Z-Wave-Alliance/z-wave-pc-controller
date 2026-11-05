@@ -1,0 +1,18 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<Window x:Class="ZWaveControllerUI.DialogWindow"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{Binding Title}"
+        WindowStartupLocation="CenterOwner"
+        Icon="avares://ZWaveControllerUI/Images/App.ico"
+        AutomationProperties.AutomationId="ID_DIALOG_WINDOW">
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Margin="4,4,4,0" Text="{Binding Description}" TextWrapping="Wrap"
+                   IsVisible="{Binding Description, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+        <ContentControl Content="{Binding}"/>
+    </DockPanel>
+</Window>

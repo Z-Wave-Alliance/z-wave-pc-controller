@@ -1,0 +1,57 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.SendDataSettingsWindow"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+             xmlns:enm="clr-namespace:ZWave.Enums;assembly=ZWave"
+             AutomationProperties.AutomationId="ID_SEND_DATA_SETTINGS_VIEW"
+             Width="420">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Bottom" Margin="4" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="OK" AutomationProperties.AutomationId="ID_BTN_OK" Command="{Binding CommandOk, Converter={StaticResource CommandReference}}" IsDefault="True"/>
+            <Button Content="Cancel" AutomationProperties.AutomationId="ID_BTN_CANCEL" Command="{Binding CommandCancel, Converter={StaticResource CommandReference}}" IsCancel="True"/>
+            <Button Content="Apply" Command="{Binding ApplySendDataSettingsCommand, Converter={StaticResource CommandReference}}"/>
+        </StackPanel>
+        <Grid Margin="2" ColumnDefinitions="*,130" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+            <Grid.Styles>
+                <Style Selector="Grid > TextBlock">
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="TextWrapping" Value="Wrap"/>
+                </Style>
+            </Grid.Styles>
+            <TextBlock Grid.Row="0" Text="Delay 'Wake Up No More Information', ms:"/>
+            <controls:NumericUpDown Grid.Column="1" Grid.Row="0" Margin="3" HorizontalAlignment="Stretch"
+                                    IntValue="{Binding DelayWakeUpNoMoreInformationMs, Mode=TwoWay}" MinValue="0" MaxValue="60000"
+                                    AutomationProperties.AutomationId="ID_TB_DELAY_WAKEUP_NOMORE_INFORMATION_MS"/>
+            <TextBlock Grid.Row="1" Text="Max bytes in encrypted (S0) packet's fragment:"/>
+            <controls:NumericUpDown Grid.Column="1" Grid.Row="1" Margin="3" HorizontalAlignment="Stretch"
+                                    IntValue="{Binding S0MaxBytesPerFrameSize, Mode=TwoWay}" MinValue="0"
+                                    AutomationProperties.AutomationId="ID_TB_MAX_BYTES_PER_FRAME_SIZE"/>
+            <TextBlock Grid.Row="2" Text="Transport service max segment size:"/>
+            <controls:NumericUpDown Grid.Column="1" Grid.Row="2" Margin="3" HorizontalAlignment="Stretch"
+                                    IntValue="{Binding TransportServiceMaxSegmentSize, Mode=TwoWay}" MinValue="10"
+                                    AutomationProperties.AutomationId="ID_TB_TRANSPORT_SERVICE_SEGMENT_MAX_SIZE"/>
+            <TextBlock Grid.Row="3" Text="Requests Timeout, ms:"/>
+            <controls:NumericUpDown Grid.Column="1" Grid.Row="3" Margin="3" HorizontalAlignment="Stretch"
+                                    IntValue="{Binding RequestsTimeoutMs, Mode=TwoWay}" MinValue="200" MaxValue="300000"
+                                    AutomationProperties.AutomationId="ID_TB_REQUESTS_TIMEOUT"/>
+            <TextBlock Grid.Row="4" Text="Delay Response, ms:"/>
+            <controls:NumericUpDown Grid.Column="1" Grid.Row="4" Margin="3" HorizontalAlignment="Stretch"
+                                    IntValue="{Binding DelayResponseMs, Mode=TwoWay}" MinValue="0" MaxValue="300000"
+                                    AutomationProperties.AutomationId="ID_TB_DELAY_RESPONSE_SEC"/>
+            <TextBlock Grid.Row="5" Text="Inclusion Controller Initiate Request Timeout, ms:"/>
+            <controls:NumericUpDown Grid.Column="1" Grid.Row="5" Margin="3" HorizontalAlignment="Stretch"
+                                    IntValue="{Binding InclusionControllerInitiateRequestTimeoutMs, Mode=TwoWay}" MinValue="0" MaxValue="300000"
+                                    AutomationProperties.AutomationId="ID_TB_INCL_CTL_INIT_REQ_TMS"/>
+            <TextBlock Grid.Row="6" Text="Supervision Report Status Response, byte"/>
+            <ComboBox Grid.Column="1" Grid.Row="6" Margin="3" HorizontalAlignment="Stretch"
+                      ItemsSource="{bind:EnumBindingSource {x:Type enm:SupervisionReportStatuses}}" SelectedItem="{Binding SupervisionReportStatusResponse}"
+                      AutomationProperties.AutomationId="ID_TB_SUPERVISION_REPORT_STATUSES"/>
+        </Grid>
+    </DockPanel>
+</UserControl>

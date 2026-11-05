@@ -22,6 +22,15 @@ The tool is mainly supporting Windows OS, but can also be used on other win32 ru
 
 ### GNU/Linux support
 
+A native GNU/Linux build, with serial port support, is in
+[ZWaveControllerUI.Avalonia](ZWaveControllerUI.Avalonia/README.md).
+Building it needs the .NET 10 SDK, which installs for your user without root:
+
+```sh
+curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 10.0
+ZWaveControllerUI.Avalonia/build-linux.sh --install
+```
+
 `ZWaveControllerUI.exe` application can be also executed on a
 GNU/Linux system thanks to
 [Wine project](https://www.winehq.org/)
