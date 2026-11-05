@@ -79,7 +79,7 @@ namespace ZWaveController.Commands
                 }
                 if (IsCancelling)
                 {
-                    ControllerSession.Logger.LogFail("IMA Network Test Cancelled");
+                    ControllerSession.Logger.LogFail("IMA Network Test Canceled");
                     ret = CommandExecutionResult.Canceled;
                 }
                 else

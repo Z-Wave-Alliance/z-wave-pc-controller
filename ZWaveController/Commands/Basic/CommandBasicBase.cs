@@ -52,13 +52,12 @@ namespace ZWaveController.Commands
 
         protected override void CancelAction(object param)
         {
-            if (!IsCancelAtController)
-            {
-                if (TargetDevice.Id > 0)
-                    ControllerSession.Cancel(TargetDevice, _token);
-            }
-            else
+            if (_token == null)
+                return;
+            if (IsCancelAtController || TargetDevice.Id == 0)
                 ControllerSession.Cancel(NodeTag.Empty, _token);
+            else
+                ControllerSession.Cancel(TargetDevice, _token);
         }
 
         public virtual void PrepareData()
