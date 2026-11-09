@@ -9,7 +9,7 @@ All incoming pull requests should be tested on the developer's own fork beforeha
 
 Reading existing documents might help to get your contribution smoothly accepted:
 
-https://github.com/Z-Wave-Alliance/OSWG
+https://github.com/Z-Wave-Alliance/open-source-working-group
 
 Currently, guidelines are available only to
 [Z-Wave-Alliance members](https://z-wavealliance.org/join-z-wave-alliance-now/),
