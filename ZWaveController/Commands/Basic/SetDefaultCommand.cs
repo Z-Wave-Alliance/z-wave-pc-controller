@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+// SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
 ﻿using ZWave.BasicApplication.Enums;
 using ZWaveController.Enums;
 using ZWaveController.Interfaces;
@@ -34,7 +35,7 @@ namespace ZWaveController.Commands
 
         protected override void ExecuteInner(object param)
         {
-            ControllerSession.SetDefault(true, out _token);
+            ControllerSession.SetDefault(false, out _token);
             ApplicationModel.NotifyControllerChanged(NotifyProperty.CommandSucceeded, new NotifyCommandData { CommandName = nameof(SetDefaultCommand), Message = "Switched to Default"});
         }
     }
