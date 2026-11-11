@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+// SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
 ﻿using System;
 using System.IO;
 using System.Linq;
@@ -741,6 +742,11 @@ namespace ZWaveControllerUI.Models
         {
             NotifyPropertiesChanged("SelectedNodes", "SelectedNode", "Controller");
             ((NetworkManagementViewModel)NetworkManagementModel).NotifyApplicationModel();
+#if !NETCOREAPP
+            // The commands enabled by the role or the node list of the controller follow a change the session reports between
+            // two commands, like the SUC ID the including controller assigns after the Learn Mode.
+            Invoke(CommandManager.InvalidateRequerySuggested);
+#endif
         }
 
 
