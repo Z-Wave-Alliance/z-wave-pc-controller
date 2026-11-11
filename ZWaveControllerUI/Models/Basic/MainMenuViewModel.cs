@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+// SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
 ﻿using System.Threading;
 using ZWaveController.Commands;
 using System.Linq;
@@ -150,7 +151,7 @@ namespace ZWaveControllerUI.Models
             ApplicationModel.SetNodeInformationModel.SelectedGenericDevice = nInfo.Generic == 0 ?
                 ApplicationModel.SetNodeInformationModel.GenericDevices.First(i => i.Item.Name == "GENERIC_TYPE_STATIC_CONTROLLER").Item:
                 ApplicationModel.SetNodeInformationModel.GenericDevices.First(i => i.Item.KeyId == nInfo.Generic).Item;
-            ApplicationModel.SetNodeInformationModel.SelectedSpecificDevice = nInfo.Specific == 0 ?
+            ApplicationModel.SetNodeInformationModel.SelectedSpecificDevice = nInfo.Generic == 0 ?
                 ApplicationModel.SetNodeInformationModel.SelectedGenericDevice.SpecificDevice.FirstOrDefault(i => i.Name == "SPECIFIC_TYPE_PC_CONTROLLER") :
                 ApplicationModel.SetNodeInformationModel.SelectedGenericDevice.SpecificDevice.FirstOrDefault(i => i.KeyId == nInfo.Specific);
             ApplicationModel.SetNodeInformationModel.CommandClasses.Where(v => v.IsSelected).ToList().ForEach(v => v.IsSelected = false);
