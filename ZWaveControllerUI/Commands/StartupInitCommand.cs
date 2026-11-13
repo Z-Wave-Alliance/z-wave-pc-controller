@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+// SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
 ﻿using System;
 using System.Linq;
 using System.Threading;
 using Utils;
-using ZWave.Enums;
 using ZWave.Layers;
 using ZWave.Layers.Transport;
 using ZWave.ZipApplication;
@@ -20,6 +20,9 @@ namespace ZWaveControllerUI.Commands
         public StartupInitCommand(IApplicationModel applicationModel) : base(applicationModel)
         {
         }
+
+        /// <summary>Overrides default so the overlay shows a startup message (inferior ConnectCommand will then show "Connecting to Source").</summary>
+        protected override string BusyMessage => "Starting up ...";
 
         protected override void ExecuteInner(object param)
         {
@@ -63,16 +66,18 @@ namespace ZWaveControllerUI.Commands
             }
         }
 
+        /// <summary>
+        /// Whether the data source can be connected at the startup. A serial port from the enumerated ports exists, and
+        /// whether it is free the connect finds out, which retries a port another process still holds. Opening it here only
+        /// to close it again is not done, since the dispose of a port waits for the event loop of the .NET SerialPort, which
+        /// some USB serial drivers never let end.
+        /// </summary>
         private bool VerifyDeviceConnection(IDataSource dataSource)
         {
             bool ret = false;
             if (dataSource is SerialPortDataSource)
             {
-                using (ISerialPortProvider sp = new SerialPortProvider())
-                {
-                    ret = sp.Open(dataSource.SourceName, (int)BaudRates.Rate_115200, PInvokeParity.None, 8, PInvokeStopBits.One);
-                }
-                Thread.Sleep(200);
+                ret = true;
             }
             else if (dataSource is SocketDataSource)
             {
