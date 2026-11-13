@@ -1,0 +1,399 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<!-- Control themes reproducing the WPF build's Styles/DefaultStyle.xaml on top of the Fluent theme. -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:ZWaveControllerUI.Controls">
+
+    <ControlTheme x:Key="{x:Type Button}" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource ButtonBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="MinHeight" Value="16"/>
+        <Setter Property="MinWidth" Value="16"/>
+        <Setter Property="Height" Value="36"/>
+        <Setter Property="Width" Value="80"/>
+        <Setter Property="Margin" Value="1"/>
+        <Setter Property="Padding" Value="2"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ContentPresenter Name="PART_ContentPresenter"
+                                  Background="{TemplateBinding Background}"
+                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                  BorderThickness="{TemplateBinding BorderThickness}"
+                                  Content="{TemplateBinding Content}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  Padding="{TemplateBinding Padding}"
+                                  RecognizesAccessKey="True"
+                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover">
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonHoverBorderBrush}"/>
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="translate(1px, 1px)"/>
+        </Style>
+        <Style Selector="^:disabled">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonDisabledForeground}"/>
+            <Setter Property="Background" Value="{DynamicResource ButtonDisabledBackground}"/>
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type ToggleButton}" TargetType="ToggleButton">
+        <Setter Property="Background" Value="{DynamicResource ButtonBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="MinHeight" Value="16"/>
+        <Setter Property="MinWidth" Value="16"/>
+        <Setter Property="Height" Value="36"/>
+        <Setter Property="Width" Value="80"/>
+        <Setter Property="Margin" Value="1"/>
+        <Setter Property="Padding" Value="2"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ContentPresenter Name="PART_ContentPresenter"
+                                  Background="{TemplateBinding Background}"
+                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                  BorderThickness="{TemplateBinding BorderThickness}"
+                                  Content="{TemplateBinding Content}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  Padding="{TemplateBinding Padding}"
+                                  RecognizesAccessKey="True"
+                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:checked">
+            <Setter Property="Background" Value="{DynamicResource ButtonCheckedBackground}"/>
+        </Style>
+        <Style Selector="^:pointerover">
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonHoverBorderBrush}"/>
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="translate(1px, 1px)"/>
+        </Style>
+        <Style Selector="^:disabled">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonDisabledForeground}"/>
+            <Setter Property="Background" Value="{DynamicResource ButtonDisabledBackground}"/>
+        </Style>
+    </ControlTheme>
+
+    <!-- On/off switch (SwitchTypeToggleButton). -->
+    <ControlTheme x:Key="SwitchTypeToggleButton" TargetType="ToggleButton">
+        <Setter Property="Height" Value="18"/>
+        <Setter Property="Width" Value="40"/>
+        <Setter Property="Margin" Value="1"/>
+        <Setter Property="Padding" Value="2"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel Background="Transparent">
+                    <Border Name="Track" CornerRadius="9" Background="{DynamicResource EditBorderBrush}"/>
+                    <Ellipse Name="Knob" Width="18" Height="18" HorizontalAlignment="Left"
+                             Fill="{DynamicResource ButtonBackground}" Stroke="{DynamicResource EditBorderBrush}" StrokeThickness="2"/>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:checked /template/ Border#Track">
+            <Setter Property="Background" Value="{DynamicResource OnBkGr}"/>
+        </Style>
+        <Style Selector="^:checked /template/ Ellipse#Knob">
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Stroke" Value="{DynamicResource OnBkGr}"/>
+        </Style>
+        <Style Selector="^:disabled /template/ Ellipse#Knob">
+            <Setter Property="Fill" Value="{DynamicResource EditDisabledForeground}"/>
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type controls:GroupBox}" TargetType="controls:GroupBox">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" MinHeight="20">
+                        <Border Name="HeaderBar1" Background="{DynamicResource BarBackground}" Height="2" Width="8"/>
+                        <ContentPresenter Name="PART_HeaderPresenter" Margin="1" VerticalAlignment="Center"
+                                          Content="{TemplateBinding Header}"
+                                          ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                          RecognizesAccessKey="True"/>
+                        <Border Name="HeaderBar2" Background="{DynamicResource BarBackground}" Height="2"/>
+                    </DockPanel>
+                    <ContentPresenter Name="PART_ContentPresenter"
+                                      Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      Padding="{TemplateBinding Padding}"
+                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                </DockPanel>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:disabled">
+            <Setter Property="Foreground" Value="{DynamicResource EditDisabledForeground}"/>
+        </Style>
+        <Style Selector="^:disabled /template/ Border#HeaderBar1">
+            <Setter Property="Background" Value="{DynamicResource BarDisabledBackground}"/>
+        </Style>
+        <Style Selector="^:disabled /template/ Border#HeaderBar2">
+            <Setter Property="Background" Value="{DynamicResource BarDisabledBackground}"/>
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type TabControl}" TargetType="TabControl">
+        <Setter Property="Foreground" Value="{DynamicResource ViewForeground}"/>
+        <Setter Property="ItemsPanel">
+            <ItemsPanelTemplate>
+                <WrapPanel/>
+            </ItemsPanelTemplate>
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <DockPanel>
+                    <ItemsPresenter Name="PART_ItemsPresenter" DockPanel.Dock="Top" ItemsPanel="{TemplateBinding ItemsPanel}"/>
+                    <Border Name="HeaderBar" BorderBrush="{DynamicResource BarBackground}" BorderThickness="0,2,0,0">
+                        <ContentPresenter Name="PART_SelectedContentHost"
+                                          Margin="{TemplateBinding Padding}"
+                                          Content="{TemplateBinding SelectedContent}"
+                                          ContentTemplate="{TemplateBinding SelectedContentTemplate}"/>
+                    </Border>
+                </DockPanel>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:disabled /template/ Border#HeaderBar">
+            <Setter Property="BorderBrush" Value="{DynamicResource BarDisabledBackground}"/>
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type TabItem}" TargetType="TabItem">
+        <Setter Property="Foreground" Value="{DynamicResource ViewForeground}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="PART_LayoutRoot" MinWidth="72" MinHeight="16"
+                        Background="{TemplateBinding Background}" BorderBrush="Transparent" BorderThickness="0,0,0,4">
+                    <ContentPresenter Name="PART_ContentPresenter" Margin="4" HorizontalAlignment="Center"
+                                      Content="{TemplateBinding Header}"
+                                      ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                      RecognizesAccessKey="True"/>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover /template/ Border#PART_LayoutRoot">
+            <Setter Property="BorderBrush" Value="{DynamicResource BarHoverBackground}"/>
+        </Style>
+        <Style Selector="^:selected /template/ Border#PART_LayoutRoot">
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBackground}"/>
+        </Style>
+        <Style Selector="^:disabled">
+            <Setter Property="Foreground" Value="{DynamicResource EditDisabledForeground}"/>
+        </Style>
+    </ControlTheme>
+
+    <!-- Grid view column header (GridViewColumnHeader): grey bar, text, sort arrow only when sorted. -->
+    <ControlTheme x:Key="{x:Type DataGridColumnHeader}" TargetType="DataGridColumnHeader">
+        <Setter Property="Background" Value="{DynamicResource BarBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource BarForeground}"/>
+        <Setter Property="SeparatorBrush" Value="{DynamicResource ViewBackground}"/>
+        <Setter Property="Padding" Value="4,0"/>
+        <Setter Property="MinHeight" Value="24"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid Background="{TemplateBinding Background}" ColumnDefinitions="*,Auto,1">
+                    <ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      Padding="{TemplateBinding Padding}" ClipToBounds="True"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    <Path Name="SortIcon" Grid.Column="1" IsVisible="False" Width="8" Height="5" Margin="0,0,4,0" Stretch="Fill"
+                          Fill="{TemplateBinding Foreground}" VerticalAlignment="Center" Data="M 0 4 L 4 0 L 8 4 Z"/>
+                    <Rectangle Name="VerticalSeparator" Grid.Column="2" Width="1" VerticalAlignment="Stretch"
+                               Fill="{TemplateBinding SeparatorBrush}" IsVisible="{TemplateBinding AreSeparatorsVisible}"/>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{DynamicResource BarHoverBackground}"/>
+        </Style>
+        <Style Selector="^:sortascending /template/ Path#SortIcon">
+            <Setter Property="IsVisible" Value="True"/>
+        </Style>
+        <Style Selector="^:sortdescending /template/ Path#SortIcon">
+            <Setter Property="IsVisible" Value="True"/>
+            <Setter Property="Data" Value="M 0 0 L 8 0 L 4 4 Z"/>
+        </Style>
+    </ControlTheme>
+
+    <!-- Expander: arrow toggle and header, content below, no frame. -->
+    <ControlTheme x:Key="ExpanderHeaderToggle" TargetType="ToggleButton">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource BarForeground}"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <DockPanel Background="Transparent">
+                    <Border DockPanel.Dock="Left" Width="14" Height="14" Margin="0,0,2,0" Background="{DynamicResource BarBackground}">
+                        <Path Name="Arrow" Width="8" Height="8" Stretch="Uniform" Fill="{DynamicResource BarForeground}"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 0 8 Z"/>
+                    </Border>
+                    <ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                </DockPanel>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:checked /template/ Path#Arrow">
+            <Setter Property="Data" Value="M 0 0 L 8 0 L 4 4 Z"/>
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type Expander}" TargetType="Expander">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource EditBorderBrush}"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                    <DockPanel>
+                        <ToggleButton Name="PART_ToggleButton" DockPanel.Dock="Top" Theme="{StaticResource ExpanderHeaderToggle}"
+                                      Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                      IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}"/>
+                        <ContentPresenter Name="PART_ContentPresenter" IsVisible="{TemplateBinding IsExpanded}"
+                                          Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Padding="{TemplateBinding Padding}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    </DockPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <!-- Plain check box sized for 20px grid rows (the WPF default check box is 13px). -->
+    <ControlTheme x:Key="CompactCheckBox" TargetType="CheckBox">
+        <Setter Property="Background" Value="{DynamicResource EditBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ButtonBackground}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="Box" Width="13" Height="13" BorderThickness="1" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}">
+                    <Path Name="CheckMark" Width="11" Height="11" Stretch="Uniform" Stroke="{TemplateBinding Foreground}" StrokeThickness="1.5"
+                          Data="{StaticResource TrueLMark}" IsVisible="False"/>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:checked /template/ Path#CheckMark">
+            <Setter Property="IsVisible" Value="True"/>
+        </Style>
+        <Style Selector="^:pointerover /template/ Border#Box">
+            <Setter Property="BorderBrush" Value="{DynamicResource BarBackground}"/>
+        </Style>
+        <Style Selector="^:disabled">
+            <Setter Property="BorderBrush" Value="{DynamicResource EditDisabledBorderBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource EditDisabledForeground}"/>
+        </Style>
+    </ControlTheme>
+
+    <!-- Read-only green check / red cross (CheckBoxMark). -->
+    <ControlTheme x:Key="CheckBoxMark" TargetType="CheckBox">
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="1"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <DockPanel Background="Transparent">
+                    <Path Name="CheckMark" DockPanel.Dock="Left" Width="8" Height="8" VerticalAlignment="Center"
+                          Stroke="Green" StrokeThickness="1" Data="{StaticResource TrueMark}"/>
+                    <ContentPresenter Margin="4,0,0,0" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                </DockPanel>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:unchecked /template/ Path#CheckMark">
+            <Setter Property="Data" Value="{StaticResource FalseMark}"/>
+            <Setter Property="Stroke" Value="Red"/>
+        </Style>
+        <Style Selector="^:indeterminate /template/ Path#CheckMark">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+    </ControlTheme>
+
+    <!-- Check mark only when set (CheckBoxFlag); the box takes the control's Background/BorderBrush/Foreground. -->
+    <ControlTheme x:Key="CheckBoxFlag" TargetType="CheckBox">
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="1"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <DockPanel Background="Transparent">
+                    <Border Name="Border" DockPanel.Dock="Left" Width="14" Height="14" VerticalAlignment="Center"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Path Name="CheckMark" Width="12" Height="12" Stroke="{TemplateBinding Foreground}" StrokeThickness="1.5"
+                              Data="{StaticResource TrueLMark}"/>
+                    </Border>
+                    <ContentPresenter Margin="4,0,0,0" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                </DockPanel>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:unchecked /template/ Path#CheckMark">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="^:indeterminate /template/ Path#CheckMark">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+    </ControlTheme>
+
+    <!-- Like CheckBoxFlag, with a cross for false and nothing for null (CheckBoxNullableFlag). -->
+    <ControlTheme x:Key="CheckBoxNullableFlag" TargetType="CheckBox">
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="1"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <DockPanel Background="Transparent">
+                    <Border Name="Border" DockPanel.Dock="Left" Width="14" Height="14" VerticalAlignment="Center"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Path Name="CheckMark" Width="12" Height="12" Stroke="{TemplateBinding Foreground}" StrokeThickness="1.5"
+                              Data="{StaticResource TrueLMark}"/>
+                    </Border>
+                    <ContentPresenter Margin="4,0,0,0" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                </DockPanel>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:unchecked /template/ Path#CheckMark">
+            <Setter Property="Data" Value="{StaticResource FalseLMark}"/>
+        </Style>
+        <Style Selector="^:indeterminate /template/ Path#CheckMark">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

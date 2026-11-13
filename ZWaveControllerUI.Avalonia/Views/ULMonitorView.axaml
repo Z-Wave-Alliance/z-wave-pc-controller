@@ -1,0 +1,59 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.ULMonitorView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Styles>
+        <!-- Jamming indicator per channel: red, green while jammed (IsJammingChannelN). -->
+        <Style Selector="Border.channel">
+            <Setter Property="Width" Value="20"/>
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Background" Value="Red"/>
+        </Style>
+        <Style Selector="Border.channel.on">
+            <Setter Property="Background" Value="Green"/>
+        </Style>
+        <Style Selector="Border.channel > TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="WhiteSmoke"/>
+        </Style>
+    </UserControl.Styles>
+    <DockPanel>
+        <WrapPanel Margin="4" DockPanel.Dock="Top">
+            <Button Command="{Binding ClearCommand, Converter={StaticResource CommandReference}}" Content="Clear"/>
+        </WrapPanel>
+        <DataGrid Margin="4,0,4,4" IsReadOnly="True" ItemsSource="{Binding ULMonitorItems}" RowHeight="26">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Notification Type" Width="160" Binding="{Binding NotificationType}"/>
+                <DataGridTextColumn Header="Event" Width="200" Binding="{Binding EventName}"/>
+                <DataGridTemplateColumn Header="Count" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Margin="4,0" Text="{Binding Counter}" IsVisible="{Binding IsCounter}"/>
+                                <StackPanel Orientation="Horizontal" IsVisible="{Binding IsSystem}">
+                                    <Border Classes="channel" Classes.on="{Binding IsJammingChannel0}">
+                                        <TextBlock Text="0"/>
+                                    </Border>
+                                    <Border Classes="channel" Classes.on="{Binding IsJammingChannel1}">
+                                        <TextBlock Text="1"/>
+                                    </Border>
+                                    <Border Classes="channel" Classes.on="{Binding IsJammingChannel2}">
+                                        <TextBlock Text="2"/>
+                                    </Border>
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</UserControl>

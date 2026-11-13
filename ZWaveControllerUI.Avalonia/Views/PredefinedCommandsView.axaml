@@ -1,0 +1,175 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.PredefinedCommandsView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             AutomationProperties.AutomationId="ID_PREDEFINED_COMMANDS_VIEW"
+             MinHeight="450" MinWidth="450">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Margin="2" Orientation="Horizontal">
+            <Button Content="New" Command="{Binding AddPredefinedGroupCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Add New Group"/>
+            <Button Content="Open" Command="{Binding LoadPredefinedGroupCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Load Group"/>
+            <Button Content="Copy" Command="{Binding CopyPredefinedGroupCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Duplicate Selected Group"/>
+            <Button Content="Rename" Command="{Binding RenamePredefinedGroupCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Change Selected Group Name"/>
+            <Button Content="Save" Command="{Binding SavePredefinedGroupCommand, Converter={StaticResource CommandReference}}" ToolTip.Tip="Save Group"/>
+        </StackPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="2">
+            <TextBlock Text="Name:" Width="60" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding TempGroupName, Mode=TwoWay}"/>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="2">
+            <TextBlock Text="Groups:" Width="60" VerticalAlignment="Center"/>
+            <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding PredefinedGroups}" SelectedItem="{Binding SelectedGroup, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </DockPanel>
+        <TextBox DockPanel.Dock="Bottom" Margin="2" Text="{Binding SelectedItemDetails}" TextWrapping="Wrap" IsReadOnly="True" Height="100" VerticalContentAlignment="Top"/>
+        <DockPanel DockPanel.Dock="Bottom" Margin="2">
+            <Button Content="Send List" Command="{Binding SendPredefinedGroupCommand, Converter={StaticResource CommandReference}}" DockPanel.Dock="Right"/>
+            <StackPanel Orientation="Horizontal">
+                <Button Command="{Binding MoveUpPredefinedItemCommand, Converter={StaticResource CommandReference}}" Width="40" ToolTip.Tip="Move up">
+                    <mi:MaterialIcon Kind="ArrowUp" Width="24" Height="24"/>
+                </Button>
+                <Button Command="{Binding MoveDownPredefinedItemCommand, Converter={StaticResource CommandReference}}" Width="40" ToolTip.Tip="Move down">
+                    <mi:MaterialIcon Kind="ArrowDown" Width="24" Height="24"/>
+                </Button>
+                <Button Command="{Binding CopyPredefinedItemCommand, Converter={StaticResource CommandReference}}" Width="40" ToolTip.Tip="Copy selected">
+                    <mi:MaterialIcon Kind="ContentCopy" Width="24" Height="24"/>
+                </Button>
+                <Button Command="{Binding DeletePredefinedCommandCommand, Converter={StaticResource CommandReference}}" Width="40" ToolTip.Tip="Delete selected">
+                    <mi:MaterialIcon Kind="PlaylistRemove" Width="24" Height="24"/>
+                </Button>
+                <Button Command="{Binding AddPredefinedItemCommand, Converter={StaticResource CommandReference}}" Width="40" ToolTip.Tip="Add new predefined command to selected group">
+                    <mi:MaterialIcon Kind="PlaylistAdd" Width="24" Height="24"/>
+                </Button>
+            </StackPanel>
+        </DockPanel>
+        <DataGrid Name="ItemsGrid" Margin="2" IsReadOnly="True" SelectionMode="Single" bind:SelectionBehavior.SyncIsSelected="True"
+                  ItemsSource="{Binding SelectedGroup.Items}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Width="180" Binding="{Binding Item.PayloadItem.CommandName}"/>
+                <DataGridTextColumn Header="Ver" Width="40" Binding="{Binding Item.PayloadItem.Version}"/>
+                <DataGridTemplateColumn Width="32">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="CRC" ToolTip.Tip="Is Crc16 Enabled"/>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsEnabled="False" HorizontalAlignment="Center" Theme="{StaticResource CheckBoxFlag}" Foreground="{DynamicResource ButtonBackground}"
+                                      IsChecked="{Binding Item.PayloadItem.IsCrc16Enabled}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="32">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="MFU" ToolTip.Tip="Is Suppress Multicast Follow Up"/>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsEnabled="False" HorizontalAlignment="Center" Theme="{StaticResource CheckBoxFlag}" Foreground="{DynamicResource ButtonBackground}"
+                                      IsChecked="{Binding Item.PayloadItem.IsSuppressMulticastFollowUp}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="32">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="FM" ToolTip.Tip="Is Force Multicast Enabled"/>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsEnabled="False" HorizontalAlignment="Center" Theme="{StaticResource CheckBoxFlag}" Foreground="{DynamicResource ButtonBackground}"
+                                      IsChecked="{Binding Item.PayloadItem.IsForceMulticastEnabled}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="32">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="SG" ToolTip.Tip="Is Supervision Get Enabled"/>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsEnabled="False" HorizontalAlignment="Center" Theme="{StaticResource CheckBoxFlag}" Foreground="{DynamicResource ButtonBackground}"
+                                      IsChecked="{Binding Item.PayloadItem.IsSupervisionGetEnabled}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="32">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="SGS" ToolTip.Tip="Is Supervision Get Status Updates Enabled"/>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsEnabled="False" HorizontalAlignment="Center" Theme="{StaticResource CheckBoxFlag}" Foreground="{DynamicResource ButtonBackground}"
+                                      IsChecked="{Binding Item.PayloadItem.IsSupervisionGetStatusUpdatesEnabled}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="32">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="AIS" ToolTip.Tip="Is Auto Increment Supervision Session Id"/>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsEnabled="False" HorizontalAlignment="Center" Theme="{StaticResource CheckBoxFlag}" Foreground="{DynamicResource ButtonBackground}"
+                                      IsChecked="{Binding Item.PayloadItem.IsAutoIncSupervisionSessionId}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="32">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="IS" ToolTip.Tip="Is Secured"/>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsEnabled="False" HorizontalAlignment="Center" Theme="{StaticResource CheckBoxNullableFlag}" Foreground="{DynamicResource ButtonBackground}"
+                                      IsChecked="{Binding Item.PayloadItem.SecureType, Converter={StaticResource SecureTypeFlagConverter}, ConverterParameter=Secured}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="32">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="IB" ToolTip.Tip="Is Broadcasted"/>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsEnabled="False" HorizontalAlignment="Center" Theme="{StaticResource CheckBoxFlag}" Foreground="{DynamicResource ButtonBackground}"
+                                      IsChecked="{Binding Item.PayloadItem.SecureType, Converter={StaticResource SecureTypeFlagConverter}, ConverterParameter=Broadcast}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="32">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="MC" ToolTip.Tip="Is MultiChannel Enabled"/>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsEnabled="False" HorizontalAlignment="Center" Theme="{StaticResource CheckBoxFlag}" Foreground="{DynamicResource ButtonBackground}"
+                                      IsChecked="{Binding Item.PayloadItem.IsMultiChannelEnabled}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="32">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="MCB" ToolTip.Tip="Is Bit Address"/>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsEnabled="False" HorizontalAlignment="Center" Theme="{StaticResource CheckBoxFlag}" Foreground="{DynamicResource ButtonBackground}"
+                                      IsChecked="{Binding Item.PayloadItem.IsBitAddress}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Data" Width="*" Binding="{Binding Item.PayloadItem.Payload, Converter={StaticResource ByteArrayToStringConverter}, Mode=OneWay}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</UserControl>

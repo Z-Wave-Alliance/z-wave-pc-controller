@@ -1,0 +1,382 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.IMAFullNetworkView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewModels="clr-namespace:ZWaveControllerUI.Models"
+             xmlns:converters="clr-namespace:ZWaveControllerUI.Converters"
+             xmlns:draw="clr-namespace:ZWaveControllerUI.Drawing">
+    <UserControl.Resources>
+        <draw:TopLeftToCoordinateConverter x:Key="TopLeftToCoordinate"/>
+        <draw:XYToPointConverter x:Key="XYToPoint"/>
+        <draw:RoutingLineGeometryConverter x:Key="RoutingLineGeometry"/>
+        <StreamGeometry x:Key="SourceArrow">M0,18H8v-2h-3V4h3l-4,-4,-4,4H3V16H0</StreamGeometry>
+        <StreamGeometry x:Key="DestinationArrow">m8,12h-3V0H3V12H0l4,4m0,0H0v2h8v-2</StreamGeometry>
+        <StreamGeometry x:Key="CriticalMark">M11,4.5H13V15.5H11V4.5M13,17.5V19.5H11V17.5H13Z</StreamGeometry>
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <!-- Node position comes from the layout; lines are drawn in canvas coordinates. -->
+        <Style Selector="ItemsControl#grid > ContentPresenter">
+            <Setter Property="Canvas.Left" Value="{Binding TopLeft, Converter={StaticResource TopLeftToCoordinate}, FallbackValue=0}"/>
+            <Setter Property="Canvas.Top" Value="{Binding TopLeft, Converter={StaticResource TopLeftToCoordinate}, ConverterParameter=Top, FallbackValue=0}"/>
+        </Style>
+        <Style Selector="Ellipse.light">
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="Height" Value="8"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="Margin" Value="0,3,3,0"/>
+        </Style>
+        <Style Selector="Ellipse.globe">
+            <Setter Property="Fill" Value="{DynamicResource ButtonBackground}"/>
+        </Style>
+        <Style Selector="Ellipse.globe.test">
+            <Setter Property="Fill" Value="Maroon"/>
+        </Style>
+        <Style Selector="Line.imaLine.selected">
+            <Setter Property="StrokeThickness" Value="2"/>
+            <Setter Property="Stroke" Value="Maroon"/>
+        </Style>
+        <Style Selector="Rectangle.progress">
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="Width" Value="4"/>
+            <Setter Property="Height" Value="4"/>
+            <Setter Property="Fill" Value="White"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+        </Style>
+        <Style Selector="Panel.inProgress Rectangle.progress">
+            <Style.Animations>
+                <Animation Duration="0:0:1" IterationCount="Infinite" PlaybackDirection="Alternate">
+                    <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0"/></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Opacity" Value="1"/></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Panel.inProgress Rectangle.progress.second">
+            <Style.Animations>
+                <Animation Duration="0:0:1" Delay="0:0:0.33" IterationCount="Infinite" PlaybackDirection="Alternate">
+                    <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0"/></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Opacity" Value="1"/></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Panel.inProgress Rectangle.progress.third">
+            <Style.Animations>
+                <Animation Duration="0:0:1" Delay="0:0:0.66" IterationCount="Infinite" PlaybackDirection="Alternate">
+                    <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0"/></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Opacity" Value="1"/></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="WrapPanel.toolbar > Button">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="TextBlock.metric">
+            <Setter Property="Width" Value="25"/>
+        </Style>
+    </UserControl.Styles>
+    <Grid ColumnDefinitions="*,Auto,300" RowDefinitions="Auto,*,Auto">
+        <StackPanel Margin="2">
+            <WrapPanel Classes="toolbar" Margin="2">
+                <Button Command="{Binding FullNetworkCommand, Converter={StaticResource CommandReference}}">
+                    <TextBlock Text="Network Health" TextWrapping="Wrap" TextAlignment="Center"/>
+                </Button>
+                <Button Command="{Binding RequestNodeInfoCommand, Converter={StaticResource CommandReference}}">
+                    <TextBlock Text="Request Node Info" TextWrapping="Wrap" TextAlignment="Center"/>
+                </Button>
+                <Button Command="{Binding GetVersionCommand, Converter={StaticResource CommandReference}}">
+                    <TextBlock Text="Get Version" TextWrapping="Wrap" TextAlignment="Center"/>
+                </Button>
+                <Button Command="{Binding PingNodeCommand, Converter={StaticResource CommandReference}}">
+                    <TextBlock Text="Ping" TextWrapping="Wrap" TextAlignment="Center"/>
+                </Button>
+                <Button Command="{Binding GetRoutingInfoCommand, Converter={StaticResource CommandReference}}">
+                    <TextBlock Text="Reload Routing Info" TextWrapping="Wrap" TextAlignment="Center"/>
+                </Button>
+                <Button Command="{Binding RediscoveryCommand, Converter={StaticResource CommandReference}}">
+                    <TextBlock Text="Rediscovery" TextWrapping="Wrap" TextAlignment="Center"/>
+                </Button>
+            </WrapPanel>
+            <StackPanel Orientation="Horizontal" Margin="2">
+                <Path Data="{StaticResource SourceArrow}" Fill="Black" VerticalAlignment="Center" Margin="2,0"/>
+                <TextBlock Text="Src:" VerticalAlignment="Center"/>
+                <TextBox Width="40" Text="{Binding SourceNode, Converter={StaticResource NodeToStringConverter}}"/>
+                <Path Data="{StaticResource DestinationArrow}" Fill="Black" VerticalAlignment="Center" Margin="8,0,2,0"/>
+                <TextBlock Text="Dest:" VerticalAlignment="Center"/>
+                <TextBox Width="40" Text="{Binding DestinationNode, Converter={StaticResource NodeToStringConverter}}"/>
+                <Button Command="{Binding PowerLevelTestCommand, Converter={StaticResource CommandReference}}">
+                    <TextBlock Text="Power Level Test" TextWrapping="Wrap" TextAlignment="Center"/>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+
+        <ScrollViewer Name="scrollViewer" Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <LayoutTransformControl Name="zoom" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <LayoutTransformControl.LayoutTransform>
+                    <ScaleTransform ScaleX="{Binding #slider.Value}" ScaleY="{Binding #slider.Value}"/>
+                </LayoutTransformControl.LayoutTransform>
+                <Panel Name="surface" Width="1500" Height="1000" Focusable="True" Background="Transparent">
+                    <Border Name="canvasBackground"/>
+                    <ItemsControl Name="grid" ItemsSource="{Binding Items}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.DataTemplates>
+                            <DataTemplate DataType="{x:Type viewModels:IMARoutingLine}">
+                                <Path IsHitTestVisible="False" Stroke="{DynamicResource ButtonBackground}" ZIndex="-1" StrokeThickness="0.75" StrokeDashArray="8,4">
+                                    <Path.Data>
+                                        <MultiBinding Converter="{StaticResource RoutingLineGeometry}">
+                                            <Binding Path="StartPoint"/>
+                                            <Binding Path="Point"/>
+                                            <Binding Path="Size"/>
+                                        </MultiBinding>
+                                    </Path.Data>
+                                </Path>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:IMALine}">
+                                <Line Classes="imaLine" Classes.selected="{Binding IsItemSelected}" IsHitTestVisible="False" StrokeThickness="0.75"
+                                      Stroke="{DynamicResource ButtonBackground}" ZIndex="-1">
+                                    <Line.StartPoint>
+                                        <MultiBinding Converter="{StaticResource XYToPoint}">
+                                            <Binding Path="X1"/>
+                                            <Binding Path="Y1"/>
+                                        </MultiBinding>
+                                    </Line.StartPoint>
+                                    <Line.EndPoint>
+                                        <MultiBinding Converter="{StaticResource XYToPoint}">
+                                            <Binding Path="X2"/>
+                                            <Binding Path="Y2"/>
+                                        </MultiBinding>
+                                    </Line.EndPoint>
+                                </Line>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:IMADeviceInfo}">
+                                <Panel Width="40" Height="40" Background="Transparent" Cursor="SizeAll" ZIndex="1000">
+                                    <ToolTip.Tip>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock FontWeight="Bold" Text="{Binding Device, StringFormat='{}{0} '}"/>
+                                            <TextBlock Text="{Binding Device, Converter={StaticResource NodeTypeConverter}}"/>
+                                        </StackPanel>
+                                    </ToolTip.Tip>
+                                    <Rectangle Margin="-3" Stroke="{DynamicResource BarBackground}" StrokeDashArray="4,2" IsVisible="{Binding IsSelected}"/>
+                                    <Panel Classes.inProgress="{Binding IsInProgress}" IsHitTestVisible="False">
+                                        <Ellipse Fill="Black" Opacity="0.3" Margin="3,3,0,0"/>
+                                        <Ellipse Classes="globe" Classes.test="{Binding IsTestController}" Margin="0,0,3,3"/>
+                                        <Ellipse Classes="light" Fill="{DynamicResource RedFill}" IsVisible="{Binding IsError}"/>
+                                        <Ellipse Classes="light" Fill="{DynamicResource YellowFill}" IsVisible="{Binding IsWarning}"/>
+                                        <Ellipse Classes="light" Fill="{DynamicResource GreenFill}" IsVisible="{Binding IsOk}"/>
+                                        <Path Data="{StaticResource CriticalMark}" Fill="Maroon" Width="12" Height="12" Stretch="Uniform"
+                                              HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,0,0" IsVisible="{Binding IsNA}"/>
+                                        <TextBlock Text="{Binding Device}" Foreground="{DynamicResource ButtonForeground}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,3,3"/>
+                                        <Rectangle Classes="progress" Margin="10,0,0,10"/>
+                                        <Rectangle Classes="progress second" Margin="16,0,0,10"/>
+                                        <Rectangle Classes="progress third" Margin="22,0,0,10"/>
+                                    </Panel>
+                                    <!-- Source / destination of commands with both arguments. -->
+                                    <Path Data="{StaticResource SourceArrow}" Fill="Black" Margin="-8" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False">
+                                        <Path.IsVisible>
+                                            <MultiBinding Converter="{StaticResource AreEqualConvertor}">
+                                                <Binding Path="Id"/>
+                                                <Binding Path="DataContext.SourceNode" RelativeSource="{RelativeSource AncestorType=ItemsControl}"/>
+                                            </MultiBinding>
+                                        </Path.IsVisible>
+                                    </Path>
+                                    <Path Data="{StaticResource DestinationArrow}" Fill="Black" Margin="-8" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False">
+                                        <Path.IsVisible>
+                                            <MultiBinding Converter="{StaticResource AreEqualConvertor}">
+                                                <Binding Path="Id"/>
+                                                <Binding Path="DataContext.DestinationNode" RelativeSource="{RelativeSource AncestorType=ItemsControl}"/>
+                                            </MultiBinding>
+                                        </Path.IsVisible>
+                                    </Path>
+                                </Panel>
+                            </DataTemplate>
+                        </ItemsControl.DataTemplates>
+                    </ItemsControl>
+                    <Rectangle Name="selectionRect" IsVisible="False" HorizontalAlignment="Left" VerticalAlignment="Top"
+                               Stroke="{DynamicResource ButtonBackground}" StrokeThickness="1" StrokeDashArray="4,2" Fill="#204f6678" IsHitTestVisible="False"/>
+                </Panel>
+            </LayoutTransformControl>
+        </ScrollViewer>
+
+        <GridSplitter Width="4" Grid.Column="1" Grid.RowSpan="3" ResizeBehavior="PreviousAndNext" ResizeDirection="Columns"/>
+
+        <Grid Grid.Column="2" Grid.RowSpan="3" RowDefinitions="Auto,*,Auto">
+            <StackPanel Margin="2">
+                <DockPanel>
+                    <Ellipse Fill="{DynamicResource GreenFill}" Width="8" Height="8" Margin="8"/>
+                    <TextBlock TextWrapping="Wrap" VerticalAlignment="Center">Network health is good.</TextBlock>
+                </DockPanel>
+                <DockPanel>
+                    <Ellipse Fill="{DynamicResource YellowFill}" Width="8" Height="8" Margin="8"/>
+                    <TextBlock TextWrapping="Wrap" VerticalAlignment="Center">Network health is acceptable but latency can be observed occasionally.</TextBlock>
+                </DockPanel>
+                <DockPanel>
+                    <Ellipse Fill="{DynamicResource RedFill}" Width="8" Height="8" Margin="8"/>
+                    <TextBlock TextWrapping="Wrap" VerticalAlignment="Center">Network health is insufficient because frames are dropped.</TextBlock>
+                </DockPanel>
+                <DockPanel>
+                    <Path Data="{StaticResource CriticalMark}" Fill="Maroon" Width="24" Height="24"/>
+                    <TextBlock TextWrapping="Wrap" VerticalAlignment="Center">Network health is critical because Z-Wave node is not responding at all.</TextBlock>
+                </DockPanel>
+                <Button Content="Details" HorizontalAlignment="Right">
+                    <Button.Flyout>
+                        <Flyout Placement="LeftEdgeAlignedTop">
+                            <ScrollViewer Width="560" MaxHeight="520">
+                                <StackPanel Margin="4" Spacing="6">
+                                    <TextBlock FontWeight="Bold" Text="Network health is good."/>
+                                    <TextBlock TextWrapping="Wrap">ACTIONS: No actions are needed. The installation leverages on route resolution mechanisms to assure a robust and reliable Z-Wave network. This mechanism is handled solely by the Z-Wave protocol when using the TRANSMIT_OPTION_EXPLORE flag.</TextBlock>
+                                    <TextBlock FontWeight="Bold" Text="Network health is acceptable but latency can be observed occasionally."/>
+                                    <TextBlock TextWrapping="Wrap">Installation: The installer MUST move nodes or install repeater nodes to achieve green traffic lights on all nodes. Verify changes by activating node in question several times to trigger a new route calculation and perform a new traffic light calculation to get network health updated.</TextBlock>
+                                    <TextBlock TextWrapping="Wrap">Maintenance: No immediate actions are needed and the installation leverages on route resolution mechanisms to assure a robust and reliable Z-Wave network. Nodes with potential problems are flagged for rediscovery. Rediscovery of flagged nodes MUST be performed once a day to rebuild the routing information and resolve the potential problems. Assignment of return routes MUST be done after a rediscovery.</TextBlock>
+                                    <TextBlock FontWeight="Bold" Text="Network health is insufficient because frames are dropped."/>
+                                    <TextBlock TextWrapping="Wrap">Installation: The installer MUST move nodes or install the necessary repeaters to achieve green traffic lights on all nodes. Verify changes by activating node in question to trigger a new route calculation and perform a new traffic light calculation to get network health updated.</TextBlock>
+                                    <TextBlock TextWrapping="Wrap">Maintenance: No immediate actions are needed and the installation relies on route resolution mechanism to assure a robust and reliable Z-Wave network. Nodes with potential problems are flagged for needing rediscovery. Rediscovery of flagged nodes MUST be performed once a day to rebuild the routing information and resolve the potential problems. Assignment of return routes MUST be done after a rediscovery.</TextBlock>
+                                    <TextBlock TextWrapping="Wrap">Remote actions: Customer interaction can be conducted to understand what potential change has caused the problem to find a solution. An additional node rediscovery can be initiated. Assignment of return routes MUST follow rediscovery.</TextBlock>
+                                    <TextBlock TextWrapping="Wrap">On-site actions: If the problem couldn't be solved remotely, a technician may have to be dispatched. The Z-Wave node in question must either be moved closer to the gateway or a repeater node must be inserted between the Z-Wave node and the gateway.</TextBlock>
+                                    <TextBlock FontWeight="Bold" Text="Network health is critical because Z-Wave node is not responding at all."/>
+                                    <TextBlock TextWrapping="Wrap">1. Alert the user about the problem and instruct him to check that all Z-Wave nodes are powered.
+2. In case the Z-Wave node is powered, instruct the user to check local operation of the node.
+3. Perform a new network health check after the user has checked Z-Wave nodes.
+4. In case network health is not green, perform a full rediscovery.
+5. If network health is still critical notify call center about the problem, and initiate replacement of the node or installation of a repeater node.</TextBlock>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+            </StackPanel>
+            <TreeView Grid.Row="1" Margin="2" ItemsSource="{Binding SelectedDevices}">
+                <TreeView.DataTemplates>
+                    <TreeDataTemplate DataType="{x:Type viewModels:IMADeviceInfo}" ItemsSource="{Binding IMATestResults}">
+                        <StackPanel>
+                            <TextBlock FontWeight="Bold" Text="{Binding Device}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="" Width="20"/>
+                                <TextBlock Classes="metric" Text="RC"/>
+                                <TextBlock Classes="metric" Text="PER"/>
+                                <TextBlock Classes="metric" Text="NB"/>
+                                <TextBlock Width="45" Text="LWRdB"/>
+                                <TextBlock Width="55" Text="LWRRSSI"/>
+                                <TextBlock Classes="metric" Text="NHV"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="" Width="20"/>
+                                <TextBlock Classes="metric" Text="{Binding RC, StringFormat='{}{0:00}'}"/>
+                                <TextBlock Classes="metric" Text="{Binding PER, StringFormat='{}{0:00}'}"/>
+                                <TextBlock Classes="metric" Text="{Binding NB, StringFormat='{}{0:00}'}"/>
+                                <Panel Width="45">
+                                    <TextBlock Text="≥6dB" IsVisible="{Binding LWRdB}"/>
+                                    <TextBlock Text="&lt;6dB" IsVisible="{Binding !LWRdB}"/>
+                                </Panel>
+                                <TextBlock Width="55" Text="{Binding LWRRSSI, StringFormat='{}{0:00}'}"/>
+                                <TextBlock Classes="metric" Text="{Binding NHV}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </TreeDataTemplate>
+                    <TreeDataTemplate DataType="{x:Type viewModels:IMATestResult}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding IterationNo, StringFormat='{}{0}:'}" Width="20"/>
+                            <TextBlock Classes="metric" Text="{Binding RC, StringFormat='{}{0:00}'}"/>
+                            <TextBlock Classes="metric" Text="{Binding PER, StringFormat='{}{0:00}'}"/>
+                            <TextBlock Classes="metric" Text="{Binding NB, StringFormat='{}{0:00}'}"/>
+                            <Panel Width="45">
+                                <TextBlock Text="≥6dB" IsVisible="{Binding LWRdB}"/>
+                                <TextBlock Text="&lt;6dB" IsVisible="{Binding !LWRdB}"/>
+                            </Panel>
+                            <TextBlock Width="55" Text="{Binding LWRRSSI, StringFormat='{}{0:00}'}"/>
+                            <TextBlock Classes="metric" Text="{Binding NHV}"/>
+                        </StackPanel>
+                    </TreeDataTemplate>
+                </TreeView.DataTemplates>
+            </TreeView>
+            <Button Grid.Row="2" Content="Legend" HorizontalAlignment="Right" Margin="2">
+                <Button.Flyout>
+                    <Flyout Placement="LeftEdgeAlignedBottom">
+                        <ScrollViewer Width="560" MaxHeight="520">
+                            <StackPanel Margin="4" Spacing="4">
+                                <Grid ColumnDefinitions="70,180,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                                    <TextBlock FontWeight="Bold" Text="RC"/><TextBlock Grid.Column="1" Text="Route Change"/><TextBlock Grid.Column="2" TextWrapping="Wrap" Text="Number of times the protocol needed additional routes"/>
+                                    <TextBlock Grid.Row="1" FontWeight="Bold" Text="PER"/><TextBlock Grid.Row="1" Grid.Column="1" Text="Packet Error Rate"/><TextBlock Grid.Row="1" Grid.Column="2" TextWrapping="Wrap" Text="Number of failed transmissions"/>
+                                    <TextBlock Grid.Row="2" FontWeight="Bold" Text="NB"/><TextBlock Grid.Row="2" Grid.Column="1" Text="Neighbors count"/><TextBlock Grid.Row="2" Grid.Column="2" TextWrapping="Wrap" Text="Number of repeater neighbors"/>
+                                    <TextBlock Grid.Row="3" FontWeight="Bold" Text="LWRdB"/><TextBlock Grid.Row="3" Grid.Column="1" TextWrapping="Wrap" Text="Last Working Route Powerlevel"/><TextBlock Grid.Row="3" Grid.Column="2" TextWrapping="Wrap" Text="The maximum reduction in transmit power where the LWR still works"/>
+                                    <TextBlock Grid.Row="4" FontWeight="Bold" Text="LWR_RSSI"/><TextBlock Grid.Row="4" Grid.Column="1" TextWrapping="Wrap" Text="Estimation of the signal-to-noise ratio"/><TextBlock Grid.Row="4" Grid.Column="2" TextWrapping="Wrap" Text="The difference between LWR RSSI and background RSSI"/>
+                                </Grid>
+                                <TextBlock FontWeight="Bold" Margin="0,6,0,0" Text="NHV: Network Health Value"/>
+                                <SelectableTextBlock FontFamily="Courier New, DejaVu Sans Mono, monospace" FontSize="11"
+                                                     Text="10  green   PER = 0 AND RC = 0 AND NB &gt; 2 AND LWRdB ≥ 6dB AND LWR_RSSI ≥ 17dB&#10; 9  green   PER = 0 AND RC = 1 AND NB &gt; 2 AND LWRdB ≥ 6dB AND LWR_RSSI ≥ 17dB&#10; 8  green   PER = 0 AND RC ≤ 1 AND NB ≤ 2 AND LWRdB ≥ 6dB AND LWR_RSSI ≥ 17dB&#10; 7  green   PER = 0 AND RC ≤ 1 AND NB &gt; 2 AND (LWRdB &lt; 6dB OR LWR_RSSI &lt; 17dB)&#10; 6  green   PER = 0 AND RC ≤ 1 AND NB ≤ 2 AND (LWRdB &lt; 6dB OR LWR_RSSI &lt; 17dB)&#10; 5  yellow  PER = 0 AND 1 &lt; RC ≤ 4&#10; 4  yellow  PER = 0 AND RC &gt; 4&#10; 3  red     PER = 1&#10; 2  red     PER = 2&#10; 1  red     2 &lt; PER &lt; 10&#10; 0  none    PER = 10"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </Grid>
+
+        <DockPanel Grid.Row="2">
+            <StackPanel Orientation="Horizontal" Margin="2">
+                <TextBlock VerticalAlignment="Center" Margin="0,0,4,0">Zoom:</TextBlock>
+                <Slider Name="slider" Minimum="0.5" Value="1" Maximum="2" Width="100" VerticalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="2">
+                <Button Content="Image" Command="{Binding SetBackgroundImageCommand, Converter={StaticResource CommandReference}}"/>
+                <CheckBox IsChecked="{Binding UseBackgroundColor}" ToolTip.Tip="Use a background color instead of the image"/>
+                <ComboBox Name="cbColors" Width="140" IsEnabled="{Binding UseBackgroundColor}"
+                          ItemsSource="{x:Static converters:NamedColors.Properties}"
+                          SelectedItem="{Binding BackgroundColor, Converter={StaticResource UInt32ToColorPropertyInfoConverter}, Mode=TwoWay}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Width="14" Height="14" Margin="2" Fill="{Binding Converter={StaticResource ColorPropertyBrushConverter}}"/>
+                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+            <Button Content="Legend" HorizontalAlignment="Right" Margin="2">
+                <Button.Flyout>
+                    <Flyout Placement="TopEdgeAlignedRight">
+                        <StackPanel Margin="4" Spacing="6" Width="420">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Line StartPoint="0,8" EndPoint="40,8" Stroke="{DynamicResource ButtonBackground}" StrokeThickness="0.75"/>
+                                <TextBlock Text="Last Working Route line. Connection between nodes."/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Line StartPoint="0,8" EndPoint="40,8" Stroke="Maroon" StrokeThickness="2"/>
+                                <TextBlock Text="Last Working Route of selected node."/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Line StartPoint="0,8" EndPoint="40,8" Stroke="{DynamicResource ButtonBackground}" StrokeThickness="0.75" StrokeDashArray="8,4"/>
+                                <TextBlock Text="Connection line to the neighbours of selected node."/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Ellipse Width="20" Height="20" Fill="{DynamicResource ButtonBackground}" Margin="10,0"/>
+                                <TextBlock Text="Node in the network." VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Ellipse Width="20" Height="20" Fill="Maroon" Margin="10,0"/>
+                                <TextBlock Text="Controller node which is connected to PC Controller." VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Path Data="{StaticResource SourceArrow}" Fill="Black" Margin="16,0"/>
+                                <TextBlock Text="Source node for commands with source and destination arguments." TextWrapping="Wrap" Width="330"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Path Data="{StaticResource DestinationArrow}" Fill="Black" Margin="16,0"/>
+                                <TextBlock Text="Destination node for commands with source and destination arguments." TextWrapping="Wrap" Width="330"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+            <Panel/>
+        </DockPanel>
+    </Grid>
+</UserControl>

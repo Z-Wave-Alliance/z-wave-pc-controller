@@ -1,0 +1,84 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.SetNodeInformationView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:bind="clr-namespace:ZWaveControllerUI.Bind"
+             xmlns:controls="clr-namespace:ZWaveControllerUI.Controls"
+             xmlns:en="clr-namespace:ZWaveController.Enums;assembly=ZWaveController"
+             xmlns:enm="clr-namespace:ZWave.Enums;assembly=ZWave">
+    <UserControl.Styles>
+        <Style Selector="DataGridRow">
+            <Setter Property="FontWeight" Value="{Binding IsEnabled, Converter={StaticResource BoolToBoldConverter}}"/>
+        </Style>
+        <Style Selector="UniformGrid > TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="UniformGrid > ComboBox">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        </Style>
+    </UserControl.Styles>
+    <Grid IsEnabled="{Binding IsReadOnlyView}" RowDefinitions="*,Auto,Auto,Auto">
+        <DataGrid Grid.Row="0" Margin="4" MinHeight="150" CanUserSortColumns="False"
+                  ItemsSource="{Binding CommandClasses, Converter={StaticResource SortedViewConverter}, ConverterParameter='-IsSelected,Item.Name'}">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Width="36">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox HorizontalAlignment="Center" IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Id" Width="60" IsReadOnly="True" Binding="{Binding Item.Key}"/>
+                <DataGridTextColumn Header="Name" Width="*" IsReadOnly="True" Binding="{Binding Item.Text, Converter={StaticResource CommandClassTextConverter}, Mode=OneWay}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <StackPanel Margin="4" Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
+            <Button Content="Default" Command="{Binding SelectDefaultCommandClassesCommand, Converter={StaticResource CommandReference}}"/>
+            <Button Content="Clear" Command="{Binding ClearActiveCommandClassesCommand, Converter={StaticResource CommandReference}}"/>
+        </StackPanel>
+        <UniformGrid Margin="4" Columns="2" Grid.Row="2">
+            <controls:GroupBox Header="Z-Wave Plus Info Report:" Margin="4">
+                <UniformGrid Columns="2" Rows="3">
+                    <TextBlock Text="Role Type:"/>
+                    <ComboBox Name="cbRoleType" ItemsSource="{bind:EnumBindingSource {x:Type enm:RoleTypes}}" SelectedItem="{Binding RoleType}"/>
+                    <TextBlock Text="Node Type:"/>
+                    <ComboBox Name="cNodeType" ItemsSource="{bind:EnumBindingSource {x:Type enm:NodeTypes}}" SelectedItem="{Binding NodeType}"/>
+                </UniformGrid>
+            </controls:GroupBox>
+            <controls:GroupBox Header="Device Node Info:" Margin="4">
+                <UniformGrid Margin="4" Columns="2">
+                    <TextBlock Text="Listening:"/>
+                    <CheckBox IsChecked="{Binding IsListening, Mode=TwoWay}"/>
+                    <TextBlock Text="Device Option:"/>
+                    <ComboBox Name="cbOpt" ItemsSource="{bind:EnumBindingSource {x:Type en:DeviceOptionsView}}" SelectedItem="{Binding DeviceOption}"/>
+                    <TextBlock Text="Generic:"/>
+                    <ComboBox Name="cbGen" ItemsSource="{Binding GenericDevices, Converter={StaticResource SortedViewConverter}, ConverterParameter='Item.Name'}"
+                              SelectedValueBinding="{Binding Item}" SelectedValue="{Binding SelectedGenericDevice, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Item.Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBlock Text="Specific:"/>
+                    <ComboBox Name="cbSpec" ItemsSource="{Binding SelectedGenericDevice.SpecificDevice}" SelectedItem="{Binding SelectedSpecificDevice, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </UniformGrid>
+            </controls:GroupBox>
+        </UniformGrid>
+        <StackPanel Margin="4" Grid.Row="3" HorizontalAlignment="Right" Orientation="Horizontal">
+            <TextBlock IsVisible="{Binding !IsReadOnlyView}" Text="List of supported command classes can be changed after RESET"
+                       Foreground="Red" VerticalAlignment="Center"/>
+            <Button Content="Set" Command="{Binding SetNodeInformationCommand, Converter={StaticResource CommandReference}}" IsDefault="True" AutomationProperties.AutomationId="ID_BTN_SET"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

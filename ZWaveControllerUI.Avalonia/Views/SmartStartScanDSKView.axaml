@@ -1,0 +1,50 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
+-->
+<UserControl x:Class="ZWaveControllerUI.Views.SmartStartScanDSKView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ext="clr-namespace:ZWaveController.Models;assembly=ZWaveController"
+             Width="600" Height="300">
+    <UserControl.Styles>
+        <Style Selector="Border.qrValue">
+            <Setter Property="BorderBrush" Value="Red"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        <Style Selector="Border.qrValue.valid">
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+    </UserControl.Styles>
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Bottom" Margin="4">
+            <Button DockPanel.Dock="Right" Command="{Binding CommandCancel, Converter={StaticResource CommandReference}}" Content="Cancel"/>
+            <Button DockPanel.Dock="Right" Command="{Binding CommandOk, Converter={StaticResource CommandReference}}" Content="OK"/>
+            <TextBlock Text="DSK:" Margin="4" VerticalAlignment="Center"/>
+            <SelectableTextBlock Name="DSK" Margin="4" VerticalAlignment="Center" Text="{Binding QrCodeOptions.QrHeader.DSK}"/>
+        </DockPanel>
+        <DockPanel>
+            <!-- QR code text from a scanner (keyboard wedge) or pasted. -->
+            <StackPanel Margin="4" DockPanel.Dock="Left" Width="170">
+                <TextBlock Text="Scan or paste the QR code:"/>
+                <TextBox Name="InputQR" TextWrapping="Wrap" Height="160" VerticalContentAlignment="Top"
+                         Text="{Binding InputQRCode, Mode=TwoWay}"/>
+                <TextBlock Name="ValidationError" Text="Invalid checksum" Foreground="Red" IsVisible="{Binding !IsValidCheksum}"/>
+            </StackPanel>
+            <TreeView Margin="4" Name="QRTreeView" ItemsSource="{Binding ParsedQR}"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                <TreeView.DataTemplates>
+                    <TreeDataTemplate DataType="{x:Type ext:StringFamilyTree}" ItemsSource="{Binding Children}">
+                        <Grid ColumnDefinitions="Auto,Auto">
+                            <TextBlock Text="{Binding Name, StringFormat='{}{0}: '}" VerticalAlignment="Top"/>
+                            <Border Grid.Column="1" Classes="qrValue" Classes.valid="{Binding IsValid}">
+                                <SelectableTextBlock TextWrapping="Wrap" Text="{Binding Value}"/>
+                            </Border>
+                        </Grid>
+                    </TreeDataTemplate>
+                </TreeView.DataTemplates>
+            </TreeView>
+        </DockPanel>
+    </DockPanel>
+</UserControl>
