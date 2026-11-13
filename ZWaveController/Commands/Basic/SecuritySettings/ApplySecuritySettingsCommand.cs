@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+// SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,37 @@ namespace ZWaveController.Commands
 
         protected override void ExecuteInner(object param)
         {
-            Apply();
+            if (ControllerSession.IsEndDeviceLibrary)
+            {
+                ApplyEndDevice();
+            }
+            else
+            {
+                Apply();
+            }
+        }
+
+        /// <summary>
+        /// Applies the settings of an End Device Serial API: The enabled Security Classes are the keys the chip requests in its
+        /// S2 bootstrapping, so they go to the chip and into the configuration. The chip holds its keys and bootstraps itself,
+        /// so there is no SecurityManager, no network key and no test scheme to set.
+        /// </summary>
+        private void ApplyEndDevice()
+        {
+            SecuritySettings securitySettings = ApplicationModel.ConfigurationItem.SecuritySettings;
+            securitySettings.IsEnabledS0 = ApplicationModel.Controller.Network.IsEnabledS0 = _securitySettings.IsEnabledSecurityS0;
+            securitySettings.IsEnabledS2_UNAUTHENTICATED = ApplicationModel.Controller.Network.IsEnabledS2_UNAUTHENTICATED =
+                _securitySettings.IsEnabledSecurityS2_UNAUTHENTICATED;
+            securitySettings.IsEnabledS2_AUTHENTICATED = ApplicationModel.Controller.Network.IsEnabledS2_AUTHENTICATED =
+                _securitySettings.IsEnabledSecurityS2_AUTHENTICATED;
+            securitySettings.IsEnabledS2_ACCESS = ApplicationModel.Controller.Network.IsEnabledS2_ACCESS = _securitySettings.IsEnabledSecurityS2_ACCESS;
+
+            bool isSet = ControllerSession.SetEndDeviceRequestedKeys();
+            // The NIF depends on whether the S2 Access Control Security Class is requested.
+            ControllerSession.SetNodeInformation(out _);
+            UpdateControllerConfiguration();
+            ApplicationModel.ConfigurationItem.RefreshNodes();
+            ApplicationModel.LastCommandExecutionResult = isSet ? CommandExecutionResult.OK : CommandExecutionResult.Failed;
         }
 
         private void Apply()

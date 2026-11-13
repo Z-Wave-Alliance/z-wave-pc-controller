@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+// SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
 ﻿using System.Collections.Generic;
 using ZWave.BasicApplication.Security;
 using ZWave.Security;
@@ -13,6 +14,11 @@ namespace ZWaveController.Interfaces
         bool IsSaveKeys { get; set; }
         string KeysStorageFolder { get; set; }
         bool IsPauseSecurity { get; set; }
+        /// <summary>
+        /// Whether the session device is an End Device Serial API, which bootstraps itself and holds its keys, so the enabled
+        /// Security Classes are the keys it requests and the other settings do not apply.
+        /// </summary>
+        bool IsEndDevice { get; set; }
         bool IsEnabledSecurityS2_UNAUTHENTICATED { get; set; }
         bool IsEnabledSecurityS2_AUTHENTICATED { get; set; }
         bool IsEnabledSecurityS2_ACCESS { get; set; }

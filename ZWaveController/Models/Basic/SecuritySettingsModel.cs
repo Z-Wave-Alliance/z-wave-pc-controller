@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+// SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
 ﻿using System.Collections.Generic;
 using ZWave.BasicApplication.Security;
 using ZWave.Configuration;
@@ -14,6 +15,7 @@ namespace ZWaveController.Models
         public bool IsSaveKeys { get; set; }
         public string KeysStorageFolder { get; set; }
         public bool IsPauseSecurity { get; set; }
+        public bool IsEndDevice { get; set; }
         public bool IsEnabledSecurityS2_UNAUTHENTICATED { get; set; } = true;
         public bool IsEnabledSecurityS2_AUTHENTICATED { get; set; } = true;
         public bool IsEnabledSecurityS2_ACCESS { get; set; } = true;

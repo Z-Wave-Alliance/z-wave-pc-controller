@@ -1839,6 +1839,30 @@ namespace ZWaveController.Models
             return ret;
         }
 
+        /// <summary>
+        /// Tells an End Device Serial API which keys to request in its S2 bootstrapping: The Security Classes enabled in the
+        /// security settings. The Learn Mode start sends them again, so the chip requests the current selection whatever
+        /// it was told before. True for a controller, which bootstraps with the host SecurityManager and needs nothing here.
+        /// </summary>
+        public bool SetEndDeviceRequestedKeys()
+        {
+            if (!(_device is EndDevice endDevice))
+            {
+                return true;
+            }
+
+            SecuritySchemes[] keys = SecuritySchemeSet.ALL.Where(x => _device.Network.IsSecuritySchemeEnabled(x)).ToArray();
+            ReturnValueResult result = endDevice.SetSecurityInclusionRequestedKeys(keys);
+            if (!result)
+            {
+                Logger.LogFail("The End Device did not accept the keys to request");
+                return false;
+            }
+
+            Logger.Log(keys.Length > 0 ? $"The End Device requests the keys {string.Join(", ", keys)}" : "The End Device requests no key");
+            return true;
+        }
+
         public ActionResult SetLearnMode(LearnModes mode, out ActionToken token)
         {
             StopSmartListener();
@@ -1848,6 +1872,14 @@ namespace ZWaveController.Models
             {
                 learnMode = LearnModes.NetworkMask | learnMode;
             }
+
+            if (!SetEndDeviceRequestedKeys())
+            {
+                token = null;
+                StartSmartListener();
+                return null;
+            }
+
             ControllerSessionsContainer.Config.DeleteConfiguration(_device);
             var endDevice = _device as EndDevice;
             if (endDevice != null)

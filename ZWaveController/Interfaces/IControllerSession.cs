@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+// SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
 ﻿using System;
 using System.Collections.Generic;
 using Utils;
@@ -41,6 +42,7 @@ namespace ZWaveController.Interfaces
         void Disconnect();
         void Update(bool isDefaultCommandClasses);
         void SaveSecurityKeys(bool isClearFile);
+        bool SetEndDeviceRequestedKeys();
         void Cancel(NodeTag cancelNode, ActionToken token);
         ActionResult SendData(NodeTag node, byte[] txData, ActionToken token);
         ActionResult SendData(NodeTag name, byte[] txData, TransmitOptions txOptions, ActionToken token);

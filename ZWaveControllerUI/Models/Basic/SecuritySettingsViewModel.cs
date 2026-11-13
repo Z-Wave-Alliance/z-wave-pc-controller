@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+// SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
@@ -76,6 +77,19 @@ namespace ZWaveControllerUI.Models
             {
                 _isPauseSecurity = value;
                 Notify("IsPauseSecurity");
+            }
+        }
+
+        private bool _isEndDevice;
+        public bool IsEndDevice
+        {
+            get { return _isEndDevice; }
+            set
+            {
+                _isEndDevice = value;
+                // Only the key selection is left for an End Device, so the dialog takes the size of its content.
+                DialogSettings.IsResizable = !value;
+                Notify("IsEndDevice");
             }
         }
 
