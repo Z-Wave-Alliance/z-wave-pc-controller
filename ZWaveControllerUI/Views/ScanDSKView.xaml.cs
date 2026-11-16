@@ -11,8 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using ZXing;
 using ZXing.Common;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
+using ZXing.Windows.Compatibility;
 using ZWaveController.Services;
 using ZWaveController.Models;
 
@@ -30,6 +29,7 @@ namespace ZWaveControllerUI.Views
         }
 
         private CancellationTokenSource _cts;
+        private readonly object _pictureLock = new object();
         private Bitmap _pictureBoxSource;
         private WebCamCaptureService _videoCapture;
 
@@ -43,7 +43,7 @@ namespace ZWaveControllerUI.Views
             if ((bool)e.NewValue == false && (bool)e.OldValue == true)
             {
                 StopCamera();
-                _pictureBoxSource = null;
+                ClearLocalResources();
                 if (_cts != null)
                 {
                     _cts.Cancel();
@@ -74,7 +74,11 @@ namespace ZWaveControllerUI.Views
 
         private void ClearLocalResources()
         {
-            _pictureBoxSource = null;
+            lock (_pictureLock)
+            {
+                _pictureBoxSource?.Dispose();
+                _pictureBoxSource = null;
+            }
         }
 
         private void OnCameraError(string error)
@@ -89,13 +93,11 @@ namespace ZWaveControllerUI.Views
                 throw new ArgumentException("Invalid PixelFormat received from video capture library!");
             }
 
-            var cameraFrame = new Bitmap(width, height, (int)stride, format, data);
-            IFormatter formatter = new BinaryFormatter();
-            using (Stream stream = new MemoryStream())
+            using var cameraFrame = new Bitmap(width, height, (int)stride, format, data);
+            lock (_pictureLock)
             {
-                formatter.Serialize(stream, cameraFrame);
-                stream.Seek(0, SeekOrigin.Begin);
-                _pictureBoxSource = (Bitmap)formatter.Deserialize(stream);
+                _pictureBoxSource?.Dispose();
+                _pictureBoxSource = new Bitmap(cameraFrame);
             }
             try
             {
@@ -141,9 +143,17 @@ namespace ZWaveControllerUI.Views
                 {
                     barcodeResult = string.Empty;
                     System.Threading.Thread.Sleep(300);
-                    if (_pictureBoxSource != null)
+                    Bitmap frame;
+                    lock (_pictureLock)
                     {
-                        barcodeResult = ExtractQRCodeMessageFromImage(_pictureBoxSource);
+                        frame = _pictureBoxSource == null ? null : new Bitmap(_pictureBoxSource);
+                    }
+                    if (frame != null)
+                    {
+                        using (frame)
+                        {
+                            barcodeResult = ExtractQRCodeMessageFromImage(frame);
+                        }
                     }
                 }
                 return barcodeResult;

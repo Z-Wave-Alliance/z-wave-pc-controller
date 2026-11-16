@@ -75,6 +75,10 @@ Build for release:
 MSBuild.exe z-wave-pc-controller\ZWaveController.sln -property:Platform="Any CPU" -property:Configuration=Release -p:OutputPath=artifacts\release -p:DebugType=None -p:DebugSymbols=false -verbosity:minimal
 ```
 
+## Manual Windows publishing
+
+See [publish/README.md](publish/README.md) for the Windows publishing guide.
+
 ## References
 
 - https://github.com/Z-Wave-Alliance/z-wave-pc-controller
