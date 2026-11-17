@@ -23,11 +23,7 @@ using ZWaveController;
 using ZWaveController.Services;
 using ZWaveControllerUI.Commands;
 using ZWaveController.Configuration;
-#if !NETCOREAPP
-//using ZWaveController.Configuration;
-//using ZWaveController.Properties;
 using System.Windows.Input;
-#endif
 
 
 namespace ZWaveControllerUI.Models
@@ -61,9 +57,7 @@ namespace ZWaveControllerUI.Models
         public CommandBase ShowMainMenuCommand => CommandsFactory.CommandBaseGet<CommandBase>(param =>
         {
             CurrentViewModel = MainMenuViewModel;
-#if !NETCOREAPP
             MainMenuViewModel.IsIMAEnabled = isRightCtrlHolded;
-#endif
         }, param => !IsBusy);
 
         public CommandBase ShowSettingsCommand => CommandsFactory.CommandBaseGet<CommandBase>(param => { ((IDialog)SettingsViewModel).ShowDialog(); }, param => !IsBusy);
@@ -671,9 +665,9 @@ namespace ZWaveControllerUI.Models
             }
         }
 
-#if !NETCOREAPP
         private bool isLeftAltHolded = false;
         private bool isRightCtrlHolded = false;
+
         public void KeyEventHandler(Key key, Key systemKey, bool isUp, bool isDown)
         {
             if (key == Key.LeftAlt || key == Key.System && systemKey == Key.LeftAlt)
@@ -689,7 +683,6 @@ namespace ZWaveControllerUI.Models
                     isRightCtrlHolded = false;
             }
         }
-#endif
 
         //public override void OnUITimerTick()
         //{

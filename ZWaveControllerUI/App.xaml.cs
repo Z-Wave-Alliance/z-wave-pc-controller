@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Utils;
@@ -105,7 +106,7 @@ namespace ZWaveControllerUI
             UiTimer.IsEnabled = true;
         }
 
-        private void KeyEventHandler(object sender, KeyEventArgs e)
+        private void KeyEventHandler(object sender, System.Windows.Input.KeyEventArgs e)
         {
             _applicationModel.KeyEventHandler(e.Key, e.SystemKey, e.IsUp, e.IsDown);
         }
@@ -121,7 +122,7 @@ namespace ZWaveControllerUI
             {
                 OpenFileDialogViewModel vm = (OpenFileDialogViewModel)dialogViewModel;
                 vm.IsOk = false;
-                OpenFileDialog ofd = new OpenFileDialog();
+                Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog();
                 ofd.InitialDirectory = vm.FileName;
                 ofd.Filter = vm.Filter;
                 ofd.FileName = vm.FileName;
@@ -136,7 +137,7 @@ namespace ZWaveControllerUI
             {
                 SaveFileDialogViewModel vm = (SaveFileDialogViewModel)dialogViewModel;
                 vm.IsOk = false;
-                SaveFileDialog sfd = new SaveFileDialog();
+                Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog();
                 sfd.InitialDirectory = vm.FileName;
                 sfd.Filter = vm.Filter;
                 sfd.FileName = vm.FileName;
@@ -152,9 +153,12 @@ namespace ZWaveControllerUI
             {
                 FolderBrowserDialogViewModel vm = (FolderBrowserDialogViewModel)dialogViewModel;
                 vm.IsOk = false;
-                System.Windows.Forms.FolderBrowserDialog fbd = new System.Windows.Forms.FolderBrowserDialog();
-                fbd.Description = "Select folder";
-                fbd.SelectedPath = vm.FolderPath;
+                FolderBrowserDialog folderBrowserDialog = new()
+                {
+                    Description = "Select folder",
+                    SelectedPath = vm.FolderPath
+                };
+                using System.Windows.Forms.FolderBrowserDialog fbd = folderBrowserDialog;
                 System.Windows.Forms.DialogResult res = fbd.ShowDialog();
                 if (res == System.Windows.Forms.DialogResult.OK)
                 {
@@ -200,7 +204,7 @@ namespace ZWaveControllerUI
                 var dialogVmBase = dialogViewModel as DialogVMBase;
                 if (dialogVmBase.DialogSettings.IsPopup)
                 {
-                    MessageBox.Show("Dialog Popups not implemented");
+                    System.Windows.MessageBox.Show("Dialog Popups not implemented");
                 }
                 else
                 {
@@ -236,7 +240,7 @@ namespace ZWaveControllerUI
                         dialog.ResizeMode = ResizeMode.NoResize;
                         dialog.SizeToContent = SizeToContent.WidthAndHeight;
                         dialog.VerticalContentAlignment = VerticalAlignment.Stretch;
-                        dialog.HorizontalContentAlignment = HorizontalAlignment.Stretch;
+                        dialog.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Stretch;
                     }
                     if (dialogVmBase.DialogSettings.Width == 0 && dialogVmBase.DialogSettings.Height == 0)
                     {
@@ -311,13 +315,13 @@ namespace ZWaveControllerUI
                 string exMsg = e.ExceptionObject.ToString();
                 string msg = "Exception occurred. Program will exit." + Environment.NewLine + Environment.NewLine + exMsg;
                 msg._DLOG();
-                MessageBox.Show(msg);
+                System.Windows.MessageBox.Show(msg);
                 //Process.GetCurrentProcess().Kill();
                 Environment.Exit(0);
             }
             else
             {
-                MessageBox.Show(MainWindow, e.ExceptionObject != null ? e.ExceptionObject.ToString() : "Unknown");
+                System.Windows.MessageBox.Show(MainWindow, e.ExceptionObject != null ? e.ExceptionObject.ToString() : "Unknown");
             }
         }
 #endif

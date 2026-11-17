@@ -10,7 +10,7 @@ namespace ZWaveController.Models
     public class ConnectModel : IConnectModel
     {
         public string UserSessionId { get; set; }
-        public List<IDataSource> DataSources { get; set; } 
+        public List<IDataSource> DataSources { get; set; } = new List<IDataSource>();
         public string Psk { get; set; } = ZWave.ZipApplication.Constants.DefaultPsk;
     }
 }
