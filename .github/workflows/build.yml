@@ -13,6 +13,9 @@ on:  # yamllint disable-line rule:truthy
       - reopened
       - synchronize # Runs on each push when pull request exists.
   push:
+    branches:
+      - main
+      - feature/cross-platform
     tags:
       - 'v*'
 
