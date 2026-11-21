@@ -11,17 +11,10 @@
     <Configurations>Debug;Release;Setup_Debug;Setup_Release</Configurations>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Models\Basic\RepeatListManagerViewModel.cs" />
-    <Compile Remove="Converters\NodeGenericTypeConverter.cs" />
-    <Compile Remove="Converters\NodeHeaderConverter.cs" />
-    <Compile Remove="Converters\NodeIdFormatConverter.cs" />
-    <Compile Remove="Views\RepeatListManagerView.xaml.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="MaterialDesignColors" Version="2.0.4" />
-    <PackageReference Include="MaterialDesignThemes" Version="4.3.0" />
+    <PackageReference Include="MaterialDesignColors" Version="5.4.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="5.4.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-    <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.9" />
+    <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.17" />
   </ItemGroup>
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
     <Content Include="..\z-wave-tools-core\z-wave-blobs\z-wave-tools-core\ZipTransport\win\ziptrans64.dll" Link="ziptrans64.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />

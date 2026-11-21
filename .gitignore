@@ -34,7 +34,6 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
-/publish/artifacts/
 /NorthstarDb.Data/Import Schema Logs
 /NorthstarDb.Data/NorthstarDb.Data.jfm
 /packages/NUnit*

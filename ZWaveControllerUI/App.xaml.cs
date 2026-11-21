@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
-﻿using Microsoft.Win32;
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -122,12 +121,14 @@ namespace ZWaveControllerUI
             {
                 OpenFileDialogViewModel vm = (OpenFileDialogViewModel)dialogViewModel;
                 vm.IsOk = false;
-                Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog();
-                ofd.InitialDirectory = vm.FileName;
-                ofd.Filter = vm.Filter;
-                ofd.FileName = vm.FileName;
-                bool? res = ofd.ShowDialog(MainWindow);
-                if (res != null && (bool)res)
+                var ofd = new OpenFileDialog()
+                {
+                    InitialDirectory = vm.FileName,
+                    Filter = vm.Filter,
+                    FileName = vm.FileName
+                };
+                var res = ofd.ShowDialog();
+                if (res == DialogResult.OK)
                 {
                     vm.FileName = ofd.FileName;
                     vm.IsOk = true;
@@ -137,12 +138,14 @@ namespace ZWaveControllerUI
             {
                 SaveFileDialogViewModel vm = (SaveFileDialogViewModel)dialogViewModel;
                 vm.IsOk = false;
-                Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog();
-                sfd.InitialDirectory = vm.FileName;
-                sfd.Filter = vm.Filter;
-                sfd.FileName = vm.FileName;
-                bool? res = sfd.ShowDialog(MainWindow);
-                if (res != null && (bool)res)
+                SaveFileDialog sfd = new SaveFileDialog
+                {
+                    InitialDirectory = vm.FileName,
+                    Filter = vm.Filter,
+                    FileName = vm.FileName
+                };
+                var res = sfd.ShowDialog();
+                if (res == DialogResult.OK)
                 {
                     vm.FilterIndex = sfd.FilterIndex;
                     vm.FileName = sfd.FileName;
@@ -158,11 +161,10 @@ namespace ZWaveControllerUI
                     Description = "Select folder",
                     SelectedPath = vm.FolderPath
                 };
-                using System.Windows.Forms.FolderBrowserDialog fbd = folderBrowserDialog;
-                System.Windows.Forms.DialogResult res = fbd.ShowDialog();
-                if (res == System.Windows.Forms.DialogResult.OK)
+                var showDlgRes = folderBrowserDialog.ShowDialog();
+                if (showDlgRes == DialogResult.OK)
                 {
-                    vm.FolderPath = fbd.SelectedPath;
+                    vm.FolderPath = folderBrowserDialog.SelectedPath;
                     vm.IsOk = true;
                 }
             }

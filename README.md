@@ -49,7 +49,7 @@ Note that with this recipe, only IP connections work; a possible workaround is t
 
 ## Build prerequisites
 
-- [.NET Framework 4.8](https://dotnet.microsoft.com/en-us/download/visual-studio-sdks?cid=getdotnetsdk)
+- [.NET 10.0](https://dotnet.microsoft.com/en-us/download/visual-studio-sdks?cid=getdotnetsdk)
 - [z-wave-pc-controller](https://github.com/Z-Wave-Alliance/z-wave-pc-controller) with its submodules:
   - [z-wave-tools-core](https://github.com/Z-Wave-Alliance/z-wave-tools-core):
     - [z-wave-blobs](https://github.com/Z-Wave-Alliance/z-wave-blobs)
@@ -74,10 +74,6 @@ Build for release:
 ```
 MSBuild.exe z-wave-pc-controller\ZWaveController.sln -property:Platform="Any CPU" -property:Configuration=Release -p:OutputPath=artifacts\release -p:DebugType=None -p:DebugSymbols=false -verbosity:minimal
 ```
-
-## Manual Windows publishing
-
-See [publish/README.md](publish/README.md) for the Windows publishing guide.
 
 ## References
 

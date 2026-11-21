@@ -29,7 +29,6 @@ namespace ZWaveController.Interfaces
         IPollingService PollingService { get; }
         IERTTService ERTTService { get; }
         INodeInformationService NodeInformationService { get; }
-        ISerialPortMonitor SerialPortMonitor { get; }
         string UserSessionId { get; set; }        
         SecurityManager SecurityManager { get; }
         SupervisionManager SupervisionManager { get; }
