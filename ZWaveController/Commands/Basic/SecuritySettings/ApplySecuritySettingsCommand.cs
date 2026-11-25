@@ -56,6 +56,12 @@ namespace ZWaveController.Commands
             securitySettings.IsEnabledS2_ACCESS = ApplicationModel.Controller.Network.IsEnabledS2_ACCESS = _securitySettings.IsEnabledSecurityS2_ACCESS;
 
             bool isSet = ControllerSession.SetEndDeviceRequestedKeys();
+            if (ApplicationModel.Controller.Network.NodeTag.Id == 0)
+            {
+                // A node that is not included shows the keys it requests; an included one keeps the keys it was granted.
+                ApplicationModel.Controller.Network.SetEnabledSecuritySchemes();
+            }
+
             // The NIF depends on whether the S2 Access Control Security Class is requested.
             ControllerSession.SetNodeInformation(out _);
             UpdateControllerConfiguration();
