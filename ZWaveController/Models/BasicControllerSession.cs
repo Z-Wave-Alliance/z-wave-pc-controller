@@ -3068,7 +3068,10 @@ namespace ZWaveController.Models
 
         public void SetNodeInformation(DeviceOptions deviceOptions, byte generic, byte specific, byte[] commandClasses, out ActionToken token)
         {
-            _device.ApplicationNodeInformation(deviceOptions, generic, specific, commandClasses);
+            // The Serial API gets the Command Classes of the current inclusion state, not every configured one.
+            _device.Network.SetApplicationNodeInformation(deviceOptions, generic, specific, commandClasses);
+            _device.Network.SetNifInclusionStateByKeys(IsAccessEndDevice);
+            WriteNodeInformation();
             if (ChipTypeSupported.SoftResetAfterSetNodeInformation(_device.ChipType))
             {
                 var expectToken = _device.Expect(new ByteIndex[] { 0x00, 0x0A }, 5000, null);
