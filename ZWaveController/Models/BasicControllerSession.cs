@@ -1849,7 +1849,6 @@ namespace ZWaveController.Models
             }
             ControllerSessionsContainer.Config.DeleteConfiguration(_device);
             // A node in Learn Mode advertises every Command Class, whatever keys it still holds from its old network.
-            SetOwnSecureCommandClasses();
             _device.Network.SetNifInclusionState(InclusionStates.NotIncluded, IsAccessEndDevice);
             WriteNodeInformation();
             token = _device.SetLearnMode(learnMode, 65000, null);
@@ -2697,7 +2696,6 @@ namespace ZWaveController.Models
                 ApplicationModel.ConfigurationItem.Node.Clear();
             }
             // The node tree and the handling of non-secure commands follow the NIF of the current inclusion state.
-            SetOwnSecureCommandClasses();
             _device.Network.SetNifInclusionStateByKeys(IsAccessEndDevice);
             if (SecurityManager != null)
             {
@@ -3026,16 +3024,6 @@ namespace ZWaveController.Models
         }
 
         /// <summary>
-        /// Declares every Command Class of the own node as securely supported, except the Security 0 Command Class, which is
-        /// never supported securely. Tools Core leaves out the always non-securely supported ones.
-        /// </summary>
-        private void SetOwnSecureCommandClasses()
-        {
-            byte[] commandClasses = _device.Network.GetCommandClasses();
-            _device.Network.SetSecureCommandClasses(commandClasses?.Where(x => x != COMMAND_CLASS_SECURITY.ID).ToArray());
-        }
-
-        /// <summary>
         /// Whether this session runs an End Device Serial API that requests the S2 Access Control Security Class.
         /// </summary>
         private bool IsAccessEndDevice
@@ -3045,7 +3033,6 @@ namespace ZWaveController.Models
 
         public void SetNodeInformation(out ActionToken token)
         {
-            SetOwnSecureCommandClasses();
             _device.Network.SetNifInclusionStateByKeys(IsAccessEndDevice);
             WriteNodeInformation();
             token = null;
@@ -3083,7 +3070,6 @@ namespace ZWaveController.Models
         {
             // The Serial API gets the Command Classes of the current inclusion state, not every configured one.
             _device.Network.SetApplicationNodeInformation(deviceOptions, generic, specific, commandClasses);
-            SetOwnSecureCommandClasses();
             _device.Network.SetNifInclusionStateByKeys(IsAccessEndDevice);
             WriteNodeInformation();
             if (ChipTypeSupported.SoftResetAfterSetNodeInformation(_device.ChipType))
