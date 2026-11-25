@@ -40,6 +40,7 @@
             <converters:ByteArrayToStringConverter x:Key="ByteArrayToStringConverter"/>
             <converters:ByteToHexStringConverter x:Key="ByteToHexStringConverter"/>
             <converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
+            <converters:InvertBoolToVisibilityConverter x:Key="InvertBoolToVisibilityConverter"/>
             <converters:IsNotNullToVisibilityConverter x:Key="IsNotNullToVisibilityConverter" />
             <converters:ParameterS2EnumDescriptionValueConverter x:Key="ParameterS2EnumDescriptionValueConverter" />
             <converters:ParameterS2TypeToSymbolCountConverter x:Key="ParameterS2TypeToSymbolCountConverter" />
@@ -81,17 +82,21 @@
     </UserControl.Resources>
     <DockPanel Margin="0"  >
         <!--IsEnabled="{Binding Path=IsReadOnlyView}"-->
-        <StackPanel Margin="4" DockPanel.Dock="Top">
+        <StackPanel Margin="4" DockPanel.Dock="Top" Visibility="{Binding IsEndDevice, Converter={StaticResource InvertBoolToVisibilityConverter}}">
             <ToggleButton AutomationProperties.AutomationId="ID_BTN_ENABLE_SECURITY" IsChecked="{Binding IsPauseSecurity, Mode=TwoWay}" Content="{Binding}" ContentTemplate="{StaticResource ToggleSecurityDataTemplate}" />
         </StackPanel>
+        <!-- An End Device Serial API bootstraps itself and holds its keys; the host only chooses the keys it requests. -->
+        <TextBlock Margin="4" DockPanel.Dock="Top" Text="Keys the End Device requests at its inclusion. The chip performs the bootstrapping and holds the keys."
+                   Visibility="{Binding IsEndDevice, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <StackPanel Margin="4" DockPanel.Dock="Top" Orientation="Horizontal" IsEnabled="{Binding IsPauseSecurity, Converter={StaticResource InvertBoolConverter}}">
             <CheckBox Content="Enable S0; " AutomationProperties.AutomationId="ID_CHK_ENABLE_S0" IsChecked="{Binding IsEnabledSecurityS0, Mode=TwoWay}" ToolTip="Enable S0 Security"/>
             <CheckBox Content="Enable S2 Unauthenticated; " AutomationProperties.AutomationId="ID_CHK_ENABLE_UNAUTH" IsChecked="{Binding IsEnabledSecurityS2_UNAUTHENTICATED, Mode=TwoWay}"/>
             <CheckBox Content="Enable S2 Authenticated; " AutomationProperties.AutomationId="ID_CHK_ENABLE_AUTH" IsChecked="{Binding IsEnabledSecurityS2_AUTHENTICATED, Mode=TwoWay}"/>
             <CheckBox Content="Enable S2 Access; " AutomationProperties.AutomationId="ID_CHK_ENABLE_ACCESS" IsChecked="{Binding IsEnabledSecurityS2_ACCESS, Mode=TwoWay}"/>
-            <CheckBox Content="Join with CSA" AutomationProperties.AutomationId="ID_CHK_JOIN_CSA" IsChecked="{Binding IsClientSideAuthS2Enabled, Mode=TwoWay}"/>
+            <CheckBox Content="Join with CSA" AutomationProperties.AutomationId="ID_CHK_JOIN_CSA" IsChecked="{Binding IsClientSideAuthS2Enabled, Mode=TwoWay}"
+                      Visibility="{Binding IsEndDevice, Converter={StaticResource InvertBoolToVisibilityConverter}}"/>
         </StackPanel>
-        <UniformGrid Margin="4" DockPanel.Dock="Top" Columns="2">
+        <UniformGrid Margin="4" DockPanel.Dock="Top" Columns="2" Visibility="{Binding IsEndDevice, Converter={StaticResource InvertBoolToVisibilityConverter}}">
             <DockPanel Background="AliceBlue">
                 <TextBlock Width="100" Text="Network Key S0"/>
                 <Rectangle Margin="1" Width="8" Height="Auto" Fill="{StaticResource SnkS0}"/>
@@ -205,7 +210,7 @@
             <Button Content="Cancel" AutomationProperties.AutomationId="ID_BTN_CANCEL" Command="{StaticResource CommandCancel}" IsCancel="True"/>
             <Button Content="Apply" Command="{StaticResource CommandApply}" IsDefault="False"/>
         </StackPanel>
-        <DockPanel Margin="4" DockPanel.Dock="Bottom">
+        <DockPanel Margin="4" DockPanel.Dock="Bottom" Visibility="{Binding IsEndDevice, Converter={StaticResource InvertBoolToVisibilityConverter}}">
             <CheckBox Name="cbIsSaveKeys" IsChecked="{Binding IsSaveKeys}" HorizontalAlignment="Left"
                       AutomationProperties.AutomationId="CHK_SAVE_KEYS" >
                 <StackPanel>
@@ -219,7 +224,8 @@
             <TextBox AutomationProperties.AutomationId="TB_SAVED_KEYS_STORAGE_PATH" 
                      Text="{Binding KeysStorageFolder}" IsEnabled="{Binding IsChecked, ElementName=cbIsSaveKeys}" Height="Auto" VerticalAlignment="Stretch" TextWrapping="Wrap"/>
         </DockPanel>
-        <TabControl Margin="0,4" AutomationProperties.AutomationId="ID_TAB_CONTAINER_TEST_SCHEME">
+        <TabControl Margin="0,4" AutomationProperties.AutomationId="ID_TAB_CONTAINER_TEST_SCHEME"
+                    Visibility="{Binding IsEndDevice, Converter={StaticResource InvertBoolToVisibilityConverter}}">
             <TabItem Header="S0 Test Scheme" Selector.IsSelected="{Binding IsS0TabSelected}" AutomationProperties.AutomationId="ID_TAB_PAGE_S0_TEST_SCHEME">
                 <ScrollViewer>
                      <StackPanel IsEnabled="{Binding IsPauseSecurity, Converter={StaticResource InvertBoolConverter}}">

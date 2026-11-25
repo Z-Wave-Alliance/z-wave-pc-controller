@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+// SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
 ﻿using Utils;
 using Utils.UI.Interfaces;
-using ZWave.BasicApplication.Devices;
 using ZWaveController;
 using ZWaveController.Commands;
 using ZWaveController.Configuration;
@@ -20,6 +20,7 @@ namespace ZWaveControllerUI.Commands
 
         protected override void ExecuteInner(object param)
         {
+            ApplicationModel.SecuritySettingsModel.IsEndDevice = ControllerSession.IsEndDeviceLibrary;
             ApplicationModel.SecuritySettingsModel.IsClientSideAuthS2Enabled = ControllerSession.Controller.Network.IsCsaEnabled;
             ApplicationModel.SecuritySettingsModel.IsEnabledSecurityS0 = ControllerSession.Controller.Network.IsEnabledS0;
             ApplicationModel.SecuritySettingsModel.IsEnabledSecurityS2_ACCESS = ControllerSession.Controller.Network.IsEnabledS2_ACCESS;
@@ -53,16 +54,14 @@ namespace ZWaveControllerUI.Commands
 
             ApplicationModel.SecuritySettingsModel.IsSaveKeys = ControllerSessionsContainer.Config.ControllerConfiguration.IsSaveKeys;
             ApplicationModel.SecuritySettingsModel.KeysStorageFolder = ControllerSessionsContainer.Config.ControllerConfiguration.KeysStorageFolder;
-            ApplicationModel.SecuritySettingsModel.NetworkKeyTemp = ControllerSession.SecurityManager.SecurityManagerInfo.GetActualNetworkKeyS2Temp();
+            // An End Device Serial API session has no SecurityManager, the chip bootstraps itself.
+            ApplicationModel.SecuritySettingsModel.NetworkKeyTemp = ControllerSession.SecurityManager?.SecurityManagerInfo.GetActualNetworkKeyS2Temp();
             ((IDialog)ApplicationModel.SecuritySettingsModel).ShowDialog();
         }
 
         public override bool CanExecuteModelDependent(object param)
         {
-            var supportedDevice = (ControllerSession.Controller is Controller) ||
-                !ControllerSession.IsEndDeviceLibrary || 
-                (ControllerSession.Controller as Device).Library == ZWave.Enums.Libraries.EndDeviceSysTestLib;
-            return !ApplicationModel.IsActiveSessionZip && supportedDevice;
+            return !ApplicationModel.IsActiveSessionZip;
         }
     }
 }
