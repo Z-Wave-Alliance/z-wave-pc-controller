@@ -38,7 +38,10 @@ namespace ZWaveControllerUI.Converters
 
                 var paramValues = GetNodeInfoPayloadValues(device, Network, ZWaveDefinition);
                 var result = PrepareTreeViewViewModel(paramValues, 1, ZWaveDefinition);
-                var secureCommandClasses = Network.GetSecureCommandClasses(device);
+                // The own node reports the securely supported Command Classes it supports in its state, which is none without a
+                // key, when they are in its NIF, and none as an Access Control end device granted a lower Security Class.
+                byte[] secureCommandClasses = device != Network.NodeTag ? Network.GetSecureCommandClasses(device)
+                    : Network.NifInclusionState == InclusionStates.IncludedSecurely ? Network.GetSupportedSecureCommandClasses() : null;
 
                 if (secureCommandClasses != null && secureCommandClasses.Length > 0)
                 {
@@ -186,8 +189,11 @@ namespace ZWaveControllerUI.Converters
             payload.Add(cmd.KeyId);
             var nInfo = network.GetNodeInfo(device);
             payload.AddRange((byte[])nInfo);
-            if (network.GetCommandClasses(device) != null)
-                payload.AddRange(network.GetCommandClasses(device));
+            // The own node shows what its NIF advertises, which leaves out the securely supported Command Classes once the node
+            // holds a key. The list of any other node is its received NIF already.
+            byte[] commandClasses = device == network.NodeTag ? network.GetNifCommandClasses() : network.GetCommandClasses(device);
+            if (commandClasses != null)
+                payload.AddRange(commandClasses);
 
             CommandClassValue[] cmdClassValues;
             zWaveDefinition.ParseApplicationObject(payload.ToArray(), out cmdClassValues);
