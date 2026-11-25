@@ -75,7 +75,6 @@ namespace ZWaveController.Models
         public SecurityManager SecurityManager { get; private set; }
         public SupervisionManager SupervisionManager { get; private set; }
         public TransportServiceManager TransportServiceManager { get; private set; }
-        public ISerialPortMonitor SerialPortMonitor { get; private set; }
         public SortedList<NodeTag, ZipDevice> Devices { get; set; }
         public IMAFullNetwork IMAFullNetwork { get; set; }
         public bool IsBridgeControllerLibrary => false;
@@ -2250,7 +2249,6 @@ namespace ZWaveController.Models
                         InitZipDsk();
                         StopCallbacksListeners();
                         StartCallbacksListeners();
-                        SerialPortMonitor?.Open();
                         ApplicationModel.NotifyControllerChanged(NotifyProperty.ControllerInfo | NotifyProperty.NodesList);
                         return CommunicationStatuses.Done;
                     }
@@ -2487,7 +2485,6 @@ namespace ZWaveController.Models
                 _zipController.Disconnect();
                 _zipController.Dispose();
                 _zipController = null;
-                SerialPortMonitor?.Close();
             }
             foreach (var item in Devices.Values)
             {

@@ -33,7 +33,7 @@ namespace ZWaveControllerUI.Commands
             catch (Exception ex)
             {
                 mainViewModel.Invoke(() => mainViewModel.ShowMessageDialog("Error getting Ports from system: ", ex.Message));
-
+                return;
             }
             if (mainViewModel.ConnectModel.DataSources.Count == 0)
                 return;

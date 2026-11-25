@@ -17,6 +17,7 @@ using System.Windows;
 [assembly: AssemblyCopyright("© 2018 Silicon Labs, Inc. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+[assembly: System.Runtime.Versioning.SupportedOSPlatform("windows")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 

@@ -37,9 +37,6 @@ using ZWaveController.Configuration;
 using ZWaveController.Enums;
 using ZWaveController.Interfaces;
 using ZWaveController.Services;
-#if !NETCOREAPP
-//using ZWaveController.Properties;
-#endif
 
 [assembly: InternalsVisibleTo("ZWaveControllerUI")]
 [assembly: InternalsVisibleTo("ZWaveControllerTests")]
@@ -95,7 +92,6 @@ namespace ZWaveController.Models
         public SecurityManager SecurityManager { get; set; }
         public SupervisionManager SupervisionManager { get; private set; }
         public TransportServiceManager TransportServiceManager { get; set; }
-        public ISerialPortMonitor SerialPortMonitor { get; private set; }
         public IPollingService PollingService { get; private set; }
         public IERTTService ERTTService { get; private set; }
         public INodeInformationService NodeInformationService { get; private set; }
@@ -110,9 +106,6 @@ namespace ZWaveController.Models
             ApplicationModel = applicationModel;
             WakeUpNodesService = new WakeUpNodesService(SendWakeUpNoMore, SendWakeupSetInterval, ApplicationModel.Dispatcher, ApplicationModel.CommandQueueCollection,
                 ApplicationModel.CreateSelectableItem, LogWarning, LogOk);
-#if !NETCOREAPP
-            SerialPortMonitor = new SerialPortMonitor(this);
-#endif
             PollingService = new PollingService(this);
             ERTTService = new ERTTService(this);
             NodeInformationService = new NodeInformationService(ApplicationModel);
@@ -203,7 +196,6 @@ namespace ZWaveController.Models
                             StopSmartListener();
                             StartSmartListener();
 
-                            SerialPortMonitor?.Open();
                             ApplicationModel.IsNeedFirstReloadTopology = true;
 
                             ApplicationModel.NotifyControllerChanged(NotifyProperty.ControllerInfo);
@@ -284,7 +276,6 @@ namespace ZWaveController.Models
             SaveConfigurations();
             if (_device != null)
             {
-                SerialPortMonitor?.Close();
                 _device.Disconnect();
                 _device.Dispose();
                 _device = null;
@@ -3529,14 +3520,16 @@ namespace ZWaveController.Models
 
         public void SetNewImageCompletedCallback(bool isUpdated)
         {
-#if NETCOREAPP
-            if (isUpdated && !System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
+            if (isUpdated && !OperatingSystem.IsWindows())
             {
+                // Keep old-style definition if targeting based on OS as requested in PR to replace <#if NETCORE>,
+                // but behind this code was not a .NET target but a multi-session environment,
+                // so we need to close the session and redirect to the home page.
                 ApplicationModel.NotifyControllerChanged(NotifyProperty.RedirectToHome, "Redirecting to Home Page...");
                 ControllerSessionsContainer.Remove(DataSource.SourceId);
                 return;
             }
-#endif
+
             ApplicationModel.SetBusy(true);
             ApplicationModel.SetBusyMessage("SoftReset...");
             ApplicationModel.IsErrorMessagePopupDisabled = true;
