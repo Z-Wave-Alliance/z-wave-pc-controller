@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+// SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -2026,6 +2027,13 @@ namespace ZWaveController.Models
                         Logger.LogWarning("Watchdog started.");
                     }
                     Update(isDefaultCommandClasses);
+                    if (_device is EndDevice)
+                    {
+                        // A change of the NodeId sets the keys of the node to the enabled ones. A reset of a node that had no NodeId
+                        // changes none, so it sets them here.
+                        _device.Network.SetEnabledSecuritySchemes();
+                    }
+
                     List<byte> cmdClasses = new List<byte>();
                     var cc = _device.Network.GetCommandClasses(_device.Network.NodeTag);
                     if (cc != null)
@@ -3082,6 +3090,8 @@ namespace ZWaveController.Models
                     ControllerSessionsContainer.Config.DeleteConfiguration(_device);
                     endDevice.SetDefault();
                     endDevice.MemoryGetId();
+                    // The reset changes no NodeId, so it sets the keys of the node to the enabled ones here.
+                    _device.Network.SetEnabledSecuritySchemes();
                 }
                 _device.Network.SetApplicationNodeInformation(deviceOptions, generic, specific, commandClasses);
             }
