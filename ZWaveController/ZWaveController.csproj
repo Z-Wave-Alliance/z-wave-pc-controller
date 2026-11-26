@@ -321,6 +321,7 @@
     <Compile Include="Services\ERTTService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Interfaces\Services\ISenderHistoryService.cs" />
+    <Compile Include="Services\DataSourceTools.cs" />
     <Compile Include="Services\JammingDetectionService.cs" />
     <Compile Include="Services\PredefinedPayloadsService.cs" />
     <Compile Include="Services\LogBaseService.cs" />

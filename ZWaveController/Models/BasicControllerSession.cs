@@ -51,6 +51,8 @@ namespace ZWaveController.Models
         public int ZWAVEPLUS_WAKE_UP_INTERVAL = 5;
         private const int WAIT_AFTER_ADD_REMOVE_NODE_TIMEOUT = 300;
         private const int SMART_START_STATE_CHANGED_TIMEOUT = 500;
+        private const int OPEN_PORT_RETRY_COUNT = 5;
+        private const int OPEN_PORT_RETRY_DELAY = 500;
 
         public IApplicationModel ApplicationModel { get; set; }
 
@@ -130,7 +132,7 @@ namespace ZWaveController.Models
             appLayer.TransportLayer.DataTransmitted += ApplicationModel.TraceCapture.SaveTransmittedData;
 
             _device = appLayer?.CreateController(false);
-            if (_device != null && _device.Connect(DataSource) == CommunicationStatuses.Done)
+            if (_device != null && OpenDeviceConnection())
             {
                 ApplicationModel.ClearCommandQueueCollection();
                 VersionResult versionRes = _device.GetVersion(false, 500);
@@ -273,6 +275,30 @@ namespace ZWaveController.Models
             _device = null;
             OnDeviceInitFailed();
             return CommunicationStatuses.Failed;
+        }
+
+        /// <summary>
+        /// Opens the connection to the device. A serial port that cannot be opened is tried again for a short time, since the OS may still hold it for a
+        /// moment after a previous run of the application ended, for instance a stopped debug session. A device that does not answer is not tried again.
+        /// </summary>
+        private bool OpenDeviceConnection()
+        {
+            var isOpen = _device.Connect(DataSource) == CommunicationStatuses.Done;
+            if (isOpen || !(DataSource is SerialPortDataSource))
+            {
+                return isOpen;
+            }
+            Logger.Log($"{DataSource.SourceName} could not be opened; retrying ...");
+            ApplicationModel.Invoke(() => ApplicationModel.SetBusyMessage("Reconnecting to " + DataSource.SourceName + " ..."));
+            for (int attempt = 0; attempt < OPEN_PORT_RETRY_COUNT; attempt++)
+            {
+                Thread.Sleep(OPEN_PORT_RETRY_DELAY);
+                if (_device.Connect(DataSource) == CommunicationStatuses.Done)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public virtual void Disconnect()
@@ -1778,7 +1804,7 @@ namespace ZWaveController.Models
             {
                 if (requestDataResult.State == ActionStates.Cancelled)
                 {
-                    Logger.LogFail("Power Level Operation Cancelled");
+                    Logger.LogFail("Power Level Operation Canceled");
                     ret = CommandExecutionResult.Canceled;
                 }
                 else
@@ -1993,7 +2019,7 @@ namespace ZWaveController.Models
                 {
                     if (result.State == ActionStates.Cancelled)
                     {
-                        Logger.LogFail("Learn Mode Operation Cancelled");
+                        Logger.LogFail("Learn Mode Operation Canceled");
                         ret = CommandExecutionResult.Canceled;
                     }
                     else
@@ -2968,7 +2994,7 @@ namespace ZWaveController.Models
                     {
                         if (!_device.IsEndDeviceApi)
                         {
-                            Thread.Sleep(1200); //Device is not fast enough to reset itself (S2 behaviour) 600 + Broadcast frame 600
+                            Thread.Sleep(1200); //Device is not fast enough to reset itself (S2 behavior) 600 + Broadcast frame 600
                             var item = ApplicationModel.ConfigurationItem.PreKitting.ProvisioningList.FirstOrDefault(i => i.NodeId == node.Id);
                             _device.SendData(node, new byte[1], ControllerSessionsContainer.Config.TxOptions); // nop to ensure that device is reset
                             var removeFailedRes = RemoveFailedNode(node, out _removeFailedToken);
@@ -3351,7 +3377,7 @@ namespace ZWaveController.Models
 
         public void CancelFirmwareUpdateOTADownload()
         {
-            ApplicationModel.SetBusyMessage("OTA Firmware Download cancelling.");
+            ApplicationModel.SetBusyMessage("OTA Firmware Download canceling.");
             ApplicationModel.FirmwareUpdateModel.DownloadFirmwareData = null;
             _isDownloadCancelled = true;
         }

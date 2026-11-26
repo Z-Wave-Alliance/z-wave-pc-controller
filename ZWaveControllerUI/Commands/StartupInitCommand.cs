@@ -1,13 +1,8 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+// SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
 ﻿using System;
 using System.Linq;
-using System.Threading;
-using Utils;
-using ZWave.Enums;
-using ZWave.Layers;
-using ZWave.Layers.Transport;
-using ZWave.ZipApplication;
 using ZWaveController.Commands;
 using ZWaveController.Interfaces;
 using ZWaveController.Services;
@@ -20,6 +15,9 @@ namespace ZWaveControllerUI.Commands
         public StartupInitCommand(IApplicationModel applicationModel) : base(applicationModel)
         {
         }
+
+        /// <summary>Overrides default so the overlay shows a startup message (inferior ConnectCommand will then show "Connecting to Source").</summary>
+        protected override string BusyMessage => "Starting up ...";
 
         protected override void ExecuteInner(object param)
         {
@@ -43,7 +41,7 @@ namespace ZWaveControllerUI.Commands
             if (!string.IsNullOrEmpty(lastUsedDeviceName))
             {
                 var lastUsedSource = dataSourcesAvailable.FirstOrDefault(x => x.SourceName == lastUsedDeviceName);
-                if (lastUsedSource != null && VerifyDeviceConnection(lastUsedSource))
+                if (lastUsedSource != null && DataSourceTools.CanConnect(lastUsedSource))
                 {
                     mainViewModel.AppSettings.SourceOnStartup = lastUsedSource;
                 }
@@ -54,60 +52,13 @@ namespace ZWaveControllerUI.Commands
                     if (!string.IsNullOrEmpty(lastUsedDeviceAltName))
                     {
                         lastUsedSource = dataSourcesAvailable.FirstOrDefault(x => x.SourceName == lastUsedDeviceAltName);
-                        if (lastUsedSource != null && VerifyDeviceConnection(lastUsedSource))
+                        if (lastUsedSource != null && DataSourceTools.CanConnect(lastUsedSource))
                         {
                             mainViewModel.AppSettings.SourceOnStartup = lastUsedSource;
                         }
                     }
                 }
             }
-        }
-
-        private bool VerifyDeviceConnection(IDataSource dataSource)
-        {
-            bool ret = false;
-            if (dataSource is SerialPortDataSource)
-            {
-                using (ISerialPortProvider sp = new SerialPortProvider())
-                {
-                    ret = sp.Open(dataSource.SourceName, (int)BaudRates.Rate_115200, PInvokeParity.None, 8, PInvokeStopBits.One);
-                }
-                Thread.Sleep(200);
-            }
-            else if (dataSource is SocketDataSource)
-            {
-                var socketDataSource = (SocketDataSource)dataSource;
-                switch (socketDataSource.Type)
-                {
-                    case SoketSourceTypes.TCP:
-                        using (var tcpConnection = new TcpConnection())
-                        {
-                            ret = tcpConnection.Connect(socketDataSource.SourceName, socketDataSource.Port);
-                        }
-                        break;
-                    case SoketSourceTypes.ZIP:
-                        IDtlsClient dtlsClient = null;
-                        try
-                        {
-                            dtlsClient = new DtlsClient();
-                            var cmdLineParser = new CommandLineParser(new[] { socketDataSource.Args });
-                            var pskKey = cmdLineParser.GetArgumentString("psk");
-                            if (!string.IsNullOrEmpty(pskKey))
-                            {
-                                ret = dtlsClient.Connect(pskKey, socketDataSource.SourceName, (ushort)socketDataSource.Port);
-                            }
-                        }
-                        finally
-                        {
-                            dtlsClient.Close();
-                        }
-                        break;
-                    default:
-                        return false;
-                }
-                Thread.Sleep(200);
-            }
-            return ret;
         }
     }
 }

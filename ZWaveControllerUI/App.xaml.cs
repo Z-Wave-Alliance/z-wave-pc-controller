@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // SPDX-FileCopyrightText: Silicon Laboratories Inc. <https://www.silabs.com>
+// SPDX-FileCopyrightText: Z-Wave Alliance <https://z-wavealliance.org>
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -34,10 +38,20 @@ namespace ZWaveControllerUI
 
         private MainViewModel _applicationModel;
 
+        private const int DISCONNECT_ON_CLOSE_TIMEOUT = 10000;
+        private bool _isClosing;
+        private bool _isDisconnectedForClose;
+
         protected override void OnExit(ExitEventArgs e)
         {
             try
             {
+                if (!_isClosing)
+                {
+                    // An exit that did not pass the closing of the main window has not disconnected yet.
+                    DisconnectAllSessions();
+                }
+
                 _logFileStream?.Close();
             }
             catch (Exception)
@@ -272,21 +286,46 @@ namespace ZWaveControllerUI
             CommandsFactory.CommandRunner.ExecuteAsync(restoreLastUsedDeviceCommand, null);
         }
 
-        private void OnMainWindowClosing(object sender, CancelEventArgs e)
+        /// <summary>
+        /// Keeps the main window open until the controller sessions are disconnected, then closes it. The disconnect runs on a background thread, because
+        /// it waits for work that may need the UI thread, such as a polling request that executes a command.
+        /// </summary>
+        private async void OnMainWindowClosing(object sender, CancelEventArgs e)
         {
-            CommandReference cmdRef = new CommandReference();
-            cmdRef.Command = CommandsFactory.CommandBaseGet<CommandBase>(param =>
+            if (_isDisconnectedForClose || ControllerSessionsContainer.ControllerSessions.Count == 0)
             {
-                _applicationModel.SetBusyMessage("Closing…");
-                if (ControllerSessionsContainer.ControllerSessions.Count > 0)
-                {
-                    var controllerSession = ControllerSessionsContainer.ControllerSessions.Last().Value;
-                    controllerSession.Disconnect();
-                    ControllerSessionsContainer.Remove(controllerSession.DataSource.SourceName);
-                }
-            });
-            cmdRef.Execute(null);
-            //{ MainViewModel = _mainViewModel, IsBusy = true, UseBackgroundThread = true };
+                return;
+            }
+
+            e.Cancel = true;
+            if (_isClosing)
+            {
+                return;
+            }
+
+            _isClosing = true;
+            _applicationModel.SetBusy(true);
+            _applicationModel.SetBusyMessage("Closing ...");
+            Task disconnectTask = Task.Run(() => DisconnectAllSessions());
+            await Task.WhenAny(disconnectTask, Task.Delay(DISCONNECT_ON_CLOSE_TIMEOUT));
+            _isDisconnectedForClose = true;
+            MainWindow.Close();
+        }
+
+        /// <summary>Disconnects all controller sessions synchronously and waits so the serial port is released before process exit.</summary>
+        private static void DisconnectAllSessions()
+        {
+            var sourceIds = ControllerSessionsContainer.ControllerSessions.Keys.ToList();
+            if (sourceIds.Count == 0)
+            {
+                return;
+            }
+            foreach (var sourceId in sourceIds)
+            {
+                ControllerSessionsContainer.Remove(sourceId);
+            }
+            int delayMs = Debugger.IsAttached ? 1500 : 700;
+            Thread.Sleep(delayMs);
         }
 
 #if !DEBUG
